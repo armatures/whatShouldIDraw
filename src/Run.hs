@@ -11,9 +11,8 @@ import Data.ByteString.Lazy.Char8 as C
 run :: RIO App ()
 run = do
     cwd <- liftIO getCurrentDirectory
-    let args = ("https://adventofcode.com/2020/day/1", cwd ++ "/advents/1.html")
-    uncurry memoizedFetch args
-
+    let args = makeArg cwd <$> [1..25]
+    traverse_ (uncurry memoizedFetch) args
 
 memoizedFetch :: String -> FilePath -> RIO App ()
 memoizedFetch address path = do
@@ -30,3 +29,8 @@ memoizedFetch address path = do
       writeFileBinary path (C.toStrict body)
       logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
 
+
+makeArg :: FilePath -> Int -> (String, String)
+makeArg cwd i =
+  ("https://adventofcode.com/2020/day/" <> show i
+  , cwd ++ "/advents/" <> show i <>".html")
