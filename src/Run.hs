@@ -5,8 +5,8 @@ module Run (run) where
 
 import           Import
 import           Network.HTTP.Simple
-import           RIO.FilePath        ((</>))
 import           System.Directory
+import Data.ByteString.Lazy.Char8 as C
 
 run :: RIO App ()
 run = do
@@ -14,25 +14,24 @@ run = do
     exists <- liftIO (doesFileExist p)
     exitIfExists exists
 
-    -- logInfo $ displayShow exists
-  -- logInfo . L.take 500 =<< httpLBS url
-
 
 exitIfExists :: Bool -> RIO App ()
 exitIfExists exists =
   if exists then
-      logInfo (displayShow "exists")
-      -- exitSuccess
+    -- do
+      logInfo "exists" >>
+      exitSuccess
   else
-      logInfo $ displayShow "doesn't exist"
-      -- do
-      --   (response <- httpLbs "http://httpbin.org/get"
-      --   logInfo $ displayShow "The body: " <> (displayShow . getResponseBody ) response
-      --   logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
-      --     )      -- print $ getResponseHeader "Content-Type" response
-      -- logInfo $ displayShow $ getResponseBody response
+      -- logInfo "doesn't exist"
+      do
+        response <- httpLbs "https://adventofcode.com/2020/day/1"
+        let body = getResponseBody response
+        filePath <- liftIO path
+        writeFileBinary filePath (C.toStrict body)
+        logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
 
+path :: IO String
 path =
   do
     cwd <- getCurrentDirectory
-    return $ cwd ++ "/fetched.html"
+    return $ cwd ++ "/advents/fetched.html"

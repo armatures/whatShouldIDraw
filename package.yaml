@@ -1,17 +1,17 @@
 name:                whatShouldIDraw
 version:             0.1.0.0
-github:              githubuser/whatShouldIDraw
+github:              armatures/whatShouldIDraw
 license:             BSD3
-author:              Author name here
+author:              Charlie
 maintainer:          example@example.com
-copyright:           2020 Author name here
+copyright:           2020 Charlie
 
 extra-source-files:
 - README.md
 - ChangeLog.md
 
 # Metadata used when publishing your package
-# synopsis:            Short description of your package
+# synopsis:            fetch things to draw
 # category:            Web
 
 # To avoid duplicated efforts in documentation and dealing with the
