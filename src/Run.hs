@@ -11,7 +11,8 @@ import Data.ByteString.Lazy.Char8 as C
 run :: RIO App ()
 run = do
     cwd <- liftIO getCurrentDirectory
-    memoizedFetch "https://adventofcode.com/2020/day/1" $ cwd ++ "/advents/1.html"
+    let args = ("https://adventofcode.com/2020/day/1", cwd ++ "/advents/1.html")
+    uncurry memoizedFetch args
 
 
 memoizedFetch :: String -> FilePath -> RIO App ()
