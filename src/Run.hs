@@ -10,28 +10,22 @@ import Data.ByteString.Lazy.Char8 as C
 
 run :: RIO App ()
 run = do
-    p <- liftIO path
-    exists <- liftIO (doesFileExist p)
-    exitIfExists exists
+    cwd <- liftIO getCurrentDirectory
+    memoizedFetch "https://adventofcode.com/2020/day/1" $ cwd ++ "/advents/1.html"
 
 
-exitIfExists :: Bool -> RIO App ()
-exitIfExists exists =
+memoizedFetch :: String -> FilePath -> RIO App ()
+memoizedFetch address path = do
+  exists <- liftIO (doesFileExist $ path)
+  let showPath = displayShow path
+  let showAddress = displayShow address
   if exists then
-    -- do
-      logInfo "exists" >>
-      exitSuccess
-  else
-      -- logInfo "doesn't exist"
-      do
-        response <- httpLbs "https://adventofcode.com/2020/day/1"
-        let body = getResponseBody response
-        filePath <- liftIO path
-        writeFileBinary filePath (C.toStrict body)
-        logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
+      logInfo $ showPath <> " exists, foregoing call to " <> showAddress
+  else do
+      logInfo $ "caching response from " <> showAddress <> " to " <> showPath
+      request <- parseRequest address
+      response <- httpLbs request
+      let body = getResponseBody response
+      writeFileBinary path (C.toStrict body)
+      logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
 
-path :: IO String
-path =
-  do
-    cwd <- getCurrentDirectory
-    return $ cwd ++ "/advents/fetched.html"
