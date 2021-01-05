@@ -28,6 +28,8 @@ dependencies:
 - directory
 - xml-conduit
 - html-conduit
+- blaze-markup
+- text
   
 ghc-options:
 - -Wall

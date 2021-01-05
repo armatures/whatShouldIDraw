@@ -4,10 +4,13 @@ module Run (run) where
 
 
 import           Data.ByteString.Lazy.Char8 as C
-import           RIO.Text                  as T
+import           Data.Text.Encoding
 import           Import
 import           Network.HTTP.Simple
+import           RIO.Text                   as T
 import           System.Directory
+import           Text.Blaze                 (toMarkup)
+import           Text.Blaze.Renderer.Utf8   (renderMarkup)
 import           Text.HTML.DOM              (parseLBS)
 import           Text.XML.Cursor
 
@@ -60,6 +63,5 @@ cursorFor file =
 findNodes :: Cursor -> [Cursor]
 findNodes = element "main" &/ element "article"
 
-
 extractData :: Cursor -> Text
-extractData = tshow . node -- T.concat . content
+extractData = decodeASCII . toStrict . renderMarkup . toMarkup . node -- T.concat . content
