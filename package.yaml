@@ -26,6 +26,8 @@ dependencies:
 - filepath
 - bytestring
 - directory
+- xml-conduit
+- html-conduit
   
 ghc-options:
 - -Wall

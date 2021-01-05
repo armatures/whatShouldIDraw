@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1e69b0d5016f8c7dbf8598088f4d3f0411d7ec4db795775097565a638afde8f6
+-- hash: f73da963a396e05e910c0654da95f01e8e6e2f5beb4d1c6d3334bdb34b867fd2
 
 name:           whatShouldIDraw
 version:        0.1.0.0
@@ -41,8 +41,10 @@ library
     , bytestring
     , directory
     , filepath
+    , html-conduit
     , http-conduit
     , rio >=0.1.12.0
+    , xml-conduit
   default-language: Haskell2010
 
 executable whatShouldIDraw-exe
@@ -57,10 +59,12 @@ executable whatShouldIDraw-exe
     , bytestring
     , directory
     , filepath
+    , html-conduit
     , http-conduit
     , optparse-simple
     , rio >=0.1.12.0
     , whatShouldIDraw
+    , xml-conduit
   default-language: Haskell2010
 
 test-suite whatShouldIDraw-test
@@ -78,7 +82,9 @@ test-suite whatShouldIDraw-test
     , directory
     , filepath
     , hspec
+    , html-conduit
     , http-conduit
     , rio >=0.1.12.0
     , whatShouldIDraw
+    , xml-conduit
   default-language: Haskell2010
