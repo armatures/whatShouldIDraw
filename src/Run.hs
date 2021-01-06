@@ -2,13 +2,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Run (run) where
 
-
 import           Data.ByteString.Lazy.Char8 as C hiding (ByteString)
-import           Data.Text.Encoding
 import           Import
 import           Network.HTTP.Simple
 import           RIO.List                   as List
-import           RIO.Text                   as T
 import           System.Directory
 import           Text.Blaze                 (toMarkup)
 import           Text.Blaze.Renderer.Utf8   (renderMarkup)
@@ -38,12 +35,15 @@ memoizedFetch address path = do
       let body = getResponseBody response
       writeFileBinary path (C.toStrict body)
 
+adventFilePath :: FilePath -> Int -> FilePath
 adventFilePath cwd i
   = cwd ++ "/advents/" <> show i <>".html"
 
+adventFilePathClean :: FilePath -> Int -> FilePath
 adventFilePathClean cwd i
   = cwd ++ "/adventsClean/" <> show i <>".html"
 
+adventUrl :: Int -> String
 adventUrl i =
   "https://adventofcode.com/2020/day/" <> show i
 
