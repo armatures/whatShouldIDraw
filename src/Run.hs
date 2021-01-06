@@ -23,7 +23,7 @@ run = do
 
 memoizedFetch :: String -> FilePath -> RIO App ()
 memoizedFetch address path = do
-  exists <- liftIO (doesFileExist $ path)
+  exists <- liftIO (doesFileExist path)
   let showPath = displayShow path
   let showAddress = displayShow address
   if exists then
@@ -49,15 +49,19 @@ adventUrl i =
 
 {-| extract the article from the page and write it to the destination -}
 parseBody :: FilePath -> FilePath -> RIO App ()
-parseBody srcFilePath destFilePath=
-    liftIO $ withLazyFile srcFilePath
-      (\file ->
-        do
+parseBody srcFilePath destFilePath = do
+    exists <- liftIO (doesFileExist destFilePath)
+    if not exists then do
+      liftIO $ withLazyFile srcFilePath
+        (\file ->
+         do
           let cursor = cursorFor file
           let foundStuff = mconcat $ cursor $// findNodes &| extractData
           writeFile destFilePath foundStuff
-      )
-  >> return ()
+        )
+      logInfo $ displayShow srcFilePath <> " was parsed and written to " <> displayShow destFilePath
+      else
+      logDebug $ displayShow destFilePath <> " already exists, not writing it."
 
 cursorFor :: LByteString -> Cursor
 cursorFor file =
