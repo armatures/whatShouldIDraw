@@ -17,9 +17,9 @@ import           Text.XML.Cursor
 run :: RIO App ()
 run = do
   cwd <- liftIO getCurrentDirectory
-  let args = makeArg cwd <$> [1..25]
+  let args = adventArgs cwd <$> [1..25]
   traverse_ (uncurry memoizedFetch) args
-  parseBody $ snd (makeArg cwd 1)
+  parseBody $ snd (adventArgs cwd 1)
 
 memoizedFetch :: String -> FilePath -> RIO App ()
 memoizedFetch address path = do
@@ -27,7 +27,7 @@ memoizedFetch address path = do
   let showPath = displayShow path
   let showAddress = displayShow address
   if exists then
-      logInfo $ showPath <> " exists, foregoing call to " <> showAddress
+    logDebug $ showPath <> " exists, foregoing call to " <> showAddress
   else do
       logInfo $ "caching response from " <> showAddress <> " to " <> showPath
       request <- parseRequest address
@@ -37,10 +37,18 @@ memoizedFetch address path = do
       logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
 
 
-makeArg :: FilePath -> Int -> (String, FilePath)
-makeArg cwd i =
-  ("https://adventofcode.com/2020/day/" <> show i
-  , cwd ++ "/advents/" <> show i <>".html")
+adventArgs :: FilePath -> Int -> (String, FilePath)
+adventArgs cwd i =
+  (adventUrl i
+  , adventFilePath cwd i
+  )
+
+adventFilePath cwd i
+  = cwd ++ "/advents/" <> show i <>".html"
+
+adventUrl i =
+  "https://adventofcode.com/2020/day/" <> show i
+{-| clean the up the article, taking only what you want to read -}
 
 parseBody :: FilePath -> RIO App ()
 parseBody filePath =
@@ -48,7 +56,6 @@ parseBody filePath =
       (\file ->
         do
           let cursor = cursorFor file
-          -- processData $
           let foundStuff = cursor $// findNodes &| extractData
           putStrLn "found nodes:"
           traverse_ (putStrLn . C.pack . T.unpack) foundStuff
@@ -64,4 +71,4 @@ findNodes :: Cursor -> [Cursor]
 findNodes = element "main" &/ element "article"
 
 extractData :: Cursor -> Text
-extractData = decodeASCII . toStrict . renderMarkup . toMarkup . node -- T.concat . content
+extractData = decodeASCII . toStrict . renderMarkup . toMarkup . node
