@@ -3,7 +3,7 @@
 module Run (run) where
 
 
-import           Data.ByteString.Lazy.Char8 as C
+import           Data.ByteString.Lazy.Char8 as C hiding (ByteString)
 import           Data.Text.Encoding
 import           Import
 import           Network.HTTP.Simple
@@ -44,8 +44,8 @@ adventFilePath cwd i
 
 adventUrl i =
   "https://adventofcode.com/2020/day/" <> show i
-{-| clean the up the article, taking only what you want to read -}
 
+{-| clean the up the article, taking only what you want to read -}
 parseBody :: FilePath -> RIO App ()
 parseBody filePath =
     liftIO $ withLazyFile filePath
@@ -54,17 +54,17 @@ parseBody filePath =
           let cursor = cursorFor file
           let foundStuff = cursor $// findNodes &| extractData
           putStrLn "found nodes:"
-          traverse_ (putStrLn . C.pack . T.unpack) foundStuff
+          traverse_ (putStrLn ) foundStuff
           return ()
       )
   >> return ()
 
-cursorFor :: C.ByteString -> Cursor
+cursorFor :: LByteString -> Cursor
 cursorFor file =
   fromDocument $ parseLBS file
 
 findNodes :: Cursor -> [Cursor]
 findNodes = element "main" &/ element "article"
 
-extractData :: Cursor -> Text
-extractData = decodeASCII . toStrict . renderMarkup . toMarkup . node
+extractData :: Cursor -> LByteString
+extractData = renderMarkup . toMarkup . node
