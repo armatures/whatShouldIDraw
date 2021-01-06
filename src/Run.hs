@@ -7,6 +7,7 @@ import           Data.ByteString.Lazy.Char8 as C
 import           Data.Text.Encoding
 import           Import
 import           Network.HTTP.Simple
+import           RIO.List                   as List
 import           RIO.Text                   as T
 import           System.Directory
 import           Text.Blaze                 (toMarkup)
@@ -17,9 +18,10 @@ import           Text.XML.Cursor
 run :: RIO App ()
 run = do
   cwd <- liftIO getCurrentDirectory
-  let args = adventArgs cwd <$> [1..25]
-  traverse_ (uncurry memoizedFetch) args
-  parseBody $ snd (adventArgs cwd 1)
+  let urls = adventUrl <$> [1..25]
+  let paths = adventFilePath cwd <$> [1..25]
+  sequenceA_ $ List.zipWith memoizedFetch urls paths
+  parseBody $ adventFilePath cwd 1
 
 memoizedFetch :: String -> FilePath -> RIO App ()
 memoizedFetch address path = do
@@ -36,12 +38,6 @@ memoizedFetch address path = do
       writeFileBinary path (C.toStrict body)
       logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
 
-
-adventArgs :: FilePath -> Int -> (String, FilePath)
-adventArgs cwd i =
-  (adventUrl i
-  , adventFilePath cwd i
-  )
 
 adventFilePath cwd i
   = cwd ++ "/advents/" <> show i <>".html"
