@@ -19,9 +19,10 @@ run :: RIO App ()
 run = do
   cwd <- liftIO getCurrentDirectory
   let urls = adventUrl <$> [1..25]
-  let paths = adventFilePath cwd <$> [1..25]
-  sequenceA_ $ List.zipWith memoizedFetch urls paths
-  parseBody $ adventFilePath cwd 1
+  let srcPaths = adventFilePath cwd <$> [1..25]
+  let destPaths = adventFilePathClean cwd <$> [1..25]
+  sequenceA_ $ List.zipWith memoizedFetch urls srcPaths
+  sequenceA_ $ List.zipWith parseBody srcPaths destPaths
 
 memoizedFetch :: String -> FilePath -> RIO App ()
 memoizedFetch address path = do
@@ -36,26 +37,25 @@ memoizedFetch address path = do
       response <- httpLbs request
       let body = getResponseBody response
       writeFileBinary path (C.toStrict body)
-      logInfo $ displayShow "The status code was: " <> displayShow (getResponseStatusCode response)
-
 
 adventFilePath cwd i
   = cwd ++ "/advents/" <> show i <>".html"
 
+adventFilePathClean cwd i
+  = cwd ++ "/adventsClean/" <> show i <>".html"
+
 adventUrl i =
   "https://adventofcode.com/2020/day/" <> show i
 
-{-| clean the up the article, taking only what you want to read -}
-parseBody :: FilePath -> RIO App ()
-parseBody filePath =
-    liftIO $ withLazyFile filePath
+{-| extract the article from the page and write it to the destination -}
+parseBody :: FilePath -> FilePath -> RIO App ()
+parseBody srcFilePath destFilePath=
+    liftIO $ withLazyFile srcFilePath
       (\file ->
         do
           let cursor = cursorFor file
-          let foundStuff = cursor $// findNodes &| extractData
-          putStrLn "found nodes:"
-          traverse_ (putStrLn ) foundStuff
-          return ()
+          let foundStuff = mconcat $ cursor $// findNodes &| extractData
+          writeFile destFilePath foundStuff
       )
   >> return ()
 
