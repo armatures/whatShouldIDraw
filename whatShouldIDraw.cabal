@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e0b87741d5c11d52aea2f3607f8923e8a54b7fa65c9071cab86bcef7a6e7223d
+-- hash: 541e2cc30651c844f78f6a5e4bc43bbf5bf901e2c8bfde08ece4e350cf67f0ea
 
 name:           whatShouldIDraw
 version:        0.1.0.0
@@ -27,6 +27,8 @@ source-repository head
 
 library
   exposed-modules:
+      AdventConfig
+      ArticleConfig
       Import
       Run
       Types
