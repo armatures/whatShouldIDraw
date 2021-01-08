@@ -1,4 +1,4 @@
-echo "<html>" > compacted1.html
+echo "<!DOCTYPE html><html><head><title>\"advents\"</title></head><body>" > compacted1.html
 cat "adventsClean/1.html" >> compacted1.html
 cat "articlesClean/1.html" >> compacted1.html
 cat "adventsClean/2.html" >> compacted1.html
@@ -9,4 +9,4 @@ cat "adventsClean/4.html" >> compacted1.html
 cat "articlesClean/4.html" >> compacted1.html
 cat "adventsClean/5.html" >> compacted1.html
 cat "articlesClean/5.html" >> compacted1.html
-echo "</html>">> compacted1.html
+echo "</body></html>">> compacted1.html
