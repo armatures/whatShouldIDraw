@@ -1,0 +1,808 @@
+<!DOCTYPE html><html><head><title>"advents"</title></head><body>
+<article class="day-desc"><h2>--- Day 11: Seating System ---</h2><p>Your plane lands with plenty of time to spare. The final leg of your journey is a ferry that goes directly to the tropical island where you can finally start your vacation. As you reach the waiting area to board the ferry, you realize you&#39;re so early, nobody else has even arrived yet!</p>
+<p>By modeling the process people use to choose (or abandon) their seat in the waiting area, you&#39;re pretty sure you can predict the best place to sit. You make a quick map of the seat layout (your puzzle input).</p>
+<p>The seat layout fits neatly on a grid. Each position is either floor (<code>.</code>), an empty seat (<code>L</code>), or an occupied seat (<code>#</code>). For example, the initial seat layout might look like this:</p>
+<pre><code>L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
+</code></pre>
+<p>Now, you just need to model the people who will be arriving shortly. Fortunately, people are entirely predictable and always follow a simple set of rules. All decisions are based on the <em>number of occupied seats</em> adjacent to a given seat (one of the eight positions immediately up, down, left, right, or diagonal from the seat). The following rules are applied to every seat simultaneously:</p>
+<ul>
+<li>If a seat is <em>empty</em> (<code>L</code>) and there are <em>no</em> occupied seats adjacent to it, the seat becomes <em>occupied</em>.</li>
+<li>If a seat is <em>occupied</em> (<code>#</code>) and <em>four or more</em> seats adjacent to it are also occupied, the seat becomes <em>empty</em>.</li>
+<li>Otherwise, the seat&#39;s state does not change.</li>
+</ul>
+<p><span title="Floor... floor never changes.">Floor (<code>.</code>) never changes</span>; seats don&#39;t move, and nobody sits on the floor.</p>
+<p>After one round of these rules, every seat in the example layout becomes occupied:</p>
+<pre><code>#.##.##.##
+#######.##
+#.#.#..#..
+####.##.##
+#.##.##.##
+#.#####.##
+..#.#.....
+##########
+#.######.#
+#.#####.##
+</code></pre>
+<p>After a second round, the seats with four or more occupied adjacent seats become empty again:</p>
+<pre><code>#.LL.L#.##
+#LLLLLL.L#
+L.L.L..L..
+#LLL.LL.L#
+#.LL.LL.LL
+#.LLLL#.##
+..L.L.....
+#LLLLLLLL#
+#.LLLLLL.L
+#.#LLLL.##
+</code></pre>
+<p>This process continues for three more rounds:</p>
+<pre><code>#.##.L#.##
+#L###LL.L#
+L.#.#..#..
+#L##.##.L#
+#.##.LL.LL
+#.###L#.##
+..#.#.....
+#L######L#
+#.LL###L.L
+#.#L###.##
+</code></pre>
+<pre><code>#.#L.L#.##
+#LLL#LL.L#
+L.L.L..#..
+#LLL.##.L#
+#.LL.LL.LL
+#.LL#L#.##
+..L.L.....
+#L#LLLL#L#
+#.LLLLLL.L
+#.#L#L#.##
+</code></pre>
+<pre><code>#.#L.L#.##
+#LLL#LL.L#
+L.#.L..#..
+#L##.##.L#
+#.#L.LL.LL
+#.#L#L#.##
+..L.L.....
+#L#L##L#L#
+#.LLLLLL.L
+#.#L#L#.##
+</code></pre>
+<p>At this point, something interesting happens: the chaos stabilizes and further applications of these rules cause no seats to change state! Once people stop moving around, you count <em><code>37</code></em> occupied seats.</p>
+<p>Simulate your seating area by applying the seating rules repeatedly until no seats change state. <em>How many seats end up occupied?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-11" id="user-content-day-11"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 11</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em>11</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/11" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day11.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day11.html" rel="nofollow">Rendered</a></em></p>
+<p>My first day on the leaderboard! :D  21 / 352.  Had a big dip on my second part
+because I had some silly typos that were difficult to catch in the moment D:</p>
+<p>After refactoring things, I realized that part 1 and part 2 are really the
+same, with only two differences:</p>
+<ol>
+<li>Each point as a different neighborhood set (in part 1, it&#39;s the immediate
+neighbors; in part 2, it&#39;s all of the line-of-sights in each direction).</li>
+<li>Threshold for seats unseating is 4 for part 1 and 5 for part 2.</li>
+</ol>
+<p>So let&#39;s write our function parameterized on those two.  We&#39;ll be storing our
+world as a <code>Map Point Bool</code>, where <code>False</code> represents an empty seat and <code>True</code>
+represents a full one.  Floor points are not included in the map.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A 2-vector type from the linear library, with a very convenient Num</span>
+<span class="pl-c"><span class="pl-c">--</span> instance.</span>
+<span class="pl-k">data</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">V2</span> <span class="pl-smi">a</span> <span class="pl-smi">a</span>
+
+<span class="pl-k">type</span> <span class="pl-en">Point</span> <span class="pl-k">=</span> <span class="pl-en">V2</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A useful utility function I keep around that counts the number of items in</span>
+<span class="pl-c"><span class="pl-c">--</span> a container matching a predicate</span>
+<span class="pl-en">countTrue</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Foldable</span></span> <span class="pl-smi">f</span> <span class="pl-k">=&gt;</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">f</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+countTrue p <span class="pl-k">=</span> <span class="pl-c1">length</span> <span class="pl-k">.</span> <span class="pl-c1">filter</span> p <span class="pl-k">.</span> toList
+
+seatRule
+    <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span>                       <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> exit seat threshold</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> (<span class="pl-en">Set</span> <span class="pl-en">Point</span>)     <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> neighbors for each point</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+seatRule thr nmp mp <span class="pl-k">=</span> <span class="pl-c1">M.</span>intersectionWith go nmp mp
+  <span class="pl-k">where</span>
+    go neighbs <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-ent">Empty</span> <span class="pl-k">-&gt;</span> <span class="pl-c1">not</span> (<span class="pl-c1">all</span> (mp <span class="pl-k"><span class="pl-c1">M.</span>!</span>) neighbs)
+      <span class="pl-ent">Full</span>  <span class="pl-k">-&gt;</span>
+        <span class="pl-k">let</span> onNeighbs <span class="pl-k">=</span> countTrue (mp <span class="pl-k"><span class="pl-c1">M.</span>!</span>) neighbs
+        <span class="pl-k">in</span>  <span class="pl-c1">not</span> (onNeighbs <span class="pl-k">&gt;=</span> thr)</pre></div>
+<p>Now we just need to create our neighborhood maps.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> The eight immediate neighbors around 0,0</span>
+<span class="pl-en">immediateNeighbs</span> <span class="pl-k">::</span> [<span class="pl-en">Point</span>]
+immediateNeighbs <span class="pl-k">=</span>
+    [ <span class="pl-ent">V2</span> dx dy
+    <span class="pl-k">|</span> dx <span class="pl-k">&lt;-</span> [<span class="pl-k">-</span><span class="pl-c1">1</span> <span class="pl-k">..</span> <span class="pl-c1">1</span>]
+    , dy <span class="pl-k">&lt;-</span> <span class="pl-k">if</span> dx <span class="pl-k">==</span> <span class="pl-c1">0</span> <span class="pl-k">then</span> [<span class="pl-k">-</span><span class="pl-c1">1</span>,<span class="pl-c1">1</span>] <span class="pl-k">else</span> [<span class="pl-k">-</span><span class="pl-c1">1</span><span class="pl-k">..</span><span class="pl-c1">1</span>]
+    ]
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> From a set of seat locations, get a map of points to all of those points&#39;</span>
+<span class="pl-c"><span class="pl-c">--</span> neighbors where there is a seat. Should only need to be computed once.</span>
+lineOfSights1
+    <span class="pl-k">::</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Set</span> (<span class="pl-en">Set</span> <span class="pl-en">Point</span>)
+lineOfSeights1 pts <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromSet go mp
+  <span class="pl-k">where</span>
+    go p _ <span class="pl-k">=</span> <span class="pl-c1">S.</span>fromList
+           <span class="pl-k">.</span> <span class="pl-c1">filter</span> (<span class="pl-k">`S.member`</span> pts)
+           <span class="pl-k">.</span> (<span class="pl-k">+</span> p)
+           <span class="pl-k">$</span> immediateNeighbs
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> From a set of seat locations, Get a map of points to all of those points&#39;</span>
+<span class="pl-c"><span class="pl-c">--</span> visible neighbors. Should only need to be computed once.</span>
+lineOfSights2
+    <span class="pl-k">::</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> (<span class="pl-en">Set</span> <span class="pl-en">Point</span>)
+lineOfSights2 bb pts <span class="pl-k">=</span> <span class="pl-c1">M.</span>mapWithKey go pts
+  <span class="pl-k">where</span>
+    go p _ <span class="pl-k">=</span> <span class="pl-c1">S.</span>fromList
+           <span class="pl-k">.</span> mapMaybe (los p)
+           <span class="pl-k">$</span> immediateNeighbs
+    los p d <span class="pl-k">=</span> find (<span class="pl-k">`S.member`</span> pts)
+            <span class="pl-k">.</span> <span class="pl-c1">takeWhile</span> inBoundingBox
+            <span class="pl-k">.</span> <span class="pl-c1">tail</span>
+            <span class="pl-k">$</span> <span class="pl-c1">iterate</span> (<span class="pl-k">+</span> d) p
+    inBoundingBox <span class="pl-k">=</span> <span class="pl-c1">all</span> (inRange (<span class="pl-c1">0</span>, <span class="pl-c1">99</span>))
+        <span class="pl-c"><span class="pl-c">--</span> inRange from Data.Ix</span>
+        <span class="pl-c"><span class="pl-c">--</span> all from Data.Foldable and V2&#39;s Foldable instance</span></pre></div>
+<p>(I hard-coded the bounds here, but in my actual solution I inferred it from the
+input.)</p>
+<p>Now to solve!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Handy utility function I have; repeat a function until you get the same</span>
+<span class="pl-c"><span class="pl-c">--</span> result twice.</span>
+<span class="pl-en">fixedPoint</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Eq</span></span> <span class="pl-smi">a</span> <span class="pl-k">=&gt;</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span>
+fixedPoint f <span class="pl-k">=</span> go
+  <span class="pl-k">where</span>
+    go <span class="pl-k">!</span>x
+        <span class="pl-k">|</span> x <span class="pl-k">==</span> y    <span class="pl-k">=</span> x
+        <span class="pl-k">|</span> <span class="pl-c1">otherwise</span> <span class="pl-k">=</span> go y
+      <span class="pl-k">where</span>
+        y <span class="pl-k">=</span> f x
+
+solveWith
+    <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span>                      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> exit seat threshold</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> (<span class="pl-en">Set</span> <span class="pl-en">Point</span>)    <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> neighbors for each point</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>           <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> initial state</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>                      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> equilibrium size</span>
+solveWith thr neighbs <span class="pl-k">=</span> countTrue <span class="pl-c1">id</span> <span class="pl-k">.</span> fixedPoint (seatRule thr neighbs)
+
+part1
+    <span class="pl-k">::</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 mp <span class="pl-k">=</span> solveWith <span class="pl-c1">4</span> los mp
+  <span class="pl-k">where</span>
+    los <span class="pl-k">=</span> lineOfSight1 (<span class="pl-c1">M.</span>keysSet mp)
+
+part2
+    <span class="pl-k">::</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 mp <span class="pl-k">=</span> solveWith <span class="pl-c1">5</span> los mp
+  <span class="pl-k">where</span>
+    los <span class="pl-k">=</span> lineOfSight2 (<span class="pl-c1">M.</span>keysSet mp)</pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-11-benchmarks" id="user-content-day-11-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 11 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 11a
+benchmarking...
+time                 131.5 ms   (126.6 ms .. 138.6 ms)
+                     0.996 R²   (0.988 R² .. 1.000 R²)
+mean                 135.8 ms   (133.3 ms .. 139.1 ms)
+std dev              4.926 ms   (3.075 ms .. 7.107 ms)
+variance introduced by outliers: 11% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 11b
+benchmarking...
+time                 136.4 ms   (129.4 ms .. 142.6 ms)
+                     0.998 R²   (0.995 R² .. 1.000 R²)
+mean                 137.5 ms   (134.5 ms .. 141.0 ms)
+std dev              5.265 ms   (3.297 ms .. 7.107 ms)
+variance introduced by outliers: 11% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 12: Rain Risk ---</h2><p>Your ferry made decent progress toward the island, but the storm came in <span title="At least it wasn&#39;t a Category Six!">faster than anyone expected</span>. The ferry needs to take <em>evasive actions</em>!</p>
+<p>Unfortunately, the ship&#39;s navigation computer seems to be malfunctioning; rather than giving a route directly to safety, it produced extremely circuitous instructions. When the captain uses the <a href="https://en.wikipedia.org/wiki/Public_address_system" target="_blank">PA system</a> to ask if anyone can help, you quickly volunteer.</p>
+<p>The navigation instructions (your puzzle input) consists of a sequence of single-character <em>actions</em> paired with integer input <em>values</em>. After staring at them for a few minutes, you work out what they probably mean:</p>
+<ul>
+<li>Action <em><code>N</code></em> means to move <em>north</em> by the given value.</li>
+<li>Action <em><code>S</code></em> means to move <em>south</em> by the given value.</li>
+<li>Action <em><code>E</code></em> means to move <em>east</em> by the given value.</li>
+<li>Action <em><code>W</code></em> means to move <em>west</em> by the given value.</li>
+<li>Action <em><code>L</code></em> means to turn <em>left</em> the given number of degrees.</li>
+<li>Action <em><code>R</code></em> means to turn <em>right</em> the given number of degrees.</li>
+<li>Action <em><code>F</code></em> means to move <em>forward</em> by the given value in the direction the ship is currently facing.</li>
+</ul>
+<p>The ship starts by facing <em>east</em>. Only the <code>L</code> and <code>R</code> actions change the direction the ship is facing. (That is, if the ship is facing east and the next instruction is <code>N10</code>, the ship would move north 10 units, but would still move east if the following action were <code>F</code>.)</p>
+<p>For example:</p>
+<pre><code>F10
+N3
+F7
+R90
+F11
+</code></pre>
+<p>These instructions would be handled as follows:</p>
+<ul>
+<li><code>F10</code> would move the ship 10 units east (because the ship starts by facing east) to <em>east 10, north 0</em>.</li>
+<li><code>N3</code> would move the ship 3 units north to <em>east 10, north 3</em>.</li>
+<li><code>F7</code> would move the ship another 7 units east (because the ship is still facing east) to <em>east 17, north 3</em>.</li>
+<li><code>R90</code> would cause the ship to turn right by 90 degrees and face <em>south</em>; it remains at <em>east 17, north 3</em>.</li>
+<li><code>F11</code> would move the ship 11 units south to <em>east 17, south 8</em>.</li>
+</ul>
+<p>At the end of these instructions, the ship&#39;s <a href="https://en.wikipedia.org/wiki/Manhattan_distance" target="_blank">Manhattan distance</a> (sum of the absolute values of its east/west position and its north/south position) from its starting position is <code>17 + 8</code> = <em><code>25</code></em>.</p>
+<p>Figure out where the navigation instructions lead. <em>What is the Manhattan distance between that location and the ship&#39;s starting position?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-12" id="user-content-day-12"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 12</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em>12</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/12" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day12.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day12.html" rel="nofollow">Rendered</a></em></p>
+<p>Hello!  Today&#39;s puzzle for me ended up a neat exercise in fitting together
+simple parts into something fun.</p>
+<p>To preface this, I do usually represent all my coordinates using <code>V2 Int</code> from
+the <em><a href="https://hackage.haskell.org/package/linear" rel="nofollow">linear</a></em> library, which
+supports addition and scaling:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">V2</span> <span class="pl-k">!</span><span class="pl-smi">a</span> <span class="pl-k">!</span><span class="pl-smi">a</span>
+
+<span class="pl-k">type</span> <span class="pl-en">Point</span> <span class="pl-k">=</span> <span class="pl-en">V2</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> You can add points using the Num instance</span>
+<span class="pl-en"><span class="pl-c1">(+)</span></span> <span class="pl-k">::</span> <span class="pl-en">Point</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Point</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Point</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> You can do scaling</span>
+<span class="pl-en">(*^)</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Point</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Point</span></pre></div>
+<p>And I have a utility type that represents a compass direction:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Dir</span> <span class="pl-k">=</span> <span class="pl-ent">North</span> | <span class="pl-ent">East</span> | <span class="pl-ent">South</span> | <span class="pl-ent">West</span>
+
+<span class="pl-en">dirPoint</span> <span class="pl-k">::</span> <span class="pl-en">Dir</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Point</span>
+dirPoint <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">North</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   <span class="pl-c1">0</span>   <span class="pl-c1">1</span>
+    <span class="pl-ent">East</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   <span class="pl-c1">1</span>   <span class="pl-c1">0</span>
+    <span class="pl-ent">South</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   <span class="pl-c1">0</span> (<span class="pl-k">-</span><span class="pl-c1">1</span>)
+    <span class="pl-ent">West</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span> (<span class="pl-k">-</span><span class="pl-c1">1</span>)  <span class="pl-c1">0</span>
+
+<span class="pl-en">rotPoint</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Dir</span> <span class="pl-k">-&gt;</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span>
+rotPoint <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">North</span> <span class="pl-k">-&gt;</span> <span class="pl-c1">id</span>
+    <span class="pl-ent">East</span>  <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   y  (<span class="pl-k">-</span>x)
+    <span class="pl-ent">West</span>  <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span> (<span class="pl-k">-</span>y)   x
+    <span class="pl-ent">South</span> <span class="pl-k">-&gt;</span> <span class="pl-c1">negate</span></pre></div>
+<p>And I do like to define a <code>Group</code> interface for my <code>Dir</code> type, just for fun.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> If you consider a Dir as a turn, then `mulDir a b` is like turning a, then</span>
+<span class="pl-c"><span class="pl-c">--</span> turning b.</span>
+<span class="pl-en">mulDir</span> <span class="pl-k">::</span> <span class="pl-en">Dir</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Dir</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Dir</span>
+mulDir <span class="pl-ent">North</span> <span class="pl-k">=</span> <span class="pl-c1">id</span>
+mulDir <span class="pl-ent">East</span>  <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span> <span class="pl-ent">North</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">East</span>
+                     <span class="pl-ent">East</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">South</span>
+                     <span class="pl-ent">South</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">West</span>
+                     <span class="pl-ent">West</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">North</span>
+mulDir <span class="pl-ent">South</span> <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span> <span class="pl-ent">North</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">South</span>
+                     <span class="pl-ent">East</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">West</span>
+                     <span class="pl-ent">South</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">North</span>
+                     <span class="pl-ent">West</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">East</span>
+mulDir <span class="pl-ent">West</span>  <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span> <span class="pl-ent">North</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">West</span>
+                     <span class="pl-ent">East</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">North</span>
+                     <span class="pl-ent">South</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">East</span>
+                     <span class="pl-ent">West</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">South</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> &#39;&lt;&gt;&#39; is &#39;mulDir&#39;.</span>
+<span class="pl-k">instance</span> <span class="pl-en">Semigroup</span> <span class="pl-en">Dir</span> <span class="pl-k">where</span>
+    <span class="pl-en">(&lt;&gt;)</span> <span class="pl-k">=</span> mulDir
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> If you consider Dir as a turn, then turning by North is the same as not</span>
+<span class="pl-c"><span class="pl-c">--</span> turning at all.</span>
+<span class="pl-k">instance</span> <span class="pl-en"><span class="pl-e">Monoid</span></span> <span class="pl-en">Dir</span> <span class="pl-k">where</span>
+    <span class="pl-c1">mempty</span> <span class="pl-k">=</span> <span class="pl-ent">North</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Reverse a turn.  Not needed for this puzzle, but still useful in general.</span>
+<span class="pl-k">instance</span> <span class="pl-en">Group</span> <span class="pl-en">Dir</span> <span class="pl-k">where</span>
+    invert <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span> <span class="pl-ent">North</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">South</span>
+                   <span class="pl-ent">East</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">West</span>
+                   <span class="pl-ent">South</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">North</span>
+                   <span class="pl-ent">West</span>  <span class="pl-k">-&gt;</span> <span class="pl-ent">East</span></pre></div>
+<p>I did not write any of this for the puzzle --- this is just a nice way I like
+to think about directions and points in my head :)</p>
+<p>One major advantage of defining a <code>Semigroup</code> instance for <code>Dir</code> is that you can
+take advantage of the <code>pow</code> function from
+<a href="https://hackage.haskell.org/package/groups-0.5.2/docs/Data-Group.html" rel="nofollow">Data.Group</a>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">pow</span> <span class="pl-k">::</span> <span class="pl-en">Group</span> <span class="pl-smi">m</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">m</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-smi">m</span></pre></div>
+<p>which is like <code>stimes</code>, but supporting negative numbers.  <code>pow x 3</code> is <code>x &lt;&gt; x &lt;&gt; x</code>, and <code>pow x (-3)</code> is <code>invert x &lt;&gt; invert x &lt;&gt; invert x</code>, or <code>invert (x &lt;&gt; x &lt;&gt; x)</code> (same thing, &#39;cause Group theory).  We don&#39;t actually need the support
+for negative numbers in this puzzle, so we could just use <code>stimes</code>, but it&#39;s
+nice that we can just use <code>pow</code> and not think about our input range.  And,
+though it doesn&#39;t matter for this challenge, it also uses <a href="https://en.wikipedia.org/wiki/Exponentiation_by_squaring" rel="nofollow">repeated
+squaring</a> so it can
+do these operations in log-n time (<code>pow x 1000000000</code> only takes 30
+operations), which is pretty neat for a lot of different applications (like <a href="https://blog.jle.im/entry/shuffling-things-up.html" rel="nofollow">in
+my writeup for 2019 Day
+22</a>).</p>
+<p>Anyway I think that&#39;s enough preamble...now let&#39;s use it! :D  Each instruction
+seems to be one of three forms: &quot;go forward&quot;, &quot;turn&quot;, or &quot;move an absolute
+vector&quot;.  So I represented these three as a data type, parameterized by the
+amount to go forward, the direction to turn, and the vector to move by,
+respectively.</p>
+<p>And each first character gives us a different way to process the <code>Int</code>
+argument, so I stored those instructions in a <code>Map</code>.  Then we can parse it by
+just using <code>readMaybe :: Read a =&gt; String -&gt; Maybe a</code> on a pattern match.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Instr</span> <span class="pl-k">=</span> <span class="pl-ent">Forward</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+           | <span class="pl-ent">Turn</span> <span class="pl-en">Dir</span>
+           | <span class="pl-ent">Move</span> <span class="pl-en">Point</span>
+  <span class="pl-k">deriving</span> <span class="pl-e">Show</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A map of a Char to the way to interpret the Int argument</span>
+<span class="pl-en">mkInstr</span> <span class="pl-k">::</span> <span class="pl-en">Map</span> <span class="pl-en"><span class="pl-c1">Char</span></span> (<span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Instr</span>)
+mkInstr <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromList
+    [ (<span class="pl-s"><span class="pl-pds">&#39;</span>F<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Forward</span>)
+    , (<span class="pl-s"><span class="pl-pds">&#39;</span>L<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Turn</span> <span class="pl-k">.</span> pow <span class="pl-ent">West</span> <span class="pl-k">.</span> (<span class="pl-k">`div`</span> <span class="pl-c1">90</span>))
+    , (<span class="pl-s"><span class="pl-pds">&#39;</span>R<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Turn</span> <span class="pl-k">.</span> pow <span class="pl-ent">East</span> <span class="pl-k">.</span> (<span class="pl-k">`div`</span> <span class="pl-c1">90</span>))
+    , (<span class="pl-s"><span class="pl-pds">&#39;</span>N<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Move</span> <span class="pl-k">.</span> (<span class="pl-k">*^</span> dirPoint <span class="pl-ent">North</span>))
+    , (<span class="pl-s"><span class="pl-pds">&#39;</span>S<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Move</span> <span class="pl-k">.</span> (<span class="pl-k">*^</span> dirPoint <span class="pl-ent">South</span>))
+    , (<span class="pl-s"><span class="pl-pds">&#39;</span>E<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Move</span> <span class="pl-k">.</span> (<span class="pl-k">*^</span> dirPoint <span class="pl-ent">East</span> ))
+    , (<span class="pl-s"><span class="pl-pds">&#39;</span>W<span class="pl-pds">&#39;</span></span>, <span class="pl-ent">Move</span> <span class="pl-k">.</span> (<span class="pl-k">*^</span> dirPoint <span class="pl-ent">West</span> ))
+    ]
+
+<span class="pl-en">parseInstr</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Instr</span>
+parseInstr <span class="pl-c1">[]</span>    <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+parseInstr (c<span class="pl-k">:</span>n) <span class="pl-k">=</span> <span class="pl-c1">M.</span><span class="pl-c1">lookup</span> c mkInstr <span class="pl-k">&lt;*&gt;</span> readMaybe n</pre></div>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> parseInstr <span class="pl-s"><span class="pl-pds">&quot;</span>F30<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Forward</span> <span class="pl-c1">30</span>
+ghci<span class="pl-k">&gt;</span> parseInstr <span class="pl-s"><span class="pl-pds">&quot;</span>L270<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Turn</span> <span class="pl-ent">East</span>
+ghci<span class="pl-k">&gt;</span> parseInstr <span class="pl-s"><span class="pl-pds">&quot;</span>N15<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Move</span> (<span class="pl-ent">V2</span> <span class="pl-c1">0</span> <span class="pl-c1">15</span>)</pre></div>
+<p>And now part 1, part 2 are basically just different ways of folding through a
+list of instructions:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">toInstrs</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en">Instr</span>]
+toInstrs <span class="pl-k">=</span> <span class="pl-c1">traverse</span> parseInstr <span class="pl-k">.</span> <span class="pl-c1">lines</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Use (ship heading, position) as the state</span>
+<span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en">Instr</span>] <span class="pl-k">-&gt;</span> (<span class="pl-en">Dir</span>, <span class="pl-en">Point</span>)
+part1 <span class="pl-k">=</span> foldl&#39; go (<span class="pl-ent">East</span>, <span class="pl-ent">V2</span> <span class="pl-c1">0</span> <span class="pl-c1">0</span>)
+  <span class="pl-k">where</span>
+    <span class="pl-en">go</span> <span class="pl-k">::</span> (<span class="pl-en">Dir</span>, <span class="pl-en">Point</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Instr</span> <span class="pl-k">-&gt;</span> (<span class="pl-en">Dir</span>, <span class="pl-en">Point</span>)
+    go (<span class="pl-k">!</span>dir, <span class="pl-k">!</span>p) <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-ent">Forward</span> n <span class="pl-k">-&gt;</span> (dir     , p <span class="pl-k">+</span> n <span class="pl-k">*^</span> dirPoint dir)
+      <span class="pl-ent">Turn</span> d    <span class="pl-k">-&gt;</span> (dir <span class="pl-k">&lt;&gt;</span> d, p                    )
+      <span class="pl-ent">Move</span> r    <span class="pl-k">-&gt;</span> (dir     , p <span class="pl-k">+</span> r                )
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Use (ship position, waypoint vector from ship) as the state</span>
+<span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en">Instr</span>] <span class="pl-k">-&gt;</span> (<span class="pl-en">Point</span>, <span class="pl-en">Point</span>)
+part2 <span class="pl-k">=</span> foldl&#39; go (<span class="pl-ent">V2</span> <span class="pl-c1">0</span> <span class="pl-c1">0</span>, <span class="pl-ent">V2</span> <span class="pl-c1">10</span> <span class="pl-c1">1</span>)
+  <span class="pl-k">where</span>
+    <span class="pl-en">go</span> <span class="pl-k">::</span> (<span class="pl-en">Point</span>, <span class="pl-en">Point</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Instr</span> <span class="pl-k">-&gt;</span> (<span class="pl-en">Point</span>, <span class="pl-en">Point</span>)
+    go (<span class="pl-k">!</span>shp, <span class="pl-k">!</span>wp) <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-ent">Forward</span> n <span class="pl-k">-&gt;</span> (shp <span class="pl-k">+</span> n <span class="pl-k">*^</span> wp, wp           )
+      <span class="pl-ent">Turn</span> d    <span class="pl-k">-&gt;</span> (shp          , rotPoint d wp)
+      <span class="pl-ent">Move</span> r    <span class="pl-k">-&gt;</span> (shp          , wp <span class="pl-k">+</span> r       )</pre></div>
+<p>And that&#39;s it!  For <code>part1</code>, we want the mannhattan distance of the ship&#39;s
+final position (the second item in the tuple), and for part2, we want the
+manhattan distance of the ship&#39;s final position (the first item in the tuple).</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">mannDist</span> <span class="pl-k">::</span> <span class="pl-en">Point</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+mannDist (<span class="pl-ent">V2</span> x y) <span class="pl-k">=</span> <span class="pl-c1">abs</span> x <span class="pl-k">+</span> <span class="pl-c1">abs</span> y</pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-12-benchmarks" id="user-content-day-12-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 12 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 12a
+benchmarking...
+time                 3.561 μs   (3.512 μs .. 3.619 μs)
+                     0.998 R²   (0.998 R² .. 0.999 R²)
+mean                 3.604 μs   (3.571 μs .. 3.631 μs)
+std dev              111.7 ns   (95.06 ns .. 130.5 ns)
+variance introduced by outliers: 40% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 12b
+benchmarking...
+time                 10.26 μs   (9.800 μs .. 10.94 μs)
+                     0.984 R²   (0.976 R² .. 0.995 R²)
+mean                 10.55 μs   (10.22 μs .. 10.87 μs)
+std dev              1.077 μs   (784.8 ns .. 1.359 μs)
+variance introduced by outliers: 86% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 13: Shuttle Search ---</h2><p>Your ferry can make it safely to a nearby port, but it won&#39;t get much further. When you call to book another ship, you discover that no ships embark from that port to your vacation island. You&#39;ll need to get from the port to the nearest airport.</p>
+<p>Fortunately, a shuttle bus service is available to bring you from the sea port to the airport!  Each bus has an ID number that also indicates <em>how often the bus leaves for the airport</em>.</p>
+<p>Bus schedules are defined based on a <em>timestamp</em> that measures the <em>number of minutes</em> since some fixed reference point in the past. At timestamp <code>0</code>, every bus simultaneously departed from the sea port. After that, each bus travels to the airport, then various other locations, and finally returns to the sea port to repeat its journey forever.</p>
+<p>The time this loop takes a particular bus is also its ID number: the bus with ID <code>5</code> departs from the sea port at timestamps <code>0</code>, <code>5</code>, <code>10</code>, <code>15</code>, and so on. The bus with ID <code>11</code> departs at <code>0</code>, <code>11</code>, <code>22</code>, <code>33</code>, and so on. If you are there when the bus departs, you can ride that bus to the airport!</p>
+<p>Your notes (your puzzle input) consist of two lines.  The first line is your estimate of the <em>earliest timestamp you could depart on a bus</em>. The second line lists the bus IDs that are in service according to the shuttle company; entries that show <code>x</code> must be out of service, so you decide to ignore them.</p>
+<p>To save time once you arrive, your goal is to figure out <em>the earliest bus you can take to the airport</em>. (There will be exactly one such bus.)</p>
+<p>For example, suppose you have the following notes:</p>
+<pre><code>939
+7,13,x,x,59,x,31,19
+</code></pre>
+<p>Here, the earliest timestamp you could depart is <code>939</code>, and the bus IDs in service are <code>7</code>, <code>13</code>, <code>59</code>, <code>31</code>, and <code>19</code>. Near timestamp <code>939</code>, these bus IDs depart at the times marked <code>D</code>:</p>
+<pre><code>time   bus 7   bus 13  bus 59  bus 31  bus 19
+929      .       .       .       .       .
+930      .       .       .       D       .
+931      D       .       .       .       D
+932      .       .       .       .       .
+933      .       .       .       .       .
+934      .       .       .       .       .
+935      .       .       .       .       .
+936      .       D       .       .       .
+937      .       .       .       .       .
+938      D       .       .       .       .
+<em>939      .       .       .       .       .</em>
+940      .       .       .       .       .
+941      .       .       .       .       .
+942      .       .       .       .       .
+943      .       .       .       .       .
+<em>944      .       .       D       .       .</em>
+945      D       .       .       .       .
+946      .       .       .       .       .
+947      .       .       .       .       .
+948      .       .       .       .       .
+949      .       D       .       .       .
+</code></pre>
+<p>The earliest bus you could take is bus ID <code>59</code>. It doesn&#39;t depart until timestamp <code>944</code>, so you would need to wait <code>944 - 939 = 5</code> minutes before it departs. Multiplying the bus ID by the number of minutes you&#39;d need to wait gives <em><code>295</code></em>.</p>
+<p><em>What is the ID of the earliest bus you can take to the airport multiplied by the number of minutes you&#39;ll need to wait for that bus?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-13" id="user-content-day-13"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 13</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em>13</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/13" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day13.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day13.html" rel="nofollow">Rendered</a></em></p>
+<p>Aw man, I feel like I would have leaderboarded today had I not been busy :&#39;(
+These type of number theory problems are the ones I usually do well on.</p>
+<p>Oh well!  Silly internet points, right?</p>
+<p>For part 1, you just need to minimize a function on each bus ID:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>)
+part1 t0 xs <span class="pl-k">=</span> minimumBy (comparing <span class="pl-c1">snd</span>)
+    [ (x, waitTime)
+    <span class="pl-k">|</span> x <span class="pl-k">&lt;-</span> xs
+    , <span class="pl-k">let</span> waitTime <span class="pl-k">=</span> x <span class="pl-k">-</span> (t0 <span class="pl-k">`mod`</span> x)
+    ]</pre></div>
+<p>Part 2 is where things get interesting!  Let&#39;s try to think of things
+inductively: start with small lists, and see how we would &quot;add one more&quot;.</p>
+<p>Let&#39;s say we had <code>(offset, id)</code> pairs <code>(0,7)</code> and <code>(1,13)</code>, like in the
+example.  This means that we want to find times where <code>t `mod` 7 == 0</code> and
+<code>(t + 1) `mod` 13 == 0</code>.</p>
+<p>We can sort of do a manual search by hand to get <code>14</code> as our lowest candidate.
+But also, note that <code>14 + (7*13)n</code> for any integer <code>n</code> would preserve the offset
+property.  <code>14</code>, <code>14 + 91</code>, <code>14 + 182</code>, etc.  So the family of all &quot;valid&quot;
+numbers are <code>14 + (7*13)n</code>.</p>
+<p>Next, what if we wanted to find the situation for pairs <code>(0,7)</code>, <code>(1,13)</code>, and
+<code>(4,15)</code>?  Well, we already know that any solution that includes <code>(0,7)</code> and
+<code>(1,13)</code> will be of the form <code>14 + (7*13)n</code>.  So now we just need to find the
+<em>first</em> one of those that also matches <code>(4,15)</code></p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> &#39;until&#39; repeatedly applies a function until it finds a value that matches a</span>
+<span class="pl-c"><span class="pl-c">--</span> predicate</span>
+ghci<span class="pl-k">&gt;</span> <span class="pl-c1">until</span> (<span class="pl-k">\</span>t <span class="pl-k">-&gt;</span> (t <span class="pl-k">+</span> <span class="pl-c1">4</span>) <span class="pl-k">`mod`</span> <span class="pl-c1">15</span> <span class="pl-k">==</span> <span class="pl-c1">0</span>) (<span class="pl-k">+</span> (<span class="pl-c1">7</span><span class="pl-k">*</span><span class="pl-c1">13</span>)) <span class="pl-c1">14</span>
+<span class="pl-c1">1106</span></pre></div>
+<p>Ah hah, good ol&#39; <code>1106</code>.  Well, <code>1106</code> isn&#39;t the only number that works.
+We can see that <code>1106 + (7*13*15)n</code> for any integer n would <em>also</em> work, since
+it preserves that mod property.</p>
+<p>And so, we can repeat this process over and over again for each new number we
+see.</p>
+<ol>
+<li>Keep track of the current &quot;lowest match&quot; (<code>14</code>) and the current &quot;search
+step&quot; (<code>7*13</code>).</li>
+<li>When you see a number, search that family until you find a new lowest match
+that includes the new number.</li>
+<li>Use that new number as the next lowest match, and multiply it to get the
+new search step.</li>
+<li>Rinse and repeat.</li>
+</ol>
+<p>Overall, this works pretty well as a <code>foldl</code>, where we keep this <code>(lowest match, search step)</code> pair as an accumulator, and update it as we see each new
+value in our list.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> [(<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>)] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">fst</span> <span class="pl-k">.</span> foldl&#39; go (<span class="pl-c1">0</span>, <span class="pl-c1">1</span>)
+  <span class="pl-k">where</span>
+    go (<span class="pl-k">!</span>base, <span class="pl-k">!</span>step) (offset, i) <span class="pl-k">=</span> (base&#39;, step <span class="pl-k">*</span> i)
+      <span class="pl-k">where</span>
+        base&#39; <span class="pl-k">=</span> iterateFind (<span class="pl-k">\</span>n <span class="pl-k">-&gt;</span> (n <span class="pl-k">+</span> offset) <span class="pl-k">`mod`</span> i <span class="pl-k">==</span> <span class="pl-c1">0</span>)
+                            (<span class="pl-k">+</span> step)
+                            base</pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-13-benchmarks" id="user-content-day-13-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 13 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 13a
+benchmarking...
+time                 248.4 ns   (237.3 ns .. 255.2 ns)
+                     0.986 R²   (0.977 R² .. 0.992 R²)
+mean                 233.9 ns   (222.3 ns .. 242.7 ns)
+std dev              32.93 ns   (28.64 ns .. 37.78 ns)
+variance introduced by outliers: 95% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 13b
+benchmarking...
+time                 3.811 μs   (3.805 μs .. 3.816 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 3.795 μs   (3.790 μs .. 3.799 μs)
+std dev              15.85 ns   (13.59 ns .. 18.67 ns)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 14: Docking Data ---</h2><p>As your ferry approaches the sea port, the captain asks for your help again. The computer system that runs this port isn&#39;t compatible with the docking program on the ferry, so the docking parameters aren&#39;t being correctly initialized in the docking program&#39;s memory.</p>
+<p>After a brief inspection, you discover that the sea port&#39;s computer system uses a strange <a href="https://en.wikipedia.org/wiki/Mask_(computing)" target="_blank">bitmask</a> system in its initialization program. Although you don&#39;t have the correct decoder chip handy, you can emulate it in software!</p>
+<p>The initialization program (your puzzle input) can either update the bitmask or write a value to memory.  Values and memory addresses are both 36-bit unsigned integers.  For example, ignoring bitmasks for a moment, a line like <code>mem[8] = 11</code> would write the value <code>11</code> to memory address <code>8</code>.</p>
+<p>The bitmask is always given as a string of 36 bits, written with the most significant bit (representing <code>2^35</code>) on the left and the least significant bit (<code>2^0</code>, that is, the <code>1</code>s bit) on the right. The current bitmask is applied to values immediately before they are written to memory: a <code>0</code> or <code>1</code> overwrites the corresponding bit in the value, while an <code>X</code> leaves the bit in the value unchanged.</p>
+<p>For example, consider the following program:</p>
+<pre><code>mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+mem[8] = 11
+mem[7] = 101
+mem[8] = 0
+</code></pre>
+<p>This program starts by specifying a bitmask (<code>mask = ....</code>). The mask it specifies will overwrite two bits in every written value: the <code>2</code>s bit is overwritten with <code>0</code>, and the <code>64</code>s bit is overwritten with <code>1</code>.</p>
+<p>The program then attempts to write the value <code>11</code> to memory address <code>8</code>. By expanding everything out to individual bits, the mask is applied as follows:</p>
+<pre><code>value:  000000000000000000000000000000001011  (decimal 11)
+mask:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+result: 00000000000000000000000000000<em>1</em>0010<em>0</em>1  (decimal 73)
+</code></pre>
+<p>So, because of the mask, the value <code>73</code> is written to memory address <code>8</code> instead. Then, the program tries to write <code>101</code> to address <code>7</code>:</p>
+<pre><code>value:  000000000000000000000000000001100101  (decimal 101)
+mask:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+result: 00000000000000000000000000000<em>1</em>1001<em>0</em>1  (decimal 101)
+</code></pre>
+<p>This time, the mask has no effect, as the bits it overwrote were already the values the mask tried to set. Finally, the program tries to write <code>0</code> to address <code>8</code>:</p>
+<pre><code>value:  000000000000000000000000000000000000  (decimal 0)
+mask:   XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+result: 00000000000000000000000000000<em>1</em>0000<em>0</em>0  (decimal 64)
+</code></pre>
+<p><code>64</code> is written to address <code>8</code> instead, overwriting the value that was there previously.</p>
+<p>To initialize your ferry&#39;s docking program, you need the sum of all values left in memory after the initialization program completes. (The entire 36-bit address space begins initialized to the value <code>0</code> at every address.) In the above example, only two values in memory are not zero - <code>101</code> (at address <code>7</code>) and <code>64</code> (at address <code>8</code>) - producing a sum of <em><code>165</code></em>.</p>
+<p>Execute the initialization program. <em>What is the sum of all values left in memory after it completes?</em> (Do not truncate the sum to 36 bits.)</p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-14" id="user-content-day-14"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 14</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em>14</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/14" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day14.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day14.html" rel="nofollow">Rendered</a></em></p>
+<p>I guess today is a &quot;here&#39;s the algorithm, now implement it&quot; puzzle, to
+contrast/take a break from yesterday&#39;s &quot;here&#39;s the goal, figure out the
+algorithm&quot; :)</p>
+<p>First, let&#39;s start with an intermediate data type representing the actions
+possible on each line:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Instr</span> <span class="pl-k">=</span>
+      <span class="pl-ent">Mask</span> [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>]
+    | <span class="pl-ent">Write</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span></pre></div>
+<p>The mask will be a list of <code>Maybe Bool</code>, where <code>X</code> is <code>Nothing</code>, <code>0</code> is <code>Just False</code>, and <code>1</code> is <code>Just True</code>.  However, it&#39;s important to reverse the string
+when parsing it from the input, because we want index <code>0</code> to correspond to bit
+<code>0</code>, index <code>1</code> to correspond to bit <code>1</code>, etc., to make our lives easier.</p>
+<p>That&#39;s because we can implement the application of a mask (for part 1) using
+<a href="https://hackage.haskell.org/package/lens-4.19.2/docs/Control-Lens-Indexed.html#v:ifoldl-39-" rel="nofollow"><code>ifoldl&#39;</code></a>,
+a version of <code>foldl&#39;</code> that gives you an item&#39;s index as you are folding it:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Data.Bits</span> (<span class="pl-en">clearBit</span>, <span class="pl-en">setBit</span>)
+<span class="pl-k">import</span>           <span class="pl-c1">Control.Lens.Indexed</span> (<span class="pl-en">ifoldl&#39;</span>)
+
+<span class="pl-en">applyMask1</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+applyMask1 <span class="pl-k">=</span> ifoldl&#39; <span class="pl-k">$</span> <span class="pl-k">\</span>i x <span class="pl-k">-&gt;</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">Nothing</span>    <span class="pl-k">-&gt;</span> x
+    <span class="pl-ent">Just</span> <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">-&gt;</span> clearBit x i
+    <span class="pl-ent">Just</span> <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">-&gt;</span> setBit   x i</pre></div>
+<p>If the bit list contains a <code>Nothing</code> in a given index, leave the item
+unchanged.  If it contains a <code>Just False</code>, clear that index&#39;s bit (set it to
+zero).  If it contains a <code>Just Nothing</code>, set that index&#39;s bit (set it to one).</p>
+<p>And that leaves part 1 as a foldl through all the instructions, keeping the
+current map and mask as state:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Data.IntMap</span> (<span class="pl-en">IntMap</span>)
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.IntMap</span> <span class="pl-k">as</span> <span class="pl-c1">IM</span>
+
+<span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en">Instr</span>] <span class="pl-k">-&gt;</span> (<span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>])
+part1 <span class="pl-k">=</span> foldl&#39; go (<span class="pl-c1">IM.</span>empty, <span class="pl-c1">[]</span>)
+  <span class="pl-k">where</span>
+    <span class="pl-en">go</span> <span class="pl-k">::</span> (<span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>]) <span class="pl-k">-&gt;</span> <span class="pl-en">Instr</span> <span class="pl-k">-&gt;</span> (<span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>])
+    go (<span class="pl-k">!</span>mp, <span class="pl-k">!</span>msk) <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-ent">Mask</span>  msk&#39;   <span class="pl-k">-&gt;</span> (mp, msk&#39;)
+      <span class="pl-ent">Write</span> addr n <span class="pl-k">-&gt;</span>
+        <span class="pl-k">let</span> mp&#39; <span class="pl-k">=</span> <span class="pl-c1">IM.</span>insert addr (applyMask1 n msk) mp
+        <span class="pl-k">in</span>  (mp&#39;, msk)</pre></div>
+<p>Part 2&#39;s mask application is interesting, because it lives in
+&quot;non-determinancy&quot;.  Basically, each bit mask bit application could potentially
+yield multiple possibilities.  We have to accumulate every nested possibility.
+This feature is given to us by list&#39;s <code>Monad</code> instance, so we can swap
+<code>ifoldl&#39;</code> for
+<a href="https://hackage.haskell.org/package/lens-4.19.2/docs/Control-Lens-Indexed.html#v:ifoldlM" rel="nofollow"><code>ifoldM</code></a>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">ifoldl&#39;</span> <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span>   <span class="pl-smi">b</span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> [<span class="pl-smi">a</span>] <span class="pl-k">-&gt;</span>   <span class="pl-smi">b</span>
+<span class="pl-en">ifoldlM</span> <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">m</span> <span class="pl-smi">b</span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> [<span class="pl-smi">a</span>] <span class="pl-k">-&gt;</span> <span class="pl-smi">m</span> <span class="pl-smi">b</span></pre></div>
+<p>For <code>ifoldlM</code>, each result lives in monad <code>m</code>, so the semantics of &quot;proceeding
+along the fold&quot; are deferred to the <code>Monad</code> instance for <code>m</code>.  If <code>m</code> is
+<code>Maybe</code>, it means that you only proceed if you get a <code>Just</code>, or else
+short-circuit with <code>Nothing</code>.  If <code>m</code> is <code>IO</code>, it means that proceeding
+involves chaining the IO action&#39;s execution and binding the result to give it
+to the function&#39;s next iteration.  If <code>m</code> is <code>[]</code> (list), it means that
+subsequent chaining will run the function on every <em>possibility</em> returned by
+the function&#39;s previous call, accumulating every possible way of choosing every
+possible choice. (I talked about this in more depth in <a href="https://blog.jle.im/entries/series/+monadplus-success-failure-monads.html" rel="nofollow">one of my first ever
+Haskell blog
+posts</a>).</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Control.Lens.Indexed</span> (<span class="pl-en">ifoldlM</span>)
+
+<span class="pl-en">applyMask2</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>] <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>]
+applyMask2 <span class="pl-k">=</span> ifoldlM <span class="pl-k">$</span> <span class="pl-k">\</span>i x <span class="pl-k">-&gt;</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">Nothing</span>    <span class="pl-k">-&gt;</span> [clearBit x i, setBit x i]
+    <span class="pl-ent">Just</span> <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">-&gt;</span> [x]
+    <span class="pl-ent">Just</span> <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">-&gt;</span> [setBit x i]</pre></div>
+<p>For these, we return a list of every possible change from a given bit mask bit.
+For the <code>Nothing</code> &quot;floating&quot; case, there are two possibilities; for the other
+two, there is only one.  We trust list&#39;s <code>Monad</code> instance to properly thread
+over all possible results into a list of all possible changes that that <code>Int</code>
+could have been subjected to.</p>
+<p>And so, part 2 looks a lot like part 1!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en">Instr</span>] <span class="pl-k">-&gt;</span> (<span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>])
+part2 <span class="pl-k">=</span> foldl&#39; go (<span class="pl-c1">IM.</span>empty, <span class="pl-c1">[]</span>)
+  <span class="pl-k">where</span>
+    <span class="pl-en">go</span> <span class="pl-k">::</span> (<span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>]) <span class="pl-k">-&gt;</span> <span class="pl-en">Instr</span> <span class="pl-k">-&gt;</span> (<span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, [<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Bool</span></span>])
+    go (<span class="pl-k">!</span>mp, <span class="pl-k">!</span>msk) <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-ent">Mask</span>  msk&#39;   <span class="pl-k">-&gt;</span> (mp, msk&#39;)
+      <span class="pl-ent">Write</span> addr n <span class="pl-k">-&gt;</span>
+        <span class="pl-k">let</span> newMp <span class="pl-k">=</span> <span class="pl-c1">IM.</span>fromList ((,n) <span class="pl-k">&lt;$&gt;</span> applyMask2 addr msk)
+        <span class="pl-k">in</span>  (newMp <span class="pl-k">&lt;&gt;</span> mp, msk)</pre></div>
+<p><code>(&lt;&gt;)</code> here is a left-biased merger, so it merges in all of the newly seen
+indices into the existing ones.</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-14-benchmarks" id="user-content-day-14-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 14 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 14a
+benchmarking...
+time                 164.4 μs   (163.7 μs .. 165.3 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 160.4 μs   (158.9 μs .. 162.0 μs)
+std dev              5.716 μs   (4.989 μs .. 6.870 μs)
+variance introduced by outliers: 33% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 14b
+benchmarking...
+time                 29.89 ms   (26.80 ms .. 33.08 ms)
+                     0.959 R²   (0.885 R² .. 0.995 R²)
+mean                 30.44 ms   (29.25 ms .. 32.87 ms)
+std dev              3.399 ms   (1.949 ms .. 5.879 ms)
+variance introduced by outliers: 45% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 15: Rambunctious Recitation ---</h2><p>You catch the airport shuttle and try to book a new flight to your vacation island. Due to the storm, all direct flights have been cancelled, but a route is available to get around the storm. You take it.</p>
+<p>While you wait for your flight, you decide to check in with the Elves back at the North Pole. They&#39;re playing a <em>memory game</em> and are <span title="Of course they are.">ever so excited</span> to explain the rules!</p>
+<p>In this game, the players take turns saying <em>numbers</em>. They begin by taking turns reading from a list of <em>starting numbers</em> (your puzzle input). Then, each turn consists of considering the <em>most recently spoken number</em>:</p>
+<ul>
+<li>If that was the <em>first</em> time the number has been spoken, the current player says <em><code>0</code></em>.</li>
+<li>Otherwise, the number had been spoken before; the current player announces <em>how many turns apart</em> the number is from when it was previously spoken.</li>
+</ul>
+<p>So, after the starting numbers, each turn results in that player speaking aloud either <em><code>0</code></em> (if the last number is new) or an <em>age</em> (if the last number is a repeat).</p>
+<p>For example, suppose the starting numbers are <code>0,3,6</code>:</p>
+<ul>
+<li><em>Turn 1</em>: The <code>1</code>st number spoken is a starting number, <em><code>0</code></em>.</li>
+<li><em>Turn 2</em>: The <code>2</code>nd number spoken is a starting number, <em><code>3</code></em>.</li>
+<li><em>Turn 3</em>: The <code>3</code>rd number spoken is a starting number, <em><code>6</code></em>.</li>
+<li><em>Turn 4</em>: Now, consider the last number spoken, <code>6</code>. Since that was the first time the number had been spoken, the <code>4</code>th number spoken is <em><code>0</code></em>.</li>
+<li><em>Turn 5</em>: Next, again consider the last number spoken, <code>0</code>. Since it <em>had</em> been spoken before, the next number to speak is the difference between the turn number when it was last spoken (the previous turn, <code>4</code>) and the turn number of the time it was most recently spoken before then (turn <code>1</code>). Thus, the <code>5</code>th number spoken is <code>4 - 1</code>, <em><code>3</code></em>.</li>
+<li><em>Turn 6</em>: The last number spoken, <code>3</code> had also been spoken before, most recently on turns <code>5</code> and <code>2</code>. So, the <code>6</code>th number spoken is <code>5 - 2</code>, <em><code>3</code></em>.</li>
+<li><em>Turn 7</em>: Since <code>3</code> was just spoken twice in a row, and the last two turns are <code>1</code> turn apart, the <code>7</code>th number spoken is <em><code>1</code></em>.</li>
+<li><em>Turn 8</em>: Since <code>1</code> is new, the <code>8</code>th number spoken is <em><code>0</code></em>.</li>
+<li><em>Turn 9</em>: <code>0</code> was last spoken on turns <code>8</code> and <code>4</code>, so the <code>9</code>th number spoken is the difference between them, <em><code>4</code></em>.</li>
+<li><em>Turn 10</em>: <code>4</code> is new, so the <code>10</code>th number spoken is <em><code>0</code></em>.</li>
+</ul>
+<p>(The game ends when the Elves get sick of playing or dinner is ready, whichever comes first.)</p>
+<p>Their question for you is: what will be the <em><code>2020</code>th</em> number spoken? In the example above, the <code>2020</code>th number spoken will be <code>436</code>.</p>
+<p>Here are a few more examples:</p>
+<ul>
+<li>Given the starting numbers <code>1,3,2</code>, the <code>2020</code>th number spoken is <code>1</code>.</li>
+<li>Given the starting numbers <code>2,1,3</code>, the <code>2020</code>th number spoken is <code>10</code>.</li>
+<li>Given the starting numbers <code>1,2,3</code>, the <code>2020</code>th number spoken is <code>27</code>.</li>
+<li>Given the starting numbers <code>2,3,1</code>, the <code>2020</code>th number spoken is <code>78</code>.</li>
+<li>Given the starting numbers <code>3,2,1</code>, the <code>2020</code>th number spoken is <code>438</code>.</li>
+<li>Given the starting numbers <code>3,1,2</code>, the <code>2020</code>th number spoken is <code>1836</code>.</li>
+</ul>
+<p>Given your starting numbers, <em>what will be the <code>2020</code>th number spoken?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-15" id="user-content-day-15"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 15</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em>15</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/15" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day15.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day15.html" rel="nofollow">Rendered</a></em></p>
+<p>So it is yet another &quot;here&#39;s the algorithm, implement it&quot; days again!  Only the
+challenge this time is...you should probably implement it to be really fast!</p>
+<p>I don&#39;t think there is <em>too</em> much wiggle room in how to implement things here;
+my original solution basically kept an <code>IntMap</code> to the last seen time of any
+value, and just repeatedly looked things up and modified the (current time,
+last said) tuple.</p>
+<p>My original solution took around 70 seconds to run, and that was what I used to
+submit things originally.  But let&#39;s see if we can get it down to something a
+little less...perceptible :)  This reflection can be a deep dive into writing
+tight, performant Haskell.</p>
+<p>The data type we&#39;ll be using is an <em><a href="https://hackage.haskell.org/package/vector/docs/Data-Vector-Unboxed-Mutable.html" rel="nofollow">unboxed mutable
+array</a></em>.
+There&#39;s a trick we can use because we have a map from integers to values, we
+can just use the integer keys as the index to an array.  This is usually a bad
+idea but for the fact that the keys we&#39;ll be using are bounded within a
+decently small range (we won&#39;t ever say a number that is greater than 30
+million), so we can definitely accumulate 30 million-item array into memory
+without any major problems.  We&#39;ll also store our last-said times as <code>Int32</code> to
+be a little bit more efficient since we&#39;re trying to eek out every last bit of
+perf.</p>
+<p>So overall we still keep some state: the current time and the last said item.
+Since those are just integers, we can keep that as pure in memory using
+<code>StateT</code> running over <code>ST s</code> (the mutable state monad, where our mutable
+vectors will live).</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Control.Monad.ST</span>
+<span class="pl-k">import</span>           <span class="pl-c1">Control.Monad.State</span>
+<span class="pl-k">import</span>           <span class="pl-c1">GHC.Int</span> (<span class="pl-en">Int32</span>)
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.Vector.Unboxed.Mutable</span> <span class="pl-k">as</span> <span class="pl-c1">MV</span>
+
+<span class="pl-k">data</span> <span class="pl-en">LoopState</span> <span class="pl-k">=</span> <span class="pl-ent">LS</span>
+    <span class="pl-k">{</span> <span class="pl-e">lsLastSaid</span> <span class="pl-k">::</span> <span class="pl-k">!</span><span class="pl-en"><span class="pl-c1">Int</span></span>
+    , <span class="pl-e">lsCurrTime</span> <span class="pl-k">::</span> <span class="pl-k">!</span><span class="pl-en">Int32</span>
+    <span class="pl-k">}</span>
+
+sayNext
+    <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">MV.</span>MVector</span> <span class="pl-smi">s</span> <span class="pl-en">Int32</span>                   <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> the mutable vector of last-seen times</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">StateT</span> (<span class="pl-en">T2</span> <span class="pl-en">Int32</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) (<span class="pl-en">ST</span> <span class="pl-smi">s</span>) <span class="pl-c1">()</span>      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> an &#39;ST s&#39; action with some pure (T2 Int32 Int) state</span>
+sayNext v <span class="pl-k">=</span> <span class="pl-k">do</span>
+    <span class="pl-ent">L</span> s i <span class="pl-k">&lt;-</span> get                        <span class="pl-c"><span class="pl-c">--</span> get the current pure state</span>
+    lst <span class="pl-k">&lt;-</span> <span class="pl-c1">MV.</span><span class="pl-c1">read</span> v x                  <span class="pl-c"><span class="pl-c">--</span> our last said is x, so look up the last time we saw it</span>
+    <span class="pl-c1">MV.</span>write v x i                      <span class="pl-c"><span class="pl-c">--</span> update the last-time-seen</span>
+    <span class="pl-k">let</span> j <span class="pl-k">|</span> lst <span class="pl-k">==</span> <span class="pl-c1">0</span>  <span class="pl-k">=</span> <span class="pl-c1">0</span>               <span class="pl-c"><span class="pl-c">--</span> we haven&#39;t seen it</span>
+          <span class="pl-k">|</span> <span class="pl-c1">otherwise</span> <span class="pl-k">=</span> i <span class="pl-k">-</span> lst         <span class="pl-c"><span class="pl-c">--</span> we have seen it</span>
+    put (<span class="pl-ent">LS</span> (<span class="pl-c1">fromIntegral</span> j) (i <span class="pl-k">+</span> <span class="pl-c1">1</span>))   <span class="pl-c"><span class="pl-c">--</span> update last seen and current time</span>
+{-# <span class="pl-k">INLINE</span> sayNext #-}</pre></div>
+<p>We will want to INLINE this so that it gets inlined directly into our main loop
+code.</p>
+<p>Oh, let&#39;s also write a function to initialize our sequence with starting
+inputs:</p>
+<div class="highlight highlight-source-haskell"><pre>saySomething
+    <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">MV.</span>MVector</span> <span class="pl-smi">s</span> <span class="pl-en">Int32</span>                   <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> the mutable vector of last-seen times</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>                                  <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> a number to &quot;say&quot;</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">StateT</span> (<span class="pl-en">T2</span> <span class="pl-en">Int32</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) (<span class="pl-en">ST</span> <span class="pl-smi">s</span>) <span class="pl-c1">()</span>      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> an &#39;ST s&#39; action with some pure (T2 Int32 Int) state</span>
+saySomething v y <span class="pl-k">=</span> <span class="pl-k">do</span>
+    <span class="pl-ent">LS</span> x i <span class="pl-k">&lt;-</span> get
+    <span class="pl-c1">MV.</span>unsafeWrite v x i          <span class="pl-c"><span class="pl-c">--</span> write the last seen number with the right time</span>
+    put (<span class="pl-ent">LS</span> y (i <span class="pl-k">+</span> <span class="pl-c1">1</span>))            <span class="pl-c"><span class="pl-c">--</span> queue up the write of the number to say</span>
+{-# <span class="pl-k">INLINE</span> saySomething #-}</pre></div>
+<p>And now we&#39;re good to go to put it all together!  We can use <code>whileM_</code> from
+<em><a href="https://hackage.haskell.org/package/monad-loops/docs/Control-Monad-Loops.html" rel="nofollow">Control.Monad.Loops</a></em>
+to emulate a while loop, where our condition is whenever <code>lsCurrTime</code> reaches
+the maximum value.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Returns &#39;True&#39; until we need to stop</span>
+<span class="pl-en">stopCond</span> <span class="pl-k">::</span> <span class="pl-en">Int32</span> <span class="pl-k">-&gt;</span> <span class="pl-en">StateT</span> (<span class="pl-en">T2</span> <span class="pl-en">Int32</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-smi">m</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+stopCond n <span class="pl-k">=</span> gets <span class="pl-k">$</span> <span class="pl-k">\</span>(<span class="pl-ent">LS</span> _ i) <span class="pl-k">-&gt;</span> i <span class="pl-k">&lt;</span> n
+{-# <span class="pl-k">INLINE</span> stopCond #-}
+<span class="pl-c"><span class="pl-c">--</span> gets f = f &lt;$&gt; get, it maps a function on top of a get</span>
+
+<span class="pl-en">looper</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+looper n xs <span class="pl-k">=</span> runST <span class="pl-k">$</span> <span class="pl-c1">flip</span> evalStateT (<span class="pl-ent">LS</span> <span class="pl-c1">0</span> <span class="pl-c1">0</span>) <span class="pl-k">$</span> <span class="pl-k">do</span>
+    v <span class="pl-k">&lt;-</span> <span class="pl-c1">MV.</span><span class="pl-c1">replicate</span> n <span class="pl-c1">0</span>       <span class="pl-c"><span class="pl-c">--</span> initialize our vector with zeros</span>
+    traverse_ (saySomething v) xs
+    whileM_ (stopCond n) (sayNext v)
+    gets lsLastSaid</pre></div>
+<p>On my machine (with some minor optimizations, like using
+<code>unsafeRead</code>/<code>unsafeWrite</code>), this runs in 230ms for part 2...a much more
+reasonable improvement over my original 70 seconds! :)</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> looper <span class="pl-c1">2020</span>
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> looper <span class="pl-c1">30000000</span></pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-15-benchmarks" id="user-content-day-15-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 15 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 15a
+benchmarking...
+time                 2.770 μs   (2.721 μs .. 2.819 μs)
+                     0.993 R²   (0.987 R² .. 0.997 R²)
+mean                 2.804 μs   (2.731 μs .. 2.980 μs)
+std dev              410.5 ns   (218.1 ns .. 710.5 ns)
+variance introduced by outliers: 94% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 15b
+benchmarking...
+time                 227.2 ms   (221.4 ms .. 232.6 ms)
+                     1.000 R²   (0.999 R² .. 1.000 R²)
+mean                 231.2 ms   (228.0 ms .. 239.5 ms)
+std dev              6.796 ms   (587.6 μs .. 9.527 ms)
+variance introduced by outliers: 14% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article></body></html>

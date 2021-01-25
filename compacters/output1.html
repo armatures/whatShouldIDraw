@@ -1,0 +1,778 @@
+<!DOCTYPE html><html><head><title>"advents"</title></head><body>
+<article class="day-desc"><h2>--- Day 6: Custom Customs ---</h2><p>As your flight approaches the regional airport where you&#39;ll switch to a much larger plane, <a href="https://en.wikipedia.org/wiki/Customs_declaration" target="_blank">customs declaration forms</a> are distributed to the passengers.</p>
+<p>The form asks a series of 26 yes-or-no questions marked <code>a</code> through <code>z</code>. All you need to do is identify the questions for which <em>anyone in your group</em> answers &quot;yes&quot;. Since your group is just you, this doesn&#39;t take very long.</p>
+<p>However, the person sitting next to you seems to be experiencing a language barrier and asks if you can help. For each of the people in their group, you write down the questions for which they answer &quot;yes&quot;, one per line.  For example:</p>
+<pre><code>abcx
+abcy
+abcz
+</code></pre>
+<p>In this group, there are <em><code>6</code></em> questions to which anyone answered &quot;yes&quot;: <code>a</code>, <code>b</code>, <code>c</code>, <code>x</code>, <code>y</code>, and <code>z</code>. (Duplicate answers to the same question don&#39;t count extra; each question counts at most once.)</p>
+<p>Another group asks for your help, then another, and eventually you&#39;ve collected answers from every group on the plane (your puzzle input). Each group&#39;s answers are separated by a blank line, and within each group, each person&#39;s answers are on a single line. For example:</p>
+<pre><code>abc
+
+a
+b
+c
+
+ab
+ac
+
+a
+a
+a
+a
+
+b
+</code></pre>
+<p>This list represents answers from five groups:</p>
+<ul>
+<li>The first group contains one person who answered &quot;yes&quot; to <em><code>3</code></em> questions: <code>a</code>, <code>b</code>, and <code>c</code>.</li>
+<li>The second group contains three people; combined, they answered &quot;yes&quot; to <em><code>3</code></em> questions: <code>a</code>, <code>b</code>, and <code>c</code>.</li>
+<li>The third group contains two people; combined, they answered &quot;yes&quot; to <em><code>3</code></em> questions: <code>a</code>, <code>b</code>, and <code>c</code>.</li>
+<li>The fourth group contains four people; combined, they answered &quot;yes&quot; to only <em><code>1</code></em> question, <code>a</code>.</li>
+<li>The last group contains one person who answered &quot;yes&quot; to only <em><code>1</code></em> question, <code>b</code>.</li>
+</ul>
+<p>In this example, the sum of these counts is <code>3 + 3 + 3 + 1 + 1</code> = <em><code>11</code></em>.</p>
+<p>For each group, count the number of questions to which anyone answered &quot;yes&quot;. <em>What is the sum of those counts?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-6" id="user-content-day-6"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 6</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em>6</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/6" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day06.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day06.html" rel="nofollow">Rendered</a></em></p>
+<p>Another day that is fairly straightforward in Haskell, I feel!  But in other
+languages that support functional approaches, it should be straightforward as
+well.</p>
+<p>The answer involves lists of groups of responses:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Data.List.NonEmpty</span>
+<span class="pl-k">import</span>           <span class="pl-c1">Data.Set</span>
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.List.NonEmpty</span> <span class="pl-k">as</span> <span class="pl-c1">NE</span>
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.Set</span>           <span class="pl-k">as</span> <span class="pl-c1">S</span>
+
+<span class="pl-k">type</span> <span class="pl-en">Response</span> <span class="pl-k">=</span> <span class="pl-en">Set</span> <span class="pl-en"><span class="pl-c1">Char</span></span>
+<span class="pl-k">type</span> <span class="pl-en">Group</span>    <span class="pl-k">=</span> <span class="pl-en">NonEmpty</span> <span class="pl-en">Response</span>
+
+<span class="pl-en">parseAnswers</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> <span class="pl-en"><span class="pl-c1">Char</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en">Group</span>]
+parseAnswers <span class="pl-k">=</span> mapMaybe ((<span class="pl-c1">fmap</span> <span class="pl-k">.</span> <span class="pl-c1">fmap</span>) <span class="pl-c1">S.</span>fromList <span class="pl-k">.</span> <span class="pl-c1">NE.</span>nonEmpty <span class="pl-k">.</span> <span class="pl-c1">lines</span>)
+             <span class="pl-k">.</span> splitOn <span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-cce">\n\n</span><span class="pl-pds">&quot;</span></span></pre></div>
+<p>And now we just need to decide how to aggregate each group.  For part 1, this
+requires a set union between every <code>Response</code> in a <code>Group</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en">Group</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> <span class="pl-c1">sum</span> <span class="pl-k">.</span> <span class="pl-c1">map</span> (<span class="pl-c1">S.</span>size <span class="pl-k">.</span> <span class="pl-c1">foldr1</span> <span class="pl-c1">S.</span>union)</pre></div>
+<p>(<code>foldr1</code> here is safe because we have a non-empty container)</p>
+<p>And for part 2, this requires a set intersection between every <code>Response</code> in a
+<code>Group</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en">Group</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">sum</span> <span class="pl-k">.</span> <span class="pl-c1">map</span> (<span class="pl-c1">S.</span>size <span class="pl-k">.</span> <span class="pl-c1">foldr1</span> <span class="pl-c1">S.</span>intersection)</pre></div>
+<p>That&#39;s it!</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-6-benchmarks" id="user-content-day-6-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 6 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 06a
+benchmarking...
+time                 143.3 μs   (135.9 μs .. 148.1 μs)
+                     0.986 R²   (0.979 R² .. 0.993 R²)
+mean                 148.7 μs   (145.5 μs .. 152.0 μs)
+std dev              13.11 μs   (10.75 μs .. 17.27 μs)
+variance introduced by outliers: 76% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 06b
+benchmarking...
+time                 151.2 μs   (145.6 μs .. 157.2 μs)
+                     0.981 R²   (0.962 R² .. 0.994 R²)
+mean                 178.9 μs   (157.5 μs .. 231.7 μs)
+std dev              119.8 μs   (56.72 μs .. 202.3 μs)
+variance introduced by outliers: 99% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 7: Handy Haversacks ---</h2><p>You land at the regional airport in time for your next flight. In fact, it looks like you&#39;ll even have time to grab some food: all flights are currently delayed due to <em>issues in luggage processing</em>.</p>
+<p>Due to recent aviation regulations, many rules (your puzzle input) are being enforced about bags and their contents; bags must be color-coded and must contain specific quantities of other color-coded bags. Apparently, nobody responsible for these regulations considered how long they would take to enforce!</p>
+<p>For example, consider the following rules:</p>
+<pre><code>light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.
+</code></pre>
+<p>These rules specify the required contents for 9 bag types. In this example, every <code>faded blue</code> bag is empty, every <code>vibrant plum</code> bag contains 11 bags (5 <code>faded blue</code> and 6 <code>dotted black</code>), and so on.</p>
+<p>You have a <code><em>shiny gold</em></code> bag. If you wanted to carry it in at least one other bag, how many different bag colors would be valid for the outermost bag? (In other words: how many colors can, eventually, contain at least one <code>shiny gold</code> bag?)</p>
+<p>In the above rules, the following options would be available to you:</p>
+<ul>
+<li>A <code>bright white</code> bag, which can hold your <code>shiny gold</code> bag directly.</li>
+<li>A <code>muted yellow</code> bag, which can hold your <code>shiny gold</code> bag directly, plus some other bags.</li>
+<li>A <code>dark orange</code> bag, which can hold <code>bright white</code> and <code>muted yellow</code> bags, either of which could then hold your <code>shiny gold</code> bag.</li>
+<li>A <code>light red</code> bag, which can hold <code>bright white</code> and <code>muted yellow</code> bags, either of which could then hold your <code>shiny gold</code> bag.</li>
+</ul>
+<p>So, in this example, the number of bag colors that can eventually contain at least one <code>shiny gold</code> bag is <code><em>4</em></code>.</p>
+<p><em>How many bag colors can eventually contain at least one <code>shiny gold</code> bag?</em> (The list of rules is quite long; make sure you get all of it.)</p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-7" id="user-content-day-7"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 7</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em>7</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/7" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day07.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day07.html" rel="nofollow">Rendered</a></em></p>
+<p>Another AoC staple, a graph search that can be solved with recursive knot
+tying!  The last one I remember off the top of my head was <a href="https://github.com/mstksg/advent-of-code-2019/blob/master/reflections.md#day-6">2019 Day
+6</a>.</p>
+<p>Here we can represent a graph as a map of vertices to other vertices, with an
+edge value:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">type</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span> <span class="pl-k">=</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> (<span class="pl-en">Map</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span>)</pre></div>
+<p>Exercise is left to the reader to parse our dataset into a <code>Graph String Int</code>,
+a graph of bags to bags with <code>Int</code> edges.</p>
+<p>Because our map has no cycles, we can take advantage of recursive knot tying to
+&quot;fold up&quot; all children and sub-children.</p>
+<p>For example, part 1 can be written as:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">allDescendants</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> (<span class="pl-en">Set</span> <span class="pl-smi">v</span>)
+allDescendants gr <span class="pl-k">=</span> descendantMap
+  <span class="pl-k">where</span>
+    descendantMap <span class="pl-k">=</span> gr <span class="pl-k">&lt;&amp;&gt;</span>
+      <span class="pl-c1">M.</span>foldMapWithKey (<span class="pl-k">\</span>v _ <span class="pl-k">-&gt;</span> <span class="pl-c1">S.</span>insert v (<span class="pl-c1">M.</span>findWithDefault <span class="pl-c1">S.</span>empty v descendantMap))
+
+<span class="pl-c"><span class="pl-c">--</span> note: (&lt;&amp;&gt;) is flip fmap</span></pre></div>
+<p>Here we &quot;assume&quot; we already have a fully-featured <code>Map v (Set v)</code> map of
+vertices to all their descendants, and then build <code>descendantMap</code> in terms of
+it.  For every vertex <code>v</code> in the <code>Map v e</code> directly underneath a given vertex,
+<code>v</code> is a descendant, and also all of <code>v</code>&#39;s descendants (which we find by
+looking things up in <code>descendantMap</code>, the map of all descendants).</p>
+<p>Oh, um...oops, this found all the descendants, but we want all of the
+ancestors.  So we have to flip the graph if we want to use this.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">flipGraph</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span>
+flipGraph mp <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromListWith <span class="pl-c1">M.</span>union
+    [ (m, <span class="pl-c1">M.</span>singleton n e)
+    <span class="pl-k">|</span> (n, ms) <span class="pl-k">&lt;-</span> <span class="pl-c1">M.</span>toList mp
+    , (m, e ) <span class="pl-k">&lt;-</span> <span class="pl-c1">M.</span>toList ms
+    ]
+
+<span class="pl-en">allAncestors</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> (<span class="pl-en">Set</span> <span class="pl-smi">v</span>)
+allAncestors <span class="pl-k">=</span> allDescendants <span class="pl-k">.</span> flipGraph</pre></div>
+<p>And so that leaves Part 1 as:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">Graph</span> <span class="pl-en"><span class="pl-c1">String</span></span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-en">Set</span> <span class="pl-en"><span class="pl-c1">String</span></span>)
+part1 <span class="pl-k">=</span> <span class="pl-c1">M.</span><span class="pl-c1">lookup</span> <span class="pl-s"><span class="pl-pds">&quot;</span>shiny gold<span class="pl-pds">&quot;</span></span> <span class="pl-k">.</span> allAncestors</pre></div>
+<p>Part 2 we can do a similar way, by &quot;assuming&quot; we have a map of all vertices to
+their &quot;usage count&quot;, and looking things up to build it:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">usageCounts</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+usageCounts gr <span class="pl-k">=</span> usageMap
+  <span class="pl-k">where</span>
+    usageMap <span class="pl-k">=</span> gr <span class="pl-k">&lt;&amp;&gt;</span> <span class="pl-k">\</span>neighbors <span class="pl-k">-&gt;</span> <span class="pl-c1">sum</span>
+      [ n <span class="pl-k">*</span> (<span class="pl-c1">M.</span>findWithDefault <span class="pl-c1">0</span> v usageMap <span class="pl-k">+</span> <span class="pl-c1">1</span>)
+      <span class="pl-k">|</span> (v, n) <span class="pl-k">&lt;-</span> <span class="pl-c1">M.</span>toList neighbors
+      ]</pre></div>
+<p>So to find the total usage of each bag, we look under each <code>(v, Int)</code> pair in the
+<code>Map v Int</code> underneath a given vertex, look up the usage of that <code>v</code> (by
+looking it up in <code>usageMap</code>), add 1 (because the bag itself is used), and
+multiply by <code>n</code>, the number of times the full contents of the bag is used.</p>
+<p>And so Part 2 is:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">Graph</span> <span class="pl-en"><span class="pl-c1">String</span></span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">M.</span><span class="pl-c1">lookup</span> <span class="pl-s"><span class="pl-pds">&quot;</span>shiny gold<span class="pl-pds">&quot;</span></span> <span class="pl-k">.</span> usageCounts</pre></div>
+<p>If we stare at the two implementations, we note that both are pretty much the
+same overall structure: we are accumulating some sort of fold over all
+descendants of a given node.  If we &quot;outsource&quot; this accumulation as a monoidal
+one (for part 1, it&#39;s <code>Set</code> union, and for part 2, it&#39;s <code>Sum Int</code> addition), we
+can needlessly hyper-generalize this to fold over any <code>Monoid</code> instance.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Recursively fold up a monoid value for each vertex and all of its</span>
+<span class="pl-c"><span class="pl-c">--</span> children&#39;s monoid values.  You can transform the value in-transit before it</span>
+<span class="pl-c"><span class="pl-c">--</span> is accumulated if you want.</span>
+foldMapGraph
+    <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span>, <span class="pl-en"><span class="pl-e">Monoid</span></span> <span class="pl-smi">m</span>)
+    <span class="pl-k">=&gt;</span> (<span class="pl-smi">v</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">m</span>)         <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> embed the vertex</span>
+    <span class="pl-k">-&gt;</span> (<span class="pl-smi">e</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">m</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">m</span>)    <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> transform with edge before it is accumulated</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> <span class="pl-smi">m</span>
+foldMapGraph f g gr <span class="pl-k">=</span> res
+  <span class="pl-k">where</span>
+    res <span class="pl-k">=</span> gr <span class="pl-k">&lt;&amp;&gt;</span>
+      <span class="pl-c1">M.</span>foldMapWithKey (<span class="pl-k">\</span>s v <span class="pl-k">-&gt;</span> f s <span class="pl-k">&lt;&gt;</span> <span class="pl-c1">foldMap</span> (g v) (<span class="pl-c1">M.</span><span class="pl-c1">lookup</span> s res))
+
+<span class="pl-en">allDescendants</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-smi">e</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> (<span class="pl-en">Set</span> <span class="pl-smi">v</span>)
+allDescendants <span class="pl-k">=</span> foldMapGraph
+    <span class="pl-c1">S.</span>singleton     <span class="pl-c"><span class="pl-c">--</span> the node is embedded as itself</span>
+    (<span class="pl-k">\</span>_ <span class="pl-k">-&gt;</span> <span class="pl-c1">id</span>)      <span class="pl-c"><span class="pl-c">--</span> ignore the edge</span>
+
+<span class="pl-en">usageCounts</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">v</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Graph</span> <span class="pl-smi">v</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">v</span> (<span class="pl-en">Sum</span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+usageCounts <span class="pl-k">=</span> foldMapGraph
+    (<span class="pl-c1">const</span> <span class="pl-c1">0</span>)                   <span class="pl-c"><span class="pl-c">--</span> ignore the nodes</span>
+    (<span class="pl-k">\</span>n x <span class="pl-k">-&gt;</span> <span class="pl-ent">Sum</span> n <span class="pl-k">*</span> (x <span class="pl-k">+</span> <span class="pl-c1">1</span>))   <span class="pl-c"><span class="pl-c">--</span> the edge multiplies the accumulator plus one</span></pre></div>
+<p>That&#39;s the curse of Haskell, I guess?  If you write these things you can&#39;t help
+but notice the common patterns, and you somehow wind up trying to figure out
+the higher-order function that can abstract over them, even though you know you
+don&#39;t need to :)</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-7-benchmarks" id="user-content-day-7-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 7 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 07a
+benchmarking...
+time                 1.703 ms   (1.676 ms .. 1.738 ms)
+                     0.997 R²   (0.995 R² .. 0.999 R²)
+mean                 1.685 ms   (1.667 ms .. 1.702 ms)
+std dev              67.82 μs   (57.66 μs .. 85.26 μs)
+variance introduced by outliers: 27% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 07b
+benchmarking...
+time                 14.68 μs   (14.26 μs .. 14.98 μs)
+                     0.996 R²   (0.994 R² .. 0.999 R²)
+mean                 14.71 μs   (14.48 μs .. 14.99 μs)
+std dev              889.5 ns   (579.7 ns .. 1.397 μs)
+variance introduced by outliers: 68% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 8: Handheld Halting ---</h2><p>Your flight to the major airline hub reaches cruising altitude without incident.  While you consider checking the in-flight menu for one of those drinks that come with a little umbrella, you are interrupted by the kid sitting next to you.</p>
+<p>Their <a href="https://en.wikipedia.org/wiki/Handheld_game_console" target="_blank">handheld game console</a> won&#39;t turn on! They ask if you can take a look.</p>
+<p>You narrow the problem down to a strange <em>infinite loop</em> in the <span title="A trendy new line of encrypted footwear?">boot code</span> (your puzzle input) of the device. You should be able to fix it, but first you need to be able to run the code in isolation.</p>
+<p>The boot code is represented as a text file with one <em>instruction</em> per line of text. Each instruction consists of an <em>operation</em> (<code>acc</code>, <code>jmp</code>, or <code>nop</code>) and an <em>argument</em> (a signed number like <code>+4</code> or <code>-20</code>).</p>
+<ul>
+<li><code>acc</code> increases or decreases a single global value called the <em>accumulator</em> by the value given in the argument. For example, <code>acc +7</code> would increase the accumulator by 7. The accumulator starts at <code>0</code>. After an <code>acc</code> instruction, the instruction immediately below it is executed next.</li>
+<li><code>jmp</code> <em>jumps</em> to a new instruction relative to itself. The next instruction to execute is found using the argument as an <em>offset</em> from the <code>jmp</code> instruction; for example, <code>jmp +2</code> would skip the next instruction, <code>jmp +1</code> would continue to the instruction immediately below it, and <code>jmp -20</code> would cause the instruction 20 lines above to be executed next.</li>
+<li><code>nop</code> stands for <em>No OPeration</em> - it does nothing.  The instruction immediately below it is executed next.</li>
+</ul>
+<p>For example, consider the following program:</p>
+<pre><code>nop +0
+acc +1
+jmp +4
+acc +3
+jmp -3
+acc -99
+acc +1
+jmp -4
+acc +6
+</code></pre>
+<p>These instructions are visited in this order:</p>
+<pre><code>nop +0  | 1
+acc +1  | 2, 8(!)
+jmp +4  | 3
+acc +3  | 6
+jmp -3  | 7
+acc -99 |
+acc +1  | 4
+jmp -4  | 5
+acc +6  |
+</code></pre>
+<p>First, the <code>nop +0</code> does nothing. Then, the accumulator is increased from 0 to 1 (<code>acc +1</code>) and <code>jmp +4</code> sets the next instruction to the other <code>acc +1</code> near the bottom. After it increases the accumulator from 1 to 2, <code>jmp -4</code> executes, setting the next instruction to the only <code>acc +3</code>. It sets the accumulator to 5, and <code>jmp -3</code> causes the program to continue back at the first <code>acc +1</code>.</p>
+<p>This is an <em>infinite loop</em>: with this sequence of jumps, the program will run forever. The moment the program tries to run any instruction a second time, you know it will never terminate.</p>
+<p>Immediately <em>before</em> the program would run an instruction a second time, the value in the accumulator is <em><code>5</code></em>.</p>
+<p>Run your copy of the boot code. Immediately before any instruction is executed a second time, <em>what value is in the accumulator?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-8" id="user-content-day-8"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 8</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em>8</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/8" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day08.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day08.html" rel="nofollow">Rendered</a></em></p>
+<p>Nothing tooooo complicated about today&#39;s, I feel: it is another staple of
+AoC --- simulating a virtual machine! :)  Only this time our program is
+separate from our memory, so we don&#39;t have any actual self-modifying code.
+However, my guard is up: this might turn into one of those soon in another day.</p>
+<p>At least, there are some interesting things we can do to prepare for a
+potential switch to different requirements in a later day (with the <code>Ixed</code>)
+typeclass, and also a nice way to handle the perturbations in Part 2 using
+<code>holesOf</code> and lens traversal composition.</p>
+<p>My main program was a sequence of <code>Command</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Instr</span> <span class="pl-k">=</span> <span class="pl-ent">NOP</span> | <span class="pl-ent">ACC</span> | <span class="pl-ent">JMP</span>
+
+<span class="pl-k">type</span> <span class="pl-en">Command</span> <span class="pl-k">=</span> (<span class="pl-en">Instr</span>, <span class="pl-en"><span class="pl-c1">Int</span></span>)</pre></div>
+<p>But, what container should we use for these?</p>
+<ol>
+<li><code>[Command]</code>: Nope, bad, literally no reason to ever use this except for
+O(1) push and pop.  The main operation here is indexing, and it&#39;s O(i) on
+the index.</li>
+<li><code>Vector Command</code>: Very fast indexing (O(1) on the index), but very bad for
+any sort of addition of new instructions in-flight if that comes up in the
+future.  But good enough for now.</li>
+<li><code>Seq Command</code>: Efficient indexing (O(1) on the index), and very good for
+adding new instructions to either end (or even in the middle) in-flight if
+it comes to that.</li>
+<li><code>IntMap Command</code>: Efficient indexing (O(1) on the index), very good for
+adding new instructions to either end, and also good for a sparse program
+bank if it ever comes to that.</li>
+</ol>
+<p><em>Luckily</em>, we can get a common interface for all four of these options by using
+the <code>Ixed</code> typeclass from the <em>lens</em> library, which abstracts over different
+&quot;indexable&quot; things.  You&#39;d get a safe index with <code>xs ^? ix i</code>.  So whenever
+possible, I&#39;ve written all my code to work generally over all four of these in
+case I have to swap quickly in the future.</p>
+<p>One theoretical nice container would actually be the <code>PointedList</code> data type
+(one implementation is in the <em><a href="https://hackage.haskell.org/package/pointedlist-0.6.1/docs/Data-List-PointedList.html" rel="nofollow">pointedlist</a></em> library).  This is because all
+of our addressing is relative, so instead of storing a &quot;current index&quot;, we
+could just always point towards the focus of the tape, and shift the tape left
+or right for <code>JMP</code>.</p>
+<p>However, this is kind of difficult to adapt to work in a uniform interface to
+the other four types...so, goodbye theoretical nicety, sacrificed in the name
+of adaptivity :&#39;(</p>
+<p>So for my solution I used <code>Vector</code>, which has just the API necessary without
+the extra flexibility that <code>Seq</code> and <code>IntMap</code> offer, since we don&#39;t need it!
+But, just know that things could be swapped at any time, thanks to the magic
+(or horror, depending on your point of view) of typeclasses.</p>
+<p>On the other hand, if we separate out the index from a fixed container, it does
+make the state a lot simpler.  It means that our state is really only the
+current pointer and the accumulator:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">CState</span> <span class="pl-k">=</span> <span class="pl-ent">CS</span> <span class="pl-k">{</span> <span class="pl-e">csPtr</span> <span class="pl-k">::</span> <span class="pl-k">!</span><span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-e">csAcc</span> <span class="pl-k">::</span> <span class="pl-k">!</span><span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">}</span>
+
+<span class="pl-en">initialCS</span> <span class="pl-k">::</span> <span class="pl-en">CState</span>
+initialCS <span class="pl-k">=</span> <span class="pl-ent">CS</span> <span class="pl-c1">0</span> <span class="pl-c1">0</span>
+
+<span class="pl-en">runCommand</span> <span class="pl-k">::</span> <span class="pl-en">Vector</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> <span class="pl-en">CState</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">CState</span></pre></div>
+<p>So our actual program becomes a very tight <code>CState -&gt; Maybe CState</code> loop --
+very efficient because the state is only a tuple!  That means that we can
+simply chain things using <code>iterateMaybe</code> go get a list of all successive
+states:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A handy utility function I keep around</span>
+<span class="pl-en">iterateMaybe</span> <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> [<span class="pl-smi">a</span>]
+iterateMaybe f <span class="pl-k">=</span> go
+  <span class="pl-k">where</span>
+    go x <span class="pl-k">=</span> x <span class="pl-k">:</span> <span class="pl-k">case</span> f x <span class="pl-k">of</span>
+      <span class="pl-ent">Nothing</span> <span class="pl-k">-&gt;</span> <span class="pl-c1">[]</span>
+      <span class="pl-ent">Just</span> y  <span class="pl-k">-&gt;</span> go y
+
+<span class="pl-en">allStates</span> <span class="pl-k">::</span> <span class="pl-en">Vector</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> [<span class="pl-en">CState</span>]
+allStates cmd <span class="pl-k">=</span> iterateMaybe (runCommand cmd) initialCS</pre></div>
+<p>So now we have a generator of all the states a given program bank will ever
+output.  For part 1, we just need to find a loop.  Luckily I have another handy
+utility function that scans a list and reports the first time a projection
+function&#39;s result is repeated</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Lazily find the first repeated projection.</span>
+<span class="pl-en">firstRepeatedBy</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">a</span> <span class="pl-k">=&gt;</span> (<span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> [<span class="pl-smi">b</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">b</span>
+firstRepeatedBy f <span class="pl-k">=</span> go <span class="pl-c1">S.</span>empty
+  <span class="pl-k">where</span>
+    go seen (x<span class="pl-k">:</span>xs)
+      <span class="pl-k">|</span> f x <span class="pl-k">`S.member`</span> seen <span class="pl-k">=</span> <span class="pl-ent">Just</span> x
+      <span class="pl-k">|</span> <span class="pl-c1">otherwise</span>           <span class="pl-k">=</span> go (f x <span class="pl-k">`S.insert`</span> seen) xs
+    go _ <span class="pl-c1">[]</span>     <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+
+<span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">Vector</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">CState</span>
+part1 cmd <span class="pl-k">=</span> firstRepititionBy csPtr states
+  <span class="pl-k">where</span>
+    states <span class="pl-k">=</span> iterateMaybe (runCommand cmd) inititialCS</pre></div>
+<p>Now all that&#39;s left is to actually implement <code>runCommand</code>!</p>
+<div class="highlight highlight-source-haskell"><pre>runCommand
+    <span class="pl-k">::</span> <span class="pl-en">Vector</span> <span class="pl-en">Command</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">CState</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">CState</span>
+runCommand cmds cs <span class="pl-k">=</span> (cmds <span class="pl-k">^?</span> ix (csPtr cs)) <span class="pl-k">&lt;&amp;&gt;</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    (<span class="pl-ent">NOP</span>, _) <span class="pl-k">-&gt;</span> cs { csPtr <span class="pl-k">=</span> csPtr cs <span class="pl-k">+</span> <span class="pl-c1">1</span> }
+    (<span class="pl-ent">ACC</span>, i) <span class="pl-k">-&gt;</span> cs { csPtr <span class="pl-k">=</span> csPtr cs <span class="pl-k">+</span> <span class="pl-c1">1</span>, csAcc <span class="pl-k">=</span> csAcc cs <span class="pl-k">+</span> i }
+    (<span class="pl-ent">JMP</span>, i) <span class="pl-k">-&gt;</span> cs { csPtr <span class="pl-k">=</span> csPtr cs <span class="pl-k">+</span> i }
+
+<span class="pl-c"><span class="pl-c">--</span> note: &lt;&amp;&gt; is flip fmap</span></pre></div>
+<p>And the nice thing about it is that if we leave off the type annotation of
+<code>runCommand</code>, we actually get a really nice polymorphic type if we ask GHC what
+it expects:</p>
+<div class="highlight highlight-source-haskell"><pre>runCommand
+    <span class="pl-k">::</span> (<span class="pl-en">Ixed</span> <span class="pl-smi">t</span>, <span class="pl-en">Index</span> <span class="pl-smi">t</span> <span class="pl-k">~</span> <span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en">IxValue</span> <span class="pl-smi">t</span> <span class="pl-k">~</span> (<span class="pl-en">Instr</span>, <span class="pl-en"><span class="pl-c1">Int</span></span>))
+    <span class="pl-k">=&gt;</span> <span class="pl-smi">t</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">CState</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">CState</span></pre></div>
+<p>This is the fully polymorphic signature that you get just from using <code>cmds ^? ix (csPtr cs)</code>.  It says that you can use this on <em>any</em> program bank <code>t</code> that&#39;s
+an instance of <code>Ixed</code>, as long as its index type is <code>Int</code> and the value at that
+index is a <code>(Instr, Int)</code>.  Nothing about the typeclasses here is inherently
+lensy, it&#39;s just a typeclass (like any other) to abstract over common
+interfaces that many types might have.  In this fully polymorphic signature, we
+can use this on <code>Vector Command</code>, <code>[Command]</code>, <code>Seq Command</code>, and <code>IntMap Command</code>, as we wish to in the future if the need comes up.</p>
+<p>For part 2 we can take advantage of some <em>actual</em> lens/optics magic, by using
+<code>holesOf</code>:</p>
+<div class="highlight highlight-source-haskell"><pre>holesOf
+    <span class="pl-k">::</span> <span class="pl-en">Traversal&#39;</span> <span class="pl-smi">s</span> <span class="pl-smi">a</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-smi">s</span>
+    <span class="pl-k">-&gt;</span> [<span class="pl-en">Pretext</span> (<span class="pl-k">-&gt;</span>) <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">s</span>]</pre></div>
+<p>The type is definitely scary, but <code>holesOf</code> is saying:</p>
+<ol>
+<li>Give me a specification of which holes you want to poke (<code>Traversal&#39; s a</code>,
+a value <code>s</code> with holes <code>a</code>)</li>
+<li>... and an item you want to poke the holes in (<code>s</code>)</li>
+<li>... and I&#39;ll return to you a list of continuations (<code>Pretext (-&gt;) a a (t a)</code>), each one allowing you to edit a different hole in <code>s</code>.</li>
+</ol>
+<p><code>Pretext</code> is a bit of a complicated type, but the main interface you would use
+it with is:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">peeks</span> <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Pretext</span> (<span class="pl-k">-&gt;</span>) <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">s</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">s</span></pre></div>
+<p><code>peeks</code> as for a function you would want to run on a hole (the <code>a -&gt; a</code>), the
+continuation you got from <code>holesOf</code>, and then returns the &quot;modified&quot; <code>s</code>,
+modified according to that transformation you ran on that hole.</p>
+<p>(thanks to <em>mniip</em> on freenode IRC for pointing out how these two work together
+to me!)</p>
+<p>Every item in the list returned by <code>holesOf</code> corresponds to a different hole,
+so for example:</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> <span class="pl-c1">map</span> (peeks <span class="pl-c1">negate</span>) (holesOf <span class="pl-c1">traverse</span> [<span class="pl-c1">1</span>,<span class="pl-c1">2</span>,<span class="pl-c1">3</span>])
+  [ [<span class="pl-k">-</span><span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>]
+  , [ <span class="pl-c1">1</span>,<span class="pl-k">-</span><span class="pl-c1">2</span>, <span class="pl-c1">3</span>]
+  , [ <span class="pl-c1">1</span>, <span class="pl-c1">2</span>,<span class="pl-k">-</span><span class="pl-c1">3</span>]
+  ]</pre></div>
+<p>The <code>traverse :: Traversal&#39; [a] a</code> is a <code>Traversal</code> that specifies the &quot;holes&quot;
+of a list <code>[a]</code> to be each item <code>a</code> in that list.  And so <code>holesOf traverse [1,2,3]</code> will return three <code>Pretext</code>s: one corresponding to modifying each item
+in the list individually.</p>
+<p><code>peeks negate</code> on each of the three items returned by <code>holesOf traverse [1,2,3]</code> will return the modified list, each with a single hole edited by
+<code>negate</code>.</p>
+<p>In our case, instead of <code>negate</code>, we can use a <code>flipInstr</code> that flips <code>NOP</code> to
+<code>JMP</code> and <code>JMP</code> to <code>NOP</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">flipInstr</span> <span class="pl-k">::</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Command</span>
+flipInstr <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">NOP</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">JMP</span>
+    <span class="pl-ent">ACC</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">ACC</span>
+    <span class="pl-ent">JMP</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">NOP</span></pre></div>
+<p>And now <code>peeks flipInstr</code> will do the right thing:</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> <span class="pl-c1">map</span> (peeks flipInstr) (holesOf <span class="pl-c1">traverse</span> [<span class="pl-ent">NOP</span>,<span class="pl-ent">ACC</span>,<span class="pl-ent">JMP</span>,<span class="pl-ent">JMP</span>])
+[ [<span class="pl-ent">JMP</span>,<span class="pl-ent">ACC</span>,<span class="pl-ent">JMP</span>,<span class="pl-ent">JMP</span>]
+, [<span class="pl-ent">NOP</span>,<span class="pl-ent">ACC</span>,<span class="pl-ent">JMP</span>,<span class="pl-ent">JMP</span>]
+, [<span class="pl-ent">NOP</span>,<span class="pl-ent">ACC</span>,<span class="pl-ent">NOP</span>,<span class="pl-ent">JMP</span>]
+, [<span class="pl-ent">NOP</span>,<span class="pl-ent">ACC</span>,<span class="pl-ent">JMP</span>,<span class="pl-ent">NOP</span>]
+]</pre></div>
+<p>An extra coolio thing is that traversals compose with <code>.</code>, so we can actually
+use a traversal <code>_1</code> (here, <code>Traversal&#39; (a,b) a</code>, which says the single &quot;hole&quot;
+in an <code>(a,b)</code> is the first item in the tuple) to be more nuanced with our hole
+selection:</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> <span class="pl-c1">map</span> (peeks flipInstr)
+        (holesOf (<span class="pl-c1">traverse</span> <span class="pl-k">.</span> _1) [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)])
+  [ [(<span class="pl-ent">JMP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)]
+  , [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)]
+  , [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">NOP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)]
+  , [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">NOP</span>,<span class="pl-c1">4</span>)]
+  ]</pre></div>
+<p>Neat!</p>
+<p>With that we can fully write <code>part2</code>: for each perturbation, check if there is
+a loop.  If there is a loop, this ain&#39;t it.  If there isn&#39;t a loop, then we hit
+the jackpot: return the last item in our list of seen states, as that&#39;s the
+last state before termination.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">Vector</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">CState</span>
+part2 cmds0 <span class="pl-k">=</span> listToMaybe
+    [ res
+    <span class="pl-k">|</span> cmds <span class="pl-k">&lt;-</span> peeks flipInstr <span class="pl-k">&lt;$&gt;</span> holesOf (<span class="pl-c1">traverse</span> <span class="pl-k">.</span> _1) cmds0
+    , <span class="pl-k">let</span> states <span class="pl-k">=</span> iterateMaybe (runCommand cmds) initialCS
+    , res  <span class="pl-k">&lt;-</span> <span class="pl-k">case</span> firstRepeatedBy csPtr stats <span class="pl-k">of</span>
+        <span class="pl-ent">Nothing</span> <span class="pl-k">-&gt;</span> [<span class="pl-c1">last</span> states]    <span class="pl-c"><span class="pl-c">--</span> loop found</span>
+        <span class="pl-ent">Just</span> _  <span class="pl-k">-&gt;</span> <span class="pl-c1">[]</span>               <span class="pl-c"><span class="pl-c">--</span> no loop found</span>
+    ]</pre></div>
+<p>In my actual code, I actually use the <code>experiment</code> function instead of <code>peeks</code>
+-- it&#39;s like a &quot;peeksM&quot;, in a way:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">peeks</span>      <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span>   <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Pretext</span> (<span class="pl-k">-&gt;</span>) <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">s</span> <span class="pl-k">-&gt;</span>   <span class="pl-smi">a</span>
+<span class="pl-en">experiment</span> <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">f</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Pretext</span> (<span class="pl-k">-&gt;</span>) <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">s</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">f</span> <span class="pl-smi">a</span></pre></div>
+<p>So instead of giving it a <code>Instr -&gt; Instr</code>, you could give it an <code>Instr -&gt; Maybe Instr</code>, and &quot;cancel out&quot; any branches that don&#39;t need to be addressed:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">experiment</span> <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Pretext</span> (<span class="pl-k">-&gt;</span>) <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">s</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">a</span>   <span class="pl-c"><span class="pl-c">--</span> in our case</span>
+
+<span class="pl-en">flipInstrs</span> <span class="pl-k">::</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Command</span>
+flipInstrs <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">NOP</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">Just</span> <span class="pl-ent">JMP</span>
+    <span class="pl-ent">ACC</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">Nothing</span>  <span class="pl-c"><span class="pl-c">--</span> for ACC indices, don&#39;t do anything</span>
+    <span class="pl-ent">JMP</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">Just</span> <span class="pl-ent">JMP</span></pre></div>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> <span class="pl-c1">map</span> (experiment flipInstrs)
+        (holesOf (<span class="pl-c1">traverse</span> <span class="pl-k">.</span> _1) [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)])
+[ <span class="pl-ent">Just</span> [(<span class="pl-ent">JMP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)]
+, <span class="pl-ent">Nothing</span>
+, <span class="pl-ent">Just</span> [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">NOP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">4</span>)]
+, <span class="pl-ent">Just</span> [(<span class="pl-ent">NOP</span>,<span class="pl-c1">1</span>),(<span class="pl-ent">ACC</span>,<span class="pl-c1">2</span>),(<span class="pl-ent">JMP</span>,<span class="pl-c1">3</span>),(<span class="pl-ent">NOP</span>,<span class="pl-c1">4</span>)]
+]</pre></div>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">Vector</span> <span class="pl-en">Command</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">CState</span>
+part2 cmds0 <span class="pl-k">=</span> listToMaybe
+    [ res
+    <span class="pl-k">|</span> <span class="pl-ent">Just</span> cmds <span class="pl-k">&lt;-</span> experiment flipInstr <span class="pl-k">&lt;$&gt;</span> holesOf (<span class="pl-c1">traverse</span> <span class="pl-k">.</span> _1) cmds0
+    , <span class="pl-k">let</span> states <span class="pl-k">=</span> iterateMaybe (runCommand cmds) initialCS
+    , res  <span class="pl-k">&lt;-</span> <span class="pl-k">case</span> firstRepeatedBy csPtr stats <span class="pl-k">of</span>
+        <span class="pl-ent">Nothing</span> <span class="pl-k">-&gt;</span> [<span class="pl-c1">last</span> states]    <span class="pl-c"><span class="pl-c">--</span> loop found</span>
+        <span class="pl-ent">Just</span> _  <span class="pl-k">-&gt;</span> <span class="pl-c1">[]</span>               <span class="pl-c"><span class="pl-c">--</span> no loop found</span>
+    ]</pre></div>
+<p>Not a super huge improvement, but maybe more theoretically nice because we can
+skip over the possible trials where we are permuting an <code>ACC</code>.  By my
+reckoning, 52% of my input file instructions were ACC instructions, so this
+small thing actually shaves off a decent amount of time.</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-8-benchmarks" id="user-content-day-8-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 8 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 08a
+benchmarking...
+time                 8.055 μs   (7.625 μs .. 8.507 μs)
+                     0.988 R²   (0.978 R² .. 0.996 R²)
+mean                 8.153 μs   (7.856 μs .. 8.438 μs)
+std dev              848.3 ns   (634.4 ns .. 1.081 μs)
+variance introduced by outliers: 88% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 08b
+benchmarking...
+time                 2.550 ms   (2.475 ms .. 2.637 ms)
+                     0.991 R²   (0.987 R² .. 0.995 R²)
+mean                 2.541 ms   (2.504 ms .. 2.571 ms)
+std dev              125.0 μs   (101.9 μs .. 156.3 μs)
+variance introduced by outliers: 33% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 9: Encoding Error ---</h2><p>With your neighbor happily enjoying their video game, you turn your attention to an open data port on the little screen in the seat in front of you.</p>
+<p>Though the port is non-standard, you manage to connect it to your computer through the clever use of several paperclips. Upon connection, the port outputs a series of numbers (your puzzle input).</p>
+<p>The data appears to be encrypted with the eXchange-Masking Addition System (<span title="No relation.">XMAS</span>) which, conveniently for you, is an old cypher with an important weakness.</p>
+<p>XMAS starts by transmitting a <em>preamble</em> of 25 numbers. After that, each number you receive should be the sum of any two of the 25 immediately previous numbers. The two numbers will have different values, and there might be more than one such pair.</p>
+<p>For example, suppose your preamble consists of the numbers <code>1</code> through <code>25</code> in a random order. To be valid, the next number must be the sum of two of those numbers:</p>
+<ul>
+<li><code>26</code> would be a <em>valid</em> next number, as it could be <code>1</code> plus <code>25</code> (or many other pairs, like <code>2</code> and <code>24</code>).</li>
+<li><code>49</code> would be a <em>valid</em> next number, as it is the sum of <code>24</code> and <code>25</code>.</li>
+<li><code>100</code> would <em>not</em> be valid; no two of the previous 25 numbers sum to <code>100</code>.</li>
+<li><code>50</code> would also <em>not</em> be valid; although <code>25</code> appears in the previous 25 numbers, the two numbers in the pair must be different.</li>
+</ul>
+<p>Suppose the 26th number is <code>45</code>, and the first number (no longer an option, as it is more than 25 numbers ago) was <code>20</code>. Now, for the next number to be valid, there needs to be some pair of numbers among <code>1</code>-<code>19</code>, <code>21</code>-<code>25</code>, or <code>45</code> that add up to it:</p>
+<ul>
+<li><code>26</code> would still be a <em>valid</em> next number, as <code>1</code> and <code>25</code> are still within the previous 25 numbers.</li>
+<li><code>65</code> would <em>not</em> be valid, as no two of the available numbers sum to it.</li>
+<li><code>64</code> and <code>66</code> would both be <em>valid</em>, as they are the result of <code>19+45</code> and <code>21+45</code> respectively.</li>
+</ul>
+<p>Here is a larger example which only considers the previous <em>5</em> numbers (and has a preamble of length 5):</p>
+<pre><code>35
+20
+15
+25
+47
+40
+62
+55
+65
+95
+102
+117
+150
+182
+127
+219
+299
+277
+309
+576
+</code></pre>
+<p>In this example, after the 5-number preamble, almost every number is the sum of two of the previous 5 numbers; the only number that does not follow this rule is <em><code>127</code></em>.</p>
+<p>The first step of attacking the weakness in the XMAS data is to find the first number in the list (after the preamble) which is <em>not</em> the sum of two of the 25 numbers before it. <em>What is the first number that does not have this property?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-9" id="user-content-day-9"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 9</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em>9</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/9" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day09.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day09.html" rel="nofollow">Rendered</a></em></p>
+<p>Let&#39;s tackle day 9!</p>
+<p>A good way to check if a sequence of 25 numbers can add to the 26th number is
+to just iterate over everything, like we might have done in day 1:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> check if, for ([x,y,z] ++ [a]), no pair in xyz can add to &#39;a&#39;.  If it&#39;s</span>
+<span class="pl-c"><span class="pl-c">--</span> bad, it returns &#39;Just a&#39;.</span>
+<span class="pl-en">isBad</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+isBad xs0 <span class="pl-k">=</span> <span class="pl-k">do</span>
+    x <span class="pl-k">:</span> xs <span class="pl-k">&lt;-</span> <span class="pl-ent">Just</span> <span class="pl-k">$</span> <span class="pl-c1">reverse</span> xs0
+    <span class="pl-k">let</span> badCheck <span class="pl-k">=</span> <span class="pl-c1">null</span> <span class="pl-k">do</span>
+          y<span class="pl-k">:</span>ys <span class="pl-k">&lt;-</span> tails (toList xs)
+          z    <span class="pl-k">&lt;-</span> ys
+          guard <span class="pl-k">$</span> (y <span class="pl-k">+</span> z) <span class="pl-k">==</span> x
+    x <span class="pl-k">&lt;$</span> guard badCheck</pre></div>
+<p>I use my favorite <code>Maybe</code> do-notation trick of pattern matching within the
+block to take advantage of do block short circuiting for <code>Maybe</code> with its
+<code>MonadFail</code> instance.  If you reverse <code>xs0</code> then you can get the last item as
+the head, and the rest as the tail :)</p>
+<p>In <code>badCheck</code> we do a list-monad powered search (see my <a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">Day 1
+Reflections</a>)
+for more details on how it works.  <code>badCheck</code> will return <code>True</code> if the search
+is empty (with <code>null</code>).  <code>guard badCheck</code> will be Nothing if <code>badCheck</code> fails
+(and our list is good) and <code>Just x</code> if <code>badCheck</code> succeeds (and our list is
+bad).</p>
+<p>Part 1 is then just finding the first bad sequence:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 xs <span class="pl-k">=</span> listToMaybe
+    [ y
+    <span class="pl-k">|</span> ys     <span class="pl-k">&lt;-</span> tails xs
+    , <span class="pl-ent">Just</span> y <span class="pl-k">&lt;-</span> [isBad (<span class="pl-c1">take</span> <span class="pl-c1">26</span> ys)]
+    ]</pre></div>
+<p>For part 2, there&#39;s a nice-ish way to do it in constant-time.  First, we can
+generate a cumulative sum <code>cumSum</code> for the <em>entire</em> list.  Then we know that
+<code>sumFrom(i,j)</code> in our original list is just <code>cumSum(j) - cumSum(i)</code>.  This is
+similar to how definite integrals work, or also how you can find the area under
+a probability density function by subtracting two points from its cumulative
+distribution function.</p>
+<p>So now the problem just becomes finding <code>i,j</code> where <code>cumSum(j) - cumSum(i) == goal</code>.  There&#39;s a clean imperative-ish way to do this that involves just
+&quot;sliding&quot; your window <code>i,j</code> up from <code>0,1</code>.  If <code>cumSum(j) - cumSum(i)</code> is too
+small, increase <code>j</code> by 1 to open the window up a bit.  If it&#39;s too big,
+increase <code>i</code> by 1 to close the window up a bit.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">findBounds</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">V.</span>Vector</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>)
+findBounds ns goal <span class="pl-k">=</span> go <span class="pl-c1">0</span> <span class="pl-c1">1</span>
+  <span class="pl-k">where</span>
+    go <span class="pl-k">!</span>i <span class="pl-k">!</span>j <span class="pl-k">=</span> <span class="pl-k">do</span>
+      x <span class="pl-k">&lt;-</span> ns <span class="pl-k"><span class="pl-c1">V.</span>!?</span> i
+      y <span class="pl-k">&lt;-</span> ns <span class="pl-k"><span class="pl-c1">V.</span>!?</span> j
+      <span class="pl-k">case</span> <span class="pl-c1">compare</span> (y <span class="pl-k">-</span> x) goal <span class="pl-k">of</span>
+        <span class="pl-ent"><span class="pl-c1">LT</span></span> <span class="pl-k">-&gt;</span> go i (j <span class="pl-k">+</span> <span class="pl-c1">1</span>)
+        <span class="pl-ent"><span class="pl-c1">EQ</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">pure</span> (i, j)
+        <span class="pl-ent"><span class="pl-c1">GT</span></span> <span class="pl-k">-&gt;</span> go (i <span class="pl-k">+</span> <span class="pl-c1">1</span>) j</pre></div>
+<p>And there you go!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 xs <span class="pl-k">=</span> <span class="pl-k">do</span>
+    goal <span class="pl-k">&lt;-</span> part1 xs
+    <span class="pl-k">let</span> cumSum <span class="pl-k">=</span> <span class="pl-c1">V.</span>fromList (scanl&#39; <span class="pl-en">(+)</span> <span class="pl-c1">0</span> xs)       <span class="pl-c"><span class="pl-c">--</span> cumulative sum</span>
+    (i, j) <span class="pl-k">&lt;-</span> findBounds cumSum goal
+    <span class="pl-k">let</span> xs <span class="pl-k">=</span> <span class="pl-c1">take</span> (j <span class="pl-k">-</span> i) <span class="pl-k">.</span> <span class="pl-c1">drop</span> i <span class="pl-k">$</span> ns
+    <span class="pl-c1">pure</span> <span class="pl-k">$</span> <span class="pl-c1">minimum</span> xs <span class="pl-k">+</span> <span class="pl-c1">maximum</span> xs</pre></div>
+<p>If anything, maybe the implementation of <code>findBounds</code> shows how one might
+directly translate a tight mutable loop in an imperative language into a
+tail-recursive function in Haskell!</p>
+<p>We do often like to avoid explicitly writing recursive functions when we can,
+but in this case I&#39;m not sure if there&#39;s a way to get around it other than
+switching to a full on mutable answer, or in a very complex way that is
+extremely specific to the situation.  If you think of one, let me know! :D</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-9-benchmarks" id="user-content-day-9-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 9 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 09a
+benchmarking...
+time                 164.4 μs   (154.6 μs .. 179.6 μs)
+                     0.973 R²   (0.965 R² .. 0.984 R²)
+mean                 178.5 μs   (170.9 μs .. 184.6 μs)
+std dev              22.16 μs   (19.45 μs .. 24.65 μs)
+variance introduced by outliers: 86% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 09b
+benchmarking...
+time                 215.2 μs   (208.9 μs .. 219.5 μs)
+                     0.987 R²   (0.977 R² .. 0.995 R²)
+mean                 214.1 μs   (207.6 μs .. 224.2 μs)
+std dev              28.57 μs   (19.93 μs .. 40.26 μs)
+variance introduced by outliers: 87% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 10: Adapter Array ---</h2><p>Patched into the aircraft&#39;s data port, you discover weather forecasts of a massive tropical storm. Before you can figure out whether it will impact your vacation plans, however, your device suddenly turns off!</p>
+<p>Its battery is dead.</p>
+<p>You&#39;ll need to plug it in. There&#39;s only one problem: the charging outlet near your seat produces the wrong number of <em>jolts</em>. Always prepared, you make a list of all of the joltage adapters in your bag.</p>
+<p>Each of your joltage adapters is rated for a specific <em>output joltage</em> (your puzzle input). Any given adapter can take an input <code>1</code>, <code>2</code>, or <code>3</code> jolts <em>lower</em> than its rating and still produce its rated output joltage.</p>
+<p>In addition, your device has a built-in joltage adapter rated for <em><code>3</code> jolts higher</em> than the highest-rated adapter in your bag. (If your adapter list were <code>3</code>, <code>9</code>, and <code>6</code>, your device&#39;s built-in adapter would be rated for <code>12</code> jolts.)</p>
+<p>Treat the charging outlet near your seat as having an effective joltage rating of <code>0</code>.</p>
+<p>Since you have some time to kill, you might as well test all of your adapters. Wouldn&#39;t want to get to your resort and realize you can&#39;t even charge your device!</p>
+<p>If you <em>use every adapter in your bag</em> at once, what is the distribution of joltage differences between the charging outlet, the adapters, and your device?</p>
+<p>For example, suppose that in your bag, you have adapters with the following joltage ratings:</p>
+<pre><code>16
+10
+15
+5
+1
+11
+7
+19
+6
+12
+4
+</code></pre>
+<p>With these adapters, your device&#39;s built-in joltage adapter would be rated for <code>19 + 3 = <em>22</em></code> jolts, 3 higher than the highest-rated adapter.</p>
+<p>Because adapters can only connect to a source 1-3 jolts lower than its rating, in order to use every adapter, you&#39;d need to choose them like this:</p>
+<ul>
+<li>The charging outlet has an effective rating of <code>0</code> jolts, so the only adapters that could connect to it directly would need to have a joltage rating of <code>1</code>, <code>2</code>, or <code>3</code> jolts. Of these, only one you have is an adapter rated <code>1</code> jolt (difference of <em><code>1</code></em>).</li>
+<li>From your <code>1</code>-jolt rated adapter, the only choice is your <code>4</code>-jolt rated adapter (difference of <em><code>3</code></em>).</li>
+<li>From the <code>4</code>-jolt rated adapter, the adapters rated <code>5</code>, <code>6</code>, or <code>7</code> are valid choices. However, in order to not skip any adapters, you have to pick the adapter rated <code>5</code> jolts (difference of <em><code>1</code></em>).</li>
+<li>Similarly, the next choices would need to be the adapter rated <code>6</code> and then the adapter rated <code>7</code> (with difference of <em><code>1</code></em> and <em><code>1</code></em>).</li>
+<li>The only adapter that works with the <code>7</code>-jolt rated adapter is the one rated <code>10</code> jolts (difference of <em><code>3</code></em>).</li>
+<li>From <code>10</code>, the choices are <code>11</code> or <code>12</code>; choose <code>11</code> (difference of <em><code>1</code></em>) and then <code>12</code> (difference of <em><code>1</code></em>).</li>
+<li>After <code>12</code>, only valid adapter has a rating of <code>15</code> (difference of <em><code>3</code></em>), then <code>16</code> (difference of <em><code>1</code></em>), then <code>19</code> (difference of <em><code>3</code></em>).</li>
+<li>Finally, your device&#39;s built-in adapter is always 3 higher than the highest adapter, so its rating is <code>22</code> jolts (always a difference of <em><code>3</code></em>).</li>
+</ul>
+<p>In this example, when using every adapter, there are <em><code>7</code></em> differences of 1 jolt and <em><code>5</code></em> differences of 3 jolts.</p>
+<p>Here is a larger example:</p>
+<pre><code>28
+33
+18
+42
+31
+14
+46
+20
+48
+47
+24
+23
+49
+45
+19
+38
+39
+11
+1
+32
+25
+35
+8
+17
+7
+9
+4
+2
+34
+10
+3
+</code></pre>
+<p>In this larger example, in a chain that uses all of the adapters, there are <em><code>22</code></em> differences of 1 jolt and <em><code>10</code></em> differences of 3 jolts.</p>
+<p>Find a chain that uses all of your adapters to connect the charging outlet to your device&#39;s built-in adapter and count the joltage differences between the charging outlet, the adapters, and your device. <em>What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-10" id="user-content-day-10"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 10</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em>10</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/10" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day10.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day10.html" rel="nofollow">Rendered</a></em></p>
+<p>Today is another day where the &quot;automatically build a memoized recursive map&quot;
+in Haskell really shines :)  It&#39;s essentially the same problem as Day 7.</p>
+<p>For the first part, once you sort the list, you can compute the differences and
+then build a frequency map</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Build a frequency map</span>
+<span class="pl-en">freqs</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">a</span> <span class="pl-k">=&gt;</span> [<span class="pl-smi">a</span>] <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-smi">a</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+freqs <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromListWith <span class="pl-en">(+)</span> <span class="pl-k">.</span> <span class="pl-c1">map</span> (,<span class="pl-c1">1</span>) <span class="pl-k">.</span> toList
+
+<span class="pl-en">diffs</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>]
+diffs xs<span class="pl-k">@</span>(_<span class="pl-k">:</span>ys) <span class="pl-k">=</span> <span class="pl-c1">zipWith</span> <span class="pl-en">(-)</span> ys xs</pre></div>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> diffs [<span class="pl-c1">1</span>,<span class="pl-c1">3</span>,<span class="pl-c1">4</span>,<span class="pl-c1">7</span>]
+[<span class="pl-c1">2</span>,<span class="pl-c1">1</span>,<span class="pl-c1">3</span>]</pre></div>
+<p>And so part 1 can be done with:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 xs <span class="pl-k">=</span> (stepFreqs <span class="pl-k"><span class="pl-c1">M.</span>!</span> <span class="pl-c1">1</span>) <span class="pl-k">*</span> (stepFreqs <span class="pl-k"><span class="pl-c1">M.</span>!</span> <span class="pl-c1">3</span>)
+  <span class="pl-k">where</span>
+    xs&#39; <span class="pl-k">=</span> <span class="pl-c1">0</span> <span class="pl-k">:</span> xs <span class="pl-k">++</span> [<span class="pl-c1">maximum</span> xs <span class="pl-k">+</span> <span class="pl-c1">3</span>]
+    stepFreqs <span class="pl-k">=</span> freqs (diffs (sort xs&#39;))</pre></div>
+<p>For part 2, if we get an <code>IntSet</code> of all of your numbers (and adding the zero,
+and the goal, the maximum + 3), then we can use it to build our <code>IntMap</code> of all
+the number of paths from a given number.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Data.IntMap</span> (<span class="pl-en">IntMap</span>)
+<span class="pl-k">import</span>           <span class="pl-c1">Data.IntSet</span> (<span class="pl-en">IntSet</span>)
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.IntMap</span> <span class="pl-k">as</span> <span class="pl-c1">IM</span>
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.IntSet</span> <span class="pl-k">as</span> <span class="pl-c1">IS</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A map of numbers to the count of how many paths from that number to</span>
+<span class="pl-c"><span class="pl-c">--</span> the goal</span>
+<span class="pl-en">pathsToGoal</span> <span class="pl-k">::</span> <span class="pl-en">IntSet</span> <span class="pl-k">-&gt;</span> <span class="pl-en">IntMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+pathsToGoal xs <span class="pl-k">=</span> res
+  <span class="pl-k">where</span>
+    res <span class="pl-k">=</span> <span class="pl-c1">flip</span> <span class="pl-c1">IM.</span>fromSet xs <span class="pl-k">$</span> <span class="pl-k">\</span>i <span class="pl-k">-&gt;</span>
+      <span class="pl-k">if</span> i <span class="pl-k">==</span> goal
+        <span class="pl-k">then</span> <span class="pl-c1">1</span>
+        <span class="pl-k">else</span> <span class="pl-c1">sum</span> [ <span class="pl-c1">IM.</span>findWithDefault <span class="pl-c1">0</span> (i <span class="pl-k">+</span> j) res
+                 <span class="pl-k">|</span> j <span class="pl-k">&lt;-</span> [<span class="pl-c1">1</span>,<span class="pl-c1">2</span>,<span class="pl-c1">3</span>]
+                 ]
+    goal <span class="pl-k">=</span> <span class="pl-c1">IS.</span>findMax is</pre></div>
+<p>Our answer is <code>res</code>, the map of numbers to the count of how many paths exist
+from that number to the goal.  To generate the count for a given number <code>i</code>, we
+add the number of paths from <code>i+1</code>, <code>i+2</code>, and <code>i+3</code>.  We get that count by
+looking it up in <code>res</code>!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 xs <span class="pl-k">=</span> pathsToGoal xs <span class="pl-k"><span class="pl-c1">IM.</span>!</span> <span class="pl-c1">0</span>
+  <span class="pl-k">where</span>
+    xs&#39; <span class="pl-k">=</span> <span class="pl-c1">IS.</span>fromList (<span class="pl-c1">0</span> <span class="pl-k">:</span> xs <span class="pl-k">++</span> [<span class="pl-c1">maximum</span> xs <span class="pl-k">+</span> <span class="pl-c1">3</span>])</pre></div>
+<p>A quick note --- after some discussion on the irc, we did <a href="https://www.reddit.com/r/adventofcode/comments/kabi91/2020_day_10_closedform_mathematical_solution/" rel="nofollow">find a closed-form
+solution</a>...I might be editing this to implement it in Haskell
+eventually :)</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-10-benchmarks" id="user-content-day-10-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 10 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 10a
+benchmarking...
+time                 7.446 μs   (6.857 μs .. 8.049 μs)
+                     0.965 R²   (0.953 R² .. 0.980 R²)
+mean                 7.693 μs   (7.232 μs .. 8.045 μs)
+std dev              1.281 μs   (1.111 μs .. 1.404 μs)
+variance introduced by outliers: 95% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 10b
+benchmarking...
+time                 9.980 μs   (9.898 μs .. 10.08 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 10.00 μs   (9.953 μs .. 10.10 μs)
+std dev              216.9 ns   (138.4 ns .. 328.4 ns)
+variance introduced by outliers: 22% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article></body></html>

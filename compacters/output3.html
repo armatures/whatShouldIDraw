@@ -1,0 +1,1175 @@
+<!DOCTYPE html><html><head><title>"advents"</title></head><body>
+<article class="day-desc"><h2>--- Day 16: Ticket Translation ---</h2><p>As you&#39;re walking to yet another connecting flight, you realize that one of the legs of your re-routed trip coming up is on a high-speed train. However, the train ticket you were given is in a language you don&#39;t understand. You should probably figure out what it says before you get to the train station after the next flight.</p>
+<p>Unfortunately, you <span title="This actually happened to me once, but I solved it by just asking someone.">can&#39;t actually <em>read</em> the words on the ticket</span>. You can, however, read the numbers, and so you figure out <em>the fields these tickets must have</em> and <em>the valid ranges</em> for values in those fields.</p>
+<p>You collect the <em>rules for ticket fields</em>, the <em>numbers on your ticket</em>, and the <em>numbers on other nearby tickets</em> for the same train service (via the airport security cameras) together into a single document you can reference (your puzzle input).</p>
+<p>The <em>rules for ticket fields</em> specify a list of fields that exist <em>somewhere</em> on the ticket and the <em>valid ranges of values</em> for each field. For example, a rule like <code>class: 1-3 or 5-7</code> means that one of the fields in every ticket is named <code>class</code> and can be any value in the ranges <code>1-3</code> or <code>5-7</code> (inclusive, such that <code>3</code> and <code>5</code> are both valid in this field, but <code>4</code> is not).</p>
+<p>Each ticket is represented by a single line of comma-separated values. The values are the numbers on the ticket in the order they appear; every ticket has the same format. For example, consider this ticket:</p>
+<pre><code>.--------------------------------------------------------.
+| ????: 101    ?????: 102   ??????????: 103     ???: 104 |
+|                                                        |
+| ??: 301  ??: 302             ???????: 303      ??????? |
+| ??: 401  ??: 402           ???? ????: 403    ????????? |
+&#39;--------------------------------------------------------&#39;
+</code></pre>
+<p>Here, <code>?</code> represents text in a language you don&#39;t understand. This ticket might be represented as <code>101,102,103,104,301,302,303,401,402,403</code>; of course, the actual train tickets you&#39;re looking at are <em>much</em> more complicated. In any case, you&#39;ve extracted just the numbers in such a way that the first number is always the same specific field, the second number is always a different specific field, and so on - you just don&#39;t know what each position actually means!</p>
+<p>Start by determining which tickets are <em>completely invalid</em>; these are tickets that contain values which <em>aren&#39;t valid for any field</em>. Ignore <em>your ticket</em> for now.</p>
+<p>For example, suppose you have the following notes:</p>
+<pre><code>class: 1-3 or 5-7
+row: 6-11 or 33-44
+seat: 13-40 or 45-50
+
+your ticket:
+7,1,14
+
+nearby tickets:
+7,3,47
+40,<em>4</em>,50
+<em>55</em>,2,20
+38,6,<em>12</em>
+</code></pre>
+<p>It doesn&#39;t matter which position corresponds to which field; you can identify invalid <em>nearby tickets</em> by considering only whether tickets contain <em>values that are not valid for any field</em>. In this example, the values on the first <em>nearby ticket</em> are all valid for at least one field. This is not true of the other three <em>nearby tickets</em>: the values <code>4</code>, <code>55</code>, and <code>12</code> are are not valid for any field. Adding together all of the invalid values produces your <em>ticket scanning error rate</em>: <code>4 + 55 + 12</code> = <em><code>71</code></em>.</p>
+<p>Consider the validity of the <em>nearby tickets</em> you scanned. <em>What is your ticket scanning error rate?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-16" id="user-content-day-16"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 16</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em>16</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/16" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day16.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day16.html" rel="nofollow">Rendered</a></em></p>
+<p>Today was a nice little self-contained constraint satisfaction problem!  Well,
+it didn&#39;t have to be (apparently), but it was fun as one :)</p>
+<p>First, our data type:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">type</span> <span class="pl-en">Passport</span> <span class="pl-k">=</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>]
+
+<span class="pl-k">data</span> <span class="pl-en">Info</span> <span class="pl-k">=</span> <span class="pl-ent">Info</span>
+      <span class="pl-k">{</span> <span class="pl-e">iFields</span> <span class="pl-k">::</span> <span class="pl-en">IntervalMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span> (<span class="pl-en">Set</span> <span class="pl-en">Text</span>)
+      , <span class="pl-e">iYours</span>  <span class="pl-k">::</span> <span class="pl-en">Passport</span>
+      , <span class="pl-e">iTheirs</span> <span class="pl-k">::</span> [<span class="pl-en">Passport</span>]
+      <span class="pl-k">}</span></pre></div>
+<p>Here we&#39;re using <code>IntervalMap</code> from the <em><a href="https://hackage.haskell.org/package/data-interval" rel="nofollow">data-interval</a></em> package, which
+makes it easy to store data at different intervals with easy lookups.  For
+example, if we have <code>[&quot;class&quot;]</code> at interval <code>(1,5)</code>, and we had <code>[&quot;row&quot;]</code> at
+interval <code>(3,7)</code>, <code>IntervalMap</code> will merge them together (with <code>&lt;&gt;</code>, if we
+choose) to get <code>[&quot;class&quot;]</code> at <code>(1,3)</code>, <code>[&quot;class&quot;,&quot;row&quot;]</code> at <code>(3,5)</code>, and
+<code>[&quot;row&quot;]</code> at <code>(5,7)</code>.</p>
+<p>If we have this <code>IntervalMap</code>, part 1 becomes straightforward enough with the
+efficient <code>IM.notMember</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.IntervalMap.Lazy</span> <span class="pl-k">as</span> <span class="pl-c1">IM</span>
+
+<span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">Info</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 info <span class="pl-k">=</span> <span class="pl-c1">sum</span>
+    [ n
+    <span class="pl-k">|</span> ns <span class="pl-k">&lt;-</span> iTheirs info
+    , n  <span class="pl-k">&lt;-</span> ns
+    , n <span class="pl-k">`IM.notMember`</span> iFields info
+    ]</pre></div>
+<p>So now let&#39;s move on to the search for part 2!</p>
+<p>Our goal is to get a list <code>[(Int, Set Text)]</code> of a column number (in the
+passport) with the set of all valid field names for that position.  And because
+we are going to be doing a search, we want this list in order of smallest to
+largest valid-name sets.</p>
+<p>First, we can replace the <code>Int</code>s in each passport instead with the set of
+fields they are valid for</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">validate</span> <span class="pl-k">::</span> <span class="pl-en">IntervalMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span> (<span class="pl-en">Set</span> <span class="pl-en">Text</span>) <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> [<span class="pl-en">Set</span> <span class="pl-en">Text</span>]
+validate flds <span class="pl-k">=</span> <span class="pl-c1">traverse</span> (<span class="pl-k">`IM.lookup`</span> flds)
+
+<span class="pl-en">validateAll</span> <span class="pl-k">::</span> <span class="pl-en">IntervalMap</span> <span class="pl-en"><span class="pl-c1">Int</span></span> (<span class="pl-en">Set</span> <span class="pl-en">Text</span>) <span class="pl-k">-&gt;</span> [<span class="pl-en">Passport</span>] <span class="pl-k">-&gt;</span> [[<span class="pl-en">Set</span> <span class="pl-en">Text</span>]]
+validateAll flds <span class="pl-k">=</span> mapMaybe (validate flds)</pre></div>
+<p>Here <code>(`IM.lookup` flds)</code> is <code>Int -&gt; Set Text</code>: it&#39;ll look up the <code>Set Text</code>
+corresponding to the interval that the <code>Int</code> falls under in the <code>IntervalMap</code>.
+It&#39;ll return <code>Nothing</code> if <em>any</em> of the <code>Int</code>s are invalid, and <code>Just</code> if <em>all</em>
+of the <code>Int</code>s are valid.</p>
+<p>Next we want to build our <code>[(Int, Set Text)]</code>.  The <code>Set Text</code> is a set of what
+is valid for that column number, so to get the <code>Set Text</code> for <code>0</code>, for
+instance, we need to <code>S.intersection</code> all of the first <code>Set Text</code>s in our list,;
+to get the <code>Set Text</code> for <code>1</code>, we need to <code>S.intersection</code> all of the second
+<code>Set Text</code>s in our lists, etc.  This can be done succinctly with a <code>transpose</code>
+(<code>transpose [[1,2,3],[4,5,6]] == [[1,4],[2,5],[3,6]]</code>).  Then we can use
+<code>sortOn</code> to sort by the size of the valids set.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">columnSets</span> <span class="pl-k">::</span> [[<span class="pl-en">Set</span> <span class="pl-en">Text</span>]] <span class="pl-k">-&gt;</span> [(<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en">Set</span> <span class="pl-en">Text</span>)]
+columnSets <span class="pl-k">=</span> sortOn (<span class="pl-c1">S.</span>size <span class="pl-k">.</span> <span class="pl-c1">snd</span>)
+           <span class="pl-k">.</span> <span class="pl-c1">zip</span> [<span class="pl-c1">0</span><span class="pl-k">..</span>]
+           <span class="pl-k">.</span> <span class="pl-c1">map</span> (foldl1&#39; <span class="pl-c1">S.</span>intersection)
+           <span class="pl-k">.</span> transpose</pre></div>
+<p>Now we&#39;re ready for our search!  We&#39;ll be using <code>StateT</code> over list, to get a
+backtracking search with backtracking state (I described this technique in <a href="https://blog.jle.im/entry/unique-sample-drawing-searches-with-list-and-statet.html" rel="nofollow">a
+constraint solving blog
+post</a>).
+Our state will be the <code>Set Text</code> of all the &quot;committed&quot; fields so far.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">search</span> <span class="pl-k">::</span> [(<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en">Set</span> <span class="pl-en">Text</span>)] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> [(<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en">Text</span>)]
+search candidateMap <span class="pl-k">=</span> listToMaybe <span class="pl-k">.</span> <span class="pl-c1">flip</span> evalStateT <span class="pl-c1">S.</span>empty <span class="pl-k">$</span> <span class="pl-k">do</span>
+    for candidates <span class="pl-k">$</span> <span class="pl-k">\</span>(i, cands) <span class="pl-k">-&gt;</span> <span class="pl-k">do</span>              <span class="pl-c"><span class="pl-c">--</span> for each (Int, Set Text):</span>
+      soFar <span class="pl-k">&lt;-</span> get                                  <span class="pl-c"><span class="pl-c">--</span> get the seen candidates</span>
+      pick  <span class="pl-k">&lt;-</span> lift <span class="pl-k">.</span> toList <span class="pl-k">$</span> cands <span class="pl-k"><span class="pl-c1">S.</span>\\</span> soFar     <span class="pl-c"><span class="pl-c">--</span> pick from the Set Text not including seens</span>
+      (i, pick) <span class="pl-k">&lt;$</span> modify (<span class="pl-c1">S.</span>insert pick)           <span class="pl-c"><span class="pl-c">--</span> propose this index/pick, inserting into seens</span></pre></div>
+<p>And that should be it for our search!  In the end this gets the first <code>[(Int, Text)]</code> that is valid, matching a column ID to the field at that column.  Our
+search supports backtracking through the list monad, but it should be noted
+that we actually don&#39;t end up needing it for the way the puzzle input is
+structured.  But, because we sort our lists first from smallest to largest
+valid-sets, our solution ends up being equivalent to the non-backtracking
+method and backtracking is never actually triggered.</p>
+<p>And we can wrap it all up:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">Info</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">product</span>
+    [ iYours info <span class="pl-k">!!</span> i
+    <span class="pl-k">|</span> (i, fld) <span class="pl-k">&lt;-</span> res
+    , <span class="pl-s"><span class="pl-pds">&quot;</span>departure<span class="pl-pds">&quot;</span></span> <span class="pl-k">`isPrefixOf`</span> fld
+    ]
+  <span class="pl-k">where</span>
+    cSets    <span class="pl-k">=</span> columnSets <span class="pl-k">$</span> validateAll (iFields info) (iTheirs info)
+    <span class="pl-ent">Just</span> res <span class="pl-k">=</span> search cSets</pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-16-benchmarks" id="user-content-day-16-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 16 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 16a
+benchmarking...
+time                 821.6 μs   (817.5 μs .. 826.3 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 813.7 μs   (806.6 μs .. 821.2 μs)
+std dev              22.69 μs   (16.70 μs .. 29.36 μs)
+variance introduced by outliers: 18% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 16b
+benchmarking...
+time                 886.2 μs   (875.7 μs .. 905.0 μs)
+                     0.997 R²   (0.992 R² .. 1.000 R²)
+mean                 894.0 μs   (887.9 μs .. 906.7 μs)
+std dev              30.87 μs   (19.73 μs .. 54.15 μs)
+variance introduced by outliers: 25% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 17: Conway Cubes ---</h2><p>As your flight slowly drifts through the sky, the Elves at the Mythical Information Bureau at the North Pole contact you. They&#39;d like some help debugging a malfunctioning experimental energy source aboard one of their super-secret imaging satellites.</p>
+<p>The experimental energy source is based on cutting-edge technology: a set of <span title="Rest in peace, Conway.">Conway</span> Cubes contained in a pocket dimension! When you hear it&#39;s having problems, you can&#39;t help but agree to take a look.</p>
+<p>The pocket dimension contains an infinite 3-dimensional grid. At every integer 3-dimensional coordinate (<code>x,y,z</code>), there exists a single cube which is either <em>active</em> or <em>inactive</em>.</p>
+<p>In the initial state of the pocket dimension, almost all cubes start <em>inactive</em>. The only exception to this is a small flat region of cubes (your puzzle input); the cubes in this region start in the specified <em>active</em> (<code>#</code>) or <em>inactive</em> (<code>.</code>) state.</p>
+<p>The energy source then proceeds to boot up by executing six <em>cycles</em>.</p>
+<p>Each cube only ever considers its <em>neighbors</em>: any of the 26 other cubes where any of their coordinates differ by at most <code>1</code>. For example, given the cube at <code>x=1,y=2,z=3</code>, its neighbors include the cube at <code>x=2,y=2,z=2</code>, the cube at <code>x=0,y=2,z=3</code>, and so on.</p>
+<p>During a cycle, <em>all</em> cubes <em>simultaneously</em> change their state according to the following rules:</p>
+<ul>
+<li>If a cube is <em>active</em> and <em>exactly <code>2</code> or <code>3</code></em> of its neighbors are also active, the cube remains <em>active</em>. Otherwise, the cube becomes <em>inactive</em>.</li>
+<li>If a cube is <em>inactive</em> but <em>exactly <code>3</code></em> of its neighbors are active, the cube becomes <em>active</em>. Otherwise, the cube remains <em>inactive</em>.</li>
+</ul>
+<p>The engineers responsible for this experimental energy source would like you to simulate the pocket dimension and determine what the configuration of cubes should be at the end of the six-cycle boot process.</p>
+<p>For example, consider the following initial state:</p>
+<pre><code>.#.
+..#
+###
+</code></pre>
+<p>Even though the pocket dimension is 3-dimensional, this initial state represents a small 2-dimensional slice of it. (In particular, this initial state defines a 3x3x1 region of the 3-dimensional space.)</p>
+<p>Simulating a few cycles from this initial state produces the following configurations, where the result of each cycle is shown layer-by-layer at each given <code>z</code> coordinate (and the frame of view follows the active cells in each cycle):</p>
+<pre><code>Before any cycles:
+
+z=0
+.#.
+..#
+###
+
+
+After 1 cycle:
+
+z=-1
+#..
+..#
+.#.
+
+z=0
+#.#
+.##
+.#.
+
+z=1
+#..
+..#
+.#.
+
+
+After 2 cycles:
+
+z=-2
+.....
+.....
+..#..
+.....
+.....
+
+z=-1
+..#..
+.#..#
+....#
+.#...
+.....
+
+z=0
+##...
+##...
+#....
+....#
+.###.
+
+z=1
+..#..
+.#..#
+....#
+.#...
+.....
+
+z=2
+.....
+.....
+..#..
+.....
+.....
+
+
+After 3 cycles:
+
+z=-2
+.......
+.......
+..##...
+..###..
+.......
+.......
+.......
+
+z=-1
+..#....
+...#...
+#......
+.....##
+.#...#.
+..#.#..
+...#...
+
+z=0
+...#...
+.......
+#......
+.......
+.....##
+.##.#..
+...#...
+
+z=1
+..#....
+...#...
+#......
+.....##
+.#...#.
+..#.#..
+...#...
+
+z=2
+.......
+.......
+..##...
+..###..
+.......
+.......
+.......
+</code></pre>
+<p>After the full six-cycle boot process completes, <em><code>112</code></em> cubes are left in the <em>active</em> state.</p>
+<p>Starting with your given initial configuration, simulate six cycles. <em>How many cubes are left in the active state after the sixth cycle?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-17" id="user-content-day-17"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 17</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em>17</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/17" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day17.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day17.html" rel="nofollow">Rendered</a></em></p>
+<p>Neat, Game of Life! :D  Actually, the 3D/4D twist does make a big impact for
+the best method we&#39;d pick: we run into the <a href="https://en.wikipedia.org/wiki/Curse_of_dimensionality" rel="nofollow">curse of
+dimensionality</a>.  It
+means that when we get to 3D and 4D, our world will become vanishingly sparse.
+In my own input, only about 4% of the 3D space ended up being active, and 2% of
+my 4D space ends up being active.  This means that holding a dense vector of
+all possible active points (which will be <code>(6+8+6)^n</code>) is up to 98% wasteful.
+And because of the way this process works, we have to completely copy our
+entire space at every iteration.</p>
+<p>In these times, I&#39;m happy that Haskell has a nice immutable sparse
+data structure like <code>Set</code>.  Sparse being beneficial in that we can easily look up and process
+only the 2% of active squares, and immutable being beneficial in that each step
+already requires a full copy in any case, so immutability doesn&#39;t give us any
+drawback.</p>
+<p>First a function to get all neighbors of a point, using the <code>V3</code> type from the
+<em><a href="https://hackage.haskell.org/package/linear" rel="nofollow">linear</a></em> library, which I&#39;ve used
+many times already for its convenient <code>Num</code> and <code>Applicative</code> instances:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Data.Set</span> (<span class="pl-en">Set</span>)
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.Set</span> <span class="pl-k">as</span> <span class="pl-c1">S</span>
+
+<span class="pl-c"><span class="pl-c">--</span> from linear</span>
+<span class="pl-k">data</span> <span class="pl-en">V3</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">V3</span> <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">a</span>
+<span class="pl-c"><span class="pl-c">--</span> its Applicative instance</span>
+<span class="pl-c1">pure</span> x <span class="pl-k">=</span> <span class="pl-ent">V3</span> x x x
+
+<span class="pl-en">neighbsSet</span> <span class="pl-k">::</span> <span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+neighbsSet p <span class="pl-k">=</span> <span class="pl-c1">S.</span>fromList
+    [ p <span class="pl-k">+</span> d
+    <span class="pl-k">|</span> d <span class="pl-k">&lt;-</span> <span class="pl-c1">sequence</span> (<span class="pl-c1">pure</span> [<span class="pl-k">-</span><span class="pl-c1">1</span>,<span class="pl-c1">0</span>,<span class="pl-c1">1</span>])
+    , d <span class="pl-k">/=</span> <span class="pl-c1">pure</span> <span class="pl-c1">0</span>
+    ]</pre></div>
+<p>Just as a reminder, <code>pure [0,1]</code> for <code>V3 Int</code> gives us <code>V3 [0,1] [0,1] [0,1]</code>,
+and if we <code>sequence</code> that we get a cartesian N-product of all combinations <code>[V3 0 0, V3 0 0 1, V3 0 1 0, V3 0 1 1, V3 1 0 0, .. etc.]</code>.  We add each of those
+to <code>p</code>, except for the one that is <code>V3 0 0 0</code>.</p>
+<p>Now we can write our stepper, which takes a <code>Set (V3 Int)</code> and returns the next
+<code>Set (V3 Int)</code> after applying the rules.  We can do that first by making a <code>Map (V3 Int) Int</code>, where <code>Int</code> is the number of neighbors at a given point.  This
+can be done by &quot;exploding&quot; every <code>V3 Int</code> in our set to a <code>Map (V3 Int) Int</code>,
+a map of all its neighbors keyed to values 1, and then using <code>M.unionsWith (+)</code>
+to union together all of those exploded neighbors, adding any overlapping keys.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span>           <span class="pl-c1">Data.Map</span> (<span class="pl-en">Map</span>)
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.Map</span> <span class="pl-k">as</span> <span class="pl-c1">M</span>
+
+<span class="pl-en">neighborMap</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-en"><span class="pl-c1">Int</span></span>
+neighborMap ps <span class="pl-k">=</span> <span class="pl-c1">M.</span>unionsWith <span class="pl-en">(+)</span>
+    [ <span class="pl-c1">M.</span>fromSet (<span class="pl-c1">const</span> <span class="pl-c1">1</span>) (neighbsSet p)
+    <span class="pl-k">|</span> p <span class="pl-k">&lt;-</span> <span class="pl-c1">S.</span>toList ps
+    ]</pre></div>
+<p>Now to implement the rules:</p>
+<div class="highlight highlight-source-haskell"><pre>stepper
+    <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+stepper ps <span class="pl-k">=</span> stayAlive <span class="pl-k">&lt;&gt;</span> comeAlive
+  <span class="pl-k">where</span>
+    neighborCounts <span class="pl-k">=</span> neighborMap ps
+    stayAlive <span class="pl-k">=</span> <span class="pl-c1">M.</span>keysSet <span class="pl-k">.</span> <span class="pl-c1">M.</span><span class="pl-c1">filter</span> (<span class="pl-k">\</span>n <span class="pl-k">-&gt;</span> n <span class="pl-k">==</span> <span class="pl-c1">2</span> <span class="pl-k">||</span> n <span class="pl-k">==</span> <span class="pl-c1">3</span>) <span class="pl-k">$</span>
+                  neighborCounts <span class="pl-k">`M.restrictKeys`</span> ps
+    comeAlive <span class="pl-k">=</span> <span class="pl-c1">M.</span>keysSet <span class="pl-k">.</span> <span class="pl-c1">M.</span><span class="pl-c1">filter</span> (<span class="pl-k">==</span> <span class="pl-c1">3</span>) <span class="pl-k">$</span>
+                  neighborCounts <span class="pl-k">`M.withoutKeys`</span>  ps</pre></div>
+<p><code>stayAlive</code> is all of the <code>neighborCounts</code> keys that correspond to already-alive
+points (<code>neighborCounts `M.restrictKeys` ps</code>), but filtered to the counts
+that are 2 or 3.  <code>comeAlive</code> is all of the <code>neighborCounts</code> keys that
+correspond to dead points (<code>neighborCounts `M.withoutKeys` ps</code>), but filtered
+to only counts that are exactly 3.  And our result is the set union of both of
+those.</p>
+<p>So our part 1 becomes:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> <span class="pl-c1">S.</span>size <span class="pl-k">.</span> (<span class="pl-k">!!</span> <span class="pl-c1">6</span>) <span class="pl-k">.</span> <span class="pl-c1">iterate</span> stepper</pre></div>
+<p>And for part 2...notice that all of our code actually never does anything
+<em>specific</em> to <code>V3</code>!  In fact, if we leave the type signatures of <code>neighbsSet</code>
+and <code>neighborMap</code> and <code>stepper</code> off, GHC will actually suggest more general
+type signatures for us.</p>
+<div class="highlight highlight-source-haskell"><pre>neighbsSet
+    <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-e">Applicative</span></span> <span class="pl-smi">f</span>, <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span>, <span class="pl-en"><span class="pl-e">Ord</span></span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>), <span class="pl-en"><span class="pl-e">Traversable</span></span> <span class="pl-smi">f</span>)
+    <span class="pl-k">=&gt;</span> <span class="pl-smi">f</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>)
+
+neighborMap
+    <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-e">Applicative</span></span> <span class="pl-smi">f</span>, <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span>, <span class="pl-en"><span class="pl-e">Ord</span></span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>), <span class="pl-en"><span class="pl-e">Traversable</span></span> <span class="pl-smi">f</span>)
+    <span class="pl-k">=&gt;</span> <span class="pl-en">Set</span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>)
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>) <span class="pl-en"><span class="pl-c1">Int</span></span>
+
+stepper
+    <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-e">Applicative</span></span> <span class="pl-smi">f</span>, <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span>, <span class="pl-en"><span class="pl-e">Ord</span></span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>), <span class="pl-en"><span class="pl-e">Traversable</span></span> <span class="pl-smi">f</span>)
+    <span class="pl-k">=&gt;</span> <span class="pl-en">Set</span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>)
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-smi">f</span> <span class="pl-smi">a</span>)</pre></div>
+<p>Neat!  This means that our code <em>already works</em> for any other fixed-sized
+<code>Vector</code> type with a <code>Num</code> instance.  Like, say...<code>V4</code>, also from <em>linear</em>?</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> also from the Linear library, with all the same instances</span>
+<span class="pl-k">data</span> <span class="pl-en">V4</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">V4</span> <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">a</span> <span class="pl-smi">a</span>
+
+<span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en">V3</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> <span class="pl-c1">S.</span>size <span class="pl-k">.</span> (<span class="pl-k">!!</span> <span class="pl-c1">6</span>) <span class="pl-k">.</span> <span class="pl-c1">iterate</span> stepper
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en">V4</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">S.</span>size <span class="pl-k">.</span> (<span class="pl-k">!!</span> <span class="pl-c1">6</span>) <span class="pl-k">.</span> <span class="pl-c1">iterate</span> stepper</pre></div>
+<p>And that&#39;s it --- code that should work for both parts :)</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-17-benchmarks" id="user-content-day-17-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 17 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 17a
+benchmarking...
+time                 4.025 ms   (3.914 ms .. 4.168 ms)
+                     0.989 R²   (0.976 R² .. 0.996 R²)
+mean                 4.028 ms   (3.934 ms .. 4.153 ms)
+std dev              338.7 μs   (256.8 μs .. 461.4 μs)
+variance introduced by outliers: 54% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 17b
+benchmarking...
+time                 18.76 ms   (17.61 ms .. 20.33 ms)
+                     0.968 R²   (0.936 R² .. 0.991 R²)
+mean                 19.49 ms   (18.95 ms .. 20.16 ms)
+std dev              1.440 ms   (1.108 ms .. 2.085 ms)
+variance introduced by outliers: 31% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 18: Operation Order ---</h2><p>As you look out the window and notice a heavily-forested continent slowly appear over the horizon, you are interrupted by the child sitting next to you. They&#39;re curious if you could help them with their <span title="Or &quot;maths&quot;, if you have more than one.">math</span> homework.</p>
+<p>Unfortunately, it seems like this &quot;math&quot; <a href="https://www.youtube.com/watch?v=3QtRK7Y2pPU&amp;t=15" target="_blank">follows different rules</a> than you remember.</p>
+<p>The homework (your puzzle input) consists of a series of expressions that consist of addition (<code>+</code>), multiplication (<code>*</code>), and parentheses (<code>(...)</code>). Just like normal math, parentheses indicate that the expression inside must be evaluated before it can be used by the surrounding expression. Addition still finds the sum of the numbers on both sides of the operator, and multiplication still finds the product.</p>
+<p>However, the rules of <em>operator precedence</em> have changed. Rather than evaluating multiplication before addition, the operators have the <em>same precedence</em>, and are evaluated left-to-right regardless of the order in which they appear.</p>
+<p>For example, the steps to evaluate the expression <code>1 + 2 * 3 + 4 * 5 + 6</code> are as follows:</p>
+<pre><code><em>1 + 2</em> * 3 + 4 * 5 + 6
+  <em>3   * 3</em> + 4 * 5 + 6
+      <em>9   + 4</em> * 5 + 6
+         <em>13   * 5</em> + 6
+             <em>65   + 6</em>
+                 <em>71</em>
+</code></pre>
+<p>Parentheses can override this order; for example, here is what happens if parentheses are added to form <code>1 + (2 * 3) + (4 * (5 + 6))</code>:</p>
+<pre><code>1 + <em>(2 * 3)</em> + (4 * (5 + 6))
+<em>1 +    6</em>    + (4 * (5 + 6))
+     7      + (4 * <em>(5 + 6)</em>)
+     7      + <em>(4 *   11   )</em>
+     <em>7      +     44</em>
+            <em>51</em>
+</code></pre>
+<p>Here are a few more examples:</p>
+<ul>
+<li><code>2 * 3 + (4 * 5)</code> becomes <em><code>26</code></em>.</li>
+<li><code>5 + (8 * 3 + 9 + 3 * 4 * 3)</code> becomes <em><code>437</code></em>.</li>
+<li><code>5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))</code> becomes <em><code>12240</code></em>.</li>
+<li><code>((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2</code> becomes <em><code>13632</code></em>.</li>
+</ul>
+<p>Before you can help with the homework, you need to understand it yourself. <em>Evaluate the expression on each line of the homework; what is the sum of the resulting values?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-18" id="user-content-day-18"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 18</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em>18</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/18" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day18.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day18.html" rel="nofollow">Rendered</a></em></p>
+<p>Let&#39;s parse with parser combinators!</p>
+<p>The main way I have learned how to deal with these binary-operation parsers is
+to separate out the stages into a &quot;bottom&quot; level containing only the leaves
+(here, the int literals) and parentheses, and then build up layers of
+precedence one-by-one from highest to lowest.  For the first part we only have
+two layers, then, since we only have one level of precedence.</p>
+<div class="highlight highlight-source-haskell"><pre>{-# <span class="pl-k">LANGUAGE</span> OverloadedStrings #-}
+
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Text.Megaparsec</span>            <span class="pl-k">as</span> <span class="pl-c1">P</span>
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Text.Megaparsec.Char</span>       <span class="pl-k">as</span> <span class="pl-c1">P</span>
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Text.Megaparsec.Char.Lexer</span> <span class="pl-k">as</span> <span class="pl-c1">PP</span>
+
+<span class="pl-k">type</span> <span class="pl-en">Parser</span> <span class="pl-k">=</span> <span class="pl-en"><span class="pl-c1">P.</span>Parsec</span> <span class="pl-en">Void</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+
+<span class="pl-en">parseBottom1</span> <span class="pl-k">::</span> <span class="pl-en">Parser</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+parseBottom1 <span class="pl-k">=</span> <span class="pl-c1">P.</span>choice
+    [ <span class="pl-c1">PP.</span>decimal
+    , <span class="pl-c1">P.</span>between <span class="pl-s"><span class="pl-pds">&quot;</span>(<span class="pl-pds">&quot;</span></span> <span class="pl-s"><span class="pl-pds">&quot;</span>)<span class="pl-pds">&quot;</span></span> parseTop1  <span class="pl-c"><span class="pl-c">--</span> use -XOverloadedStrings to get parsers that match strings</span>
+    ]
+
+<span class="pl-en">parseTop1</span> <span class="pl-k">::</span> <span class="pl-en">Parser</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+parseTop1 <span class="pl-k">=</span> <span class="pl-k">do</span>
+    leftOfOp <span class="pl-k">&lt;-</span> parseBottom1   <span class="pl-c"><span class="pl-c">--</span> parse the left hand side of a possible binary operator</span>
+    doNext acc
+  <span class="pl-k">where</span>
+    doNext acc <span class="pl-k">=</span> <span class="pl-c1">P.</span>choice          <span class="pl-c"><span class="pl-c">--</span> once we parse a left hand side, pick from:</span>
+      [ <span class="pl-k">do</span> <span class="pl-s"><span class="pl-pds">&quot;</span> * <span class="pl-pds">&quot;</span></span>                        <span class="pl-c"><span class="pl-c">--</span> either it&#39;s a *</span>
+           rightOfOp <span class="pl-k">&lt;-</span> parseBottom1    <span class="pl-c"><span class="pl-c">--</span>   ... so we parse the right hand side and multiply</span>
+           doNext (acc <span class="pl-k">*</span> rightOfOp)
+      , <span class="pl-k">do</span> <span class="pl-s"><span class="pl-pds">&quot;</span> + <span class="pl-pds">&quot;</span></span>                        <span class="pl-c"><span class="pl-c">--</span> or it&#39;s a +</span>
+           rightOfOp <span class="pl-k">&lt;-</span> parseBottom1    <span class="pl-c"><span class="pl-c">--</span>   ... so we parse the right hand side and add</span>
+           doNext (acc <span class="pl-k">+</span> rightOfOp)
+      , <span class="pl-c1">pure</span> acc                        <span class="pl-c"><span class="pl-c">--</span> otherwise that was it, no operator</span>
+      ]</pre></div>
+<p>Remember that <code>leftOfOp</code> could either come from a leaf literal number or from a
+parenthesized equation.  In the end, we get an <code>Int</code>, representing whatever
+number was on the left hand side of our operator.  Then we move into <code>doNext</code>,
+which continually accumulates new operations after that first <code>leftOfOp</code> parse.</p>
+<p>If we see a <code>*</code>, we parse the right hand side, fold that into our accumulator
+and repeat until we hit a dead end and yield our accumulated value; same for
+<code>+</code>.</p>
+<p>So there&#39;s this sort of &quot;cycle&quot; that <code>parseTop</code> defers to <code>parseBottom</code> for its
+underlying things &quot;in between&quot; the operators, but <code>parseBottom</code> loops back up
+to <code>parseTop</code> to handle what is in the parentheses.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> <span class="pl-c1">P.</span>parseMaybe <span class="pl-k">$</span>
+          <span class="pl-c1">sum</span> <span class="pl-k">&lt;$&gt;</span> <span class="pl-c1">P.</span>many parseTop1</pre></div>
+<p>The twist for part 2 is that now we have to have another layer of precedence,
+so we split things out:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">parseBottom2</span> <span class="pl-k">::</span> <span class="pl-en">Parser</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+parseBottom2 <span class="pl-k">=</span> <span class="pl-c1">P.</span>choice
+    [ <span class="pl-c1">PP.</span>decimal
+    , <span class="pl-c1">P.</span>between <span class="pl-s"><span class="pl-pds">&quot;</span>(<span class="pl-pds">&quot;</span></span> <span class="pl-s"><span class="pl-pds">&quot;</span>)<span class="pl-pds">&quot;</span></span> parseTop2
+    ]
+
+<span class="pl-en">parseMiddle2</span> <span class="pl-k">::</span> <span class="pl-en">Parser</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+parseMiddle2 <span class="pl-k">=</span> <span class="pl-k">do</span>
+    leftOfOp <span class="pl-k">&lt;-</span> parseBottom2
+    doNext leftOfOp
+  <span class="pl-k">where</span>
+    doNext acc <span class="pl-k">=</span> <span class="pl-c1">P.</span>choice
+      [ <span class="pl-k">do</span> <span class="pl-s"><span class="pl-pds">&quot;</span> + <span class="pl-pds">&quot;</span></span>
+           rightOfOp <span class="pl-k">&lt;-</span> parseBottom2
+           doNext (acc <span class="pl-k">+</span> rightOfOp)
+      , <span class="pl-c1">pure</span> acc
+      ]
+
+<span class="pl-en">parseTop2</span> <span class="pl-k">::</span> <span class="pl-en">Parser</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+parseTop2 <span class="pl-k">=</span> <span class="pl-k">do</span>
+    leftOfOp <span class="pl-k">&lt;-</span> parseMiddle2
+    doNext leftOfOp
+  <span class="pl-k">where</span>
+    doNext acc <span class="pl-k">=</span> <span class="pl-c1">P.</span>choice
+      [ <span class="pl-k">do</span> <span class="pl-s"><span class="pl-pds">&quot;</span> * <span class="pl-pds">&quot;</span></span>
+           rightOfOp <span class="pl-k">&lt;-</span> parseMiddle2
+           doNext (acc <span class="pl-k">*</span> rightOfOp)
+      , <span class="pl-c1">pure</span> acc
+      ]</pre></div>
+<p>So the parser dependency again is kind of interesting: <code>parseTop2</code> is built up
+of chained <code>parseMiddle2</code>s, which is built up of chained <code>parseBottom2</code>, which
+could loop back up with <code>parseTop2</code> if detect parentheses.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">P.</span>parseMaybe <span class="pl-k">$</span>
+          <span class="pl-c1">sum</span> <span class="pl-k">&lt;$&gt;</span> (parseTop2 <span class="pl-k">`P.sepBy`</span> <span class="pl-c1">P.</span>newline)</pre></div>
+<p>Note that this chaining and looping behavior can be abstracted out --- that&#39;s
+essentially what I wrote in my <a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day18.hs">cleaned up solution</a>.  But also the
+<em><a href="https://hackage.haskell.org/package/parser-combinators-1.2.1/docs/Control-Monad-Combinators-Expr.html" rel="nofollow">Control.Monad.Combinators.Expr</a></em>
+module also abstracts over this pattern, letting you specify the &quot;layers&quot; you
+want, and it&#39;ll generate the right parser for you with the correct weaving of
+dependencies like I described here.  But still, I think it&#39;s fun to see how
+these things end up looking like under the hood :)</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-18-benchmarks" id="user-content-day-18-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 18 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 18a
+benchmarking...
+time                 2.628 ms   (2.442 ms .. 2.867 ms)
+                     0.968 R²   (0.952 R² .. 0.992 R²)
+mean                 2.573 ms   (2.485 ms .. 2.671 ms)
+std dev              315.6 μs   (188.3 μs .. 456.3 μs)
+variance introduced by outliers: 76% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 18b
+benchmarking...
+time                 2.166 ms   (2.081 ms .. 2.247 ms)
+                     0.987 R²   (0.980 R² .. 0.993 R²)
+mean                 2.166 ms   (2.106 ms .. 2.224 ms)
+std dev              203.9 μs   (155.9 μs .. 269.6 μs)
+variance introduced by outliers: 65% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 19: Monster Messages ---</h2><p>You land in an airport surrounded by dense forest. As you walk to your high-speed train, the Elves at the <span title="This is a purely fictional organization. Any resemblance to actual organizations, past or present, is purely coincidental.">Mythical Information Bureau</span> contact you again. They think their satellite has collected an image of a <em>sea monster</em>! Unfortunately, the connection to the satellite is having problems, and many of the messages sent back from the satellite have been corrupted.</p>
+<p>They sent you a list of <em>the rules valid messages should obey</em> and a list of <em>received messages</em> they&#39;ve collected so far (your puzzle input).</p>
+<p>The <em>rules for valid messages</em> (the top part of your puzzle input) are numbered and build upon each other. For example:</p>
+<pre><code>0: 1 2
+1: &quot;a&quot;
+2: 1 3 | 3 1
+3: &quot;b&quot;
+</code></pre>
+<p>Some rules, like <code>3: &quot;b&quot;</code>, simply match a single character (in this case, <code>b</code>).</p>
+<p>The remaining rules list the sub-rules that must be followed; for example, the rule <code>0: 1 2</code> means that to match rule <code>0</code>, the text being checked must match rule <code>1</code>, and the text after the part that matched rule <code>1</code> must then match rule <code>2</code>.</p>
+<p>Some of the rules have multiple lists of sub-rules separated by a pipe (<code>|</code>). This means that <em>at least one</em> list of sub-rules must match. (The ones that match might be different each time the rule is encountered.) For example, the rule <code>2: 1 3 | 3 1</code> means that to match rule <code>2</code>, the text being checked must match rule <code>1</code> followed by rule <code>3</code> <em>or</em> it must match rule <code>3</code> followed by rule <code>1</code>.</p>
+<p>Fortunately, there are no loops in the rules, so the list of possible matches will be finite. Since rule <code>1</code> matches <code>a</code> and rule <code>3</code> matches <code>b</code>, rule <code>2</code> matches either <code>ab</code> or <code>ba</code>. Therefore, rule <code>0</code> matches <code>aab</code> or <code>aba</code>.</p>
+<p>Here&#39;s a more interesting example:</p>
+<pre><code>0: 4 1 5
+1: 2 3 | 3 2
+2: 4 4 | 5 5
+3: 4 5 | 5 4
+4: &quot;a&quot;
+5: &quot;b&quot;
+</code></pre>
+<p>Here, because rule <code>4</code> matches <code>a</code> and rule <code>5</code> matches <code>b</code>, rule <code>2</code> matches two letters that are the same (<code>aa</code> or <code>bb</code>), and rule <code>3</code> matches two letters that are different (<code>ab</code> or <code>ba</code>).</p>
+<p>Since rule <code>1</code> matches rules <code>2</code> and <code>3</code> once each in either order, it must match two pairs of letters, one pair with matching letters and one pair with different letters. This leaves eight possibilities: <code>aaab</code>, <code>aaba</code>, <code>bbab</code>, <code>bbba</code>, <code>abaa</code>, <code>abbb</code>, <code>baaa</code>, or <code>babb</code>.</p>
+<p>Rule <code>0</code>, therefore, matches <code>a</code> (rule <code>4</code>), then any of the eight options from rule <code>1</code>, then <code>b</code> (rule <code>5</code>): <code>aaaabb</code>, <code>aaabab</code>, <code>abbabb</code>, <code>abbbab</code>, <code>aabaab</code>, <code>aabbbb</code>, <code>abaaab</code>, or <code>ababbb</code>.</p>
+<p>The <em>received messages</em> (the bottom part of your puzzle input) need to be checked against the rules so you can determine which are valid and which are corrupted. Including the rules and the messages together, this might look like:</p>
+<pre><code>0: 4 1 5
+1: 2 3 | 3 2
+2: 4 4 | 5 5
+3: 4 5 | 5 4
+4: &quot;a&quot;
+5: &quot;b&quot;
+
+ababbb
+bababa
+abbbab
+aaabbb
+aaaabbb
+</code></pre>
+<p>Your goal is to determine <em>the number of messages that completely match rule <code>0</code></em>. In the above example, <code>ababbb</code> and <code>abbbab</code> match, but <code>bababa</code>, <code>aaabbb</code>, and <code>aaaabbb</code> do not, producing the answer <em><code>2</code></em>. The whole message must match all of rule <code>0</code>; there can&#39;t be extra unmatched characters in the message. (For example, <code>aaaabbb</code> might appear to match rule <code>0</code> above, but it has an extra unmatched <code>b</code> on the end.)</p>
+<p><em>How many messages completely match rule <code>0</code>?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-19" id="user-content-day-19"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 19</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em>19</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/19" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day19.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day19.html" rel="nofollow">Rendered</a></em></p>
+<p>I had originally solved this puzzle using recursive knot tying and a funky
+custom Monad --- the writeup for that is <a href="https://github.com/mstksg/advent-of-code-2020/blob/5065aad720f6996386e9c94fbd7904a6fa9f2d9d/reflections-out/day19.md">available online
+here</a>.
+But after some thought and reflection, I saw that things might be a little
+cleaner as a hylomorphism from
+<em><a href="https://hackage.haskell.org/package/recursion-schemes" rel="nofollow">recursion-schemes</a></em>,
+so I did a rewrite based on it!  It also ended up being about 25% faster to
+run, which was a nice bonus.  Note that I do have a <a href="/mstksg/advent-of-code-2020/blob/master/reflections-out">blog post on hylomorphisms
+and recurion schemes</a>
+(<a href="https://blog.jle.im/entry/tries-with-recursion-schemes.html" rel="nofollow">https://blog.jle.im/entry/tries-with-recursion-schemes.html</a>), if you&#39;d like to
+investigate more about the topic :)</p>
+<p>The central type (&quot;base functor&quot;) is <code>Rule</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Rule</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">Simple</span> <span class="pl-en"><span class="pl-c1">Char</span></span>
+            | <span class="pl-ent">Compound</span> [[<span class="pl-smi">a</span>]]
+  <span class="pl-k">deriving</span> (<span class="pl-e">Show</span>, <span class="pl-e">Eq</span>, <span class="pl-e">Ord</span>, <span class="pl-e">Generic</span>, <span class="pl-e">Functor</span>)</pre></div>
+<p>A <code>Rule a</code> is either a &quot;base&quot; <code>Char</code> match, or it is a list of options of sequences
+(a list of &quot;or&quot;&#39;s of &quot;and then&quot;&#39;s) of <code>a</code>.  The choice of <code>a</code> gives us
+our interesting behavior.</p>
+<p>For example, our initial ruleset from the input file is a list of <code>Rule Int</code>s:
+either they are a simple <code>Char</code>, or they contain a list of options of sequences
+of rule id&#39;s (<code>Int</code>).  We can load it all as an <code>IntMap (Rule Int)</code>, where each
+<code>Rule Int</code> is stored under its rule ID.</p>
+<p>Just to help us get an intuition for this type, let&#39;s look at what happens if
+we want to &quot;expand&quot; out a rule all the way to only leaves at the end of a bunch
+of nested choices and sequences.  This isn&#39;t required for the solve, but could
+be pretty fun.</p>
+<p>For that, we can use the <code>Fix</code> data type:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">newtype</span> <span class="pl-en">Fix</span> <span class="pl-smi">f</span> <span class="pl-k">=</span> <span class="pl-ent">Fix</span> (<span class="pl-smi">f</span> (<span class="pl-en">Fix</span> <span class="pl-smi">f</span>))
+
+<span class="pl-k">type</span> <span class="pl-en">ExpandedRule</span> <span class="pl-k">=</span> <span class="pl-en">Fix</span> <span class="pl-en">Rule</span></pre></div>
+<p>A <code>Fix Rule</code> is infinite nested <code>Rule</code>s: it&#39;s essentially <code>Rule (Rule (Rule (Rule ...)))</code> forever, meaning underneath each <code>Compound</code> are new rules, and at
+the end of it all we only have <code>Leaf Char</code>s, and no more <code>Int</code>s.  For example,
+we could represent rule 0 of</p>
+<pre><code>0: 1 2 | 3
+1: 3
+2: 3 3
+3: &quot;a&quot;
+</code></pre>
+<p>as</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-ent">Fix</span> <span class="pl-k">$</span> <span class="pl-ent">Compound</span> [
+    [<span class="pl-ent">Fix</span> <span class="pl-k">$</span> <span class="pl-ent">Compoud</span> [[<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>a<span class="pl-pds">&#39;</span></span>)]], <span class="pl-ent">Fix</span> <span class="pl-k">$</span> <span class="pl-ent">Compound</span> [[<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>a<span class="pl-pds">&#39;</span></span>), <span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>a<span class="pl-pds">&#39;</span></span>)]]]
+  , [<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>a<span class="pl-pds">&#39;</span></span>)]
+  ]</pre></div>
+<p>But, given an <code>IntMap (Rule Int)</code> (the &quot;unexpanded&quot; raw rules as they are in
+the input file), how do we get our <code>Fix Rule</code>?</p>
+<p>We can use the handy <code>ana</code> function, which, given an expansion function <code>a -&gt; Rule a</code>, returns a <code>a -&gt; Fix Rule</code>: It runs the <code>a -&gt; Rule a</code> expansion
+function on the &quot;seed&quot; <code>a</code>, and then runs it again on all the <code>a</code>s in the
+result, and again, and again, etc., until there are no more <code>a</code>s to expand.</p>
+<p>Well, in our case, our &quot;expansion&quot; function is <code>Int -&gt; Rule Int</code>: &quot;To expand an
+<code>Int</code>, look it up in the <code>IntMap Int (RuleInt)</code>&quot;.  And that gives us a function
+to fully expand any rule number:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">expandRule</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Rule</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Fix</span> <span class="pl-en">Rule</span>
+expandRule rs <span class="pl-k">=</span> ana (rs <span class="pl-k"><span class="pl-c1">IM.</span>!</span>)</pre></div>
+<p>Neat, huh?  That will fully expand the rule at any index by repeatedly
+re-expanding it with <code>(rs IM.!)</code> until we are out of things to expand.</p>
+<p>Another fun thing we can write that we could actually use for part 1 is to turn
+an <code>Fix Rule</code> into a list of all possible strings to match.  We want to
+write a <code>Fix Rule -&gt; [String]</code> function by tearing down our recursive data
+type, and this could be nicely expressed with a catamorphism (<code>cata :: (Rule a -&gt; a) -&gt; Fix Rule -&gt; a</code>), where we specify how to tear down a &quot;single layer&quot; of
+our <code>Rule</code> type, and <code>cata</code> will generalize that to tear down the entire
+structure.  I talk about this a bit <a href="https://blog.jle.im/entry/tries-with-recursion-schemes.html" rel="nofollow">in my recursion schemes blog
+post</a>, and the
+explanation I give is &quot;The <code>a</code> values in the <code>Rule</code> become the very things we
+swore to create.&quot; --- in this case, the <code>[String]</code></p>
+<p>So let&#39;s write our <code>Rule [String] -&gt; [String]</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">generateAlg</span> <span class="pl-k">::</span> <span class="pl-en">Rule</span> [<span class="pl-en"><span class="pl-c1">String</span></span>] <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+generateAlg <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">Simple</span> c   <span class="pl-k">-&gt;</span> [[c]]                                   <span class="pl-c"><span class="pl-c">--</span> the single single-char string is created</span>
+    <span class="pl-ent">Compoud</span> xs <span class="pl-k">-&gt;</span> <span class="pl-c1">concatMap</span> (<span class="pl-c1">fmap</span> <span class="pl-c1">concat</span> <span class="pl-k">.</span> <span class="pl-c1">sequence</span>) xs   <span class="pl-c"><span class="pl-c">--</span> concat/sequence all options</span></pre></div>
+<p>And now <code>cata generateAlg</code> will generate all possible matches from a ruleset</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> cata generateAlg
+    (<span class="pl-ent">Fix</span> <span class="pl-k">$</span> <span class="pl-ent">Compound</span> [[<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>h<span class="pl-pds">&#39;</span></span>), <span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>e<span class="pl-pds">&#39;</span></span>)], [<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>h<span class="pl-pds">&#39;</span></span>)], [<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>q<span class="pl-pds">&#39;</span></span>)]])
+[<span class="pl-s"><span class="pl-pds">&quot;</span>he<span class="pl-pds">&quot;</span></span>,<span class="pl-s"><span class="pl-pds">&quot;</span>h<span class="pl-pds">&quot;</span></span>,<span class="pl-s"><span class="pl-pds">&quot;</span>q<span class="pl-pds">&quot;</span></span>]</pre></div>
+<p>Okay, that&#39;s enough playing around for now...time to find our real solution :)</p>
+<p>Note that we can &quot;interpret&quot; a rule to match it on a string by turning it into
+a <code>String -&gt; [String]</code>: it&#39;ll take a string and return a list of the leftovers
+of every possible match.  For example, running the rules <code>(he)|h|q</code> on <code>&quot;hello&quot;</code>
+<em>should</em> give us <code>[&quot;llo&quot;,&quot;ello&quot;]</code>.  Then we can just see if we have any matches
+that return empty leftovers.</p>
+<p>For aid in thinking, let&#39;s imagine turning a <code>Fix Rule</code> into a <code>String -&gt; [String]</code>.  We can do that with the help of <code>cata :: (Rule a -&gt; a) -&gt; Fix Rule -&gt; a</code>.  Because we want to write a <code>Fix Rule -&gt; (String -&gt; [String])</code>, our
+catamorphism function (&quot;algebra&quot;) is <code>Rule (String -&gt; [String]) -&gt; (String -&gt; [String])</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">matchAlg</span> <span class="pl-k">::</span> <span class="pl-en">Rule</span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+matchAlg <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">Simple</span> c <span class="pl-k">-&gt;</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-c1">[]</span>   <span class="pl-k">-&gt;</span> <span class="pl-c1">[]</span>
+      d<span class="pl-k">:</span>ds <span class="pl-k">-&gt;</span> <span class="pl-k">if</span> c <span class="pl-k">==</span> d <span class="pl-k">then</span> [ds] <span class="pl-k">else</span> <span class="pl-c1">[]</span>
+    <span class="pl-ent">Compound</span> xs <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>str <span class="pl-k">-&gt;</span>
+      <span class="pl-c1">concatMap</span> (sequenceAll str) xs
+  <span class="pl-k">where</span>
+    <span class="pl-c"><span class="pl-c">--</span> run the String -&gt; [String]s on an input String one after the other</span>
+    <span class="pl-en">sequenceAll</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]] <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+    sequenceAll s0 fs <span class="pl-k">=</span> <span class="pl-c1">foldr</span> <span class="pl-en">(&gt;=&gt;)</span> <span class="pl-c1">pure</span> fs s0
+
+<span class="pl-en">match</span> <span class="pl-k">::</span> <span class="pl-en">Fix</span> <span class="pl-en">Rule</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+match <span class="pl-k">=</span> cata matchAlg</pre></div>
+<p>We want to fail on our input string (return no matches) if we see a <code>Simple c</code>
+with either an empty input string or one that doesn&#39;t match the <code>c</code>.  Then for
+the <code>Compound</code> case with our <code>xs :: [[String -&gt; [String]]]</code>, we take a choice
+(<code>concatMap</code>) of all of the possible full sequences of the inner <code>[String -&gt; [String]]</code> sequences.</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> match (<span class="pl-ent">Fix</span> <span class="pl-k">$</span> <span class="pl-ent">Compound</span> [[<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>h<span class="pl-pds">&#39;</span></span>), <span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>e<span class="pl-pds">&#39;</span></span>)], [<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>h<span class="pl-pds">&#39;</span></span>)], [<span class="pl-ent">Fix</span> (<span class="pl-ent">Leaf</span> <span class="pl-s"><span class="pl-pds">&#39;</span>q<span class="pl-pds">&#39;</span></span>)]])
+                <span class="pl-s"><span class="pl-pds">&quot;</span>hello<span class="pl-pds">&quot;</span></span>
+[<span class="pl-s"><span class="pl-pds">&quot;</span>llo<span class="pl-pds">&quot;</span></span>, <span class="pl-s"><span class="pl-pds">&quot;</span>ello<span class="pl-pds">&quot;</span></span>]</pre></div>
+<p>Alright, so now how do we solve the final puzzle?</p>
+<p>It looks like we need to &quot;generate&quot; a <code>Fix Rule</code>, and <em>immediately</em> tear it down
+into a <code>String -&gt; [String]</code> to use it to match a string.  &quot;Generate recursively
+and immediately tear down recursively&quot;...that&#39;s a hylomorphism!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">hylo</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Functor</span></span> <span class="pl-smi">f</span> <span class="pl-k">=&gt;</span> (<span class="pl-smi">f</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span>) <span class="pl-k">-&gt;</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">f</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span>
+
+<span class="pl-c"><span class="pl-c">--</span> which we use as...</span>
+<span class="pl-en">hylo</span> <span class="pl-k">::</span> (<span class="pl-en">Rule</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span>) <span class="pl-k">-&gt;</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Rule</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">b</span>
+
+<span class="pl-c"><span class="pl-c">--</span> which we use as...</span>
+<span class="pl-en">hylo</span>  <span class="pl-k">::</span> (<span class="pl-en">Rule</span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]) <span class="pl-k">-&gt;</span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]))
+      <span class="pl-k">-&gt;</span> (<span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Rule</span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+      <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+      <span class="pl-k">-&gt;</span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>])</pre></div>
+<p>If we give <code>hylo</code> a way to &quot;break down nested <code>Rule</code>s&quot; and a way to &quot;build up
+nested <code>Rule</code>s&quot;, then it can actually iteratively expand up <code>Rule</code>s while
+immediately tearing them down.  The nice thing about this is that it&#39;s
+very lazy: it&#39;ll only <em>call</em> the generator function if you ever <em>need</em> the
+thing during your teardown function.  Since our teardown function (the <code>String -&gt; [String]</code>) will terminate whenever we encounter an empty string or no
+matches, <code>hylo</code> will only run the build-up function until the point that we hit
+one of those conditions.  You can also think of it as running it on a <code>Rule Int</code> where each <code>Int</code> is dynamically looked up as you need it from the rules map.</p>
+<p>The neat thing about this is that we don&#39;t ever need <code>Fix</code> at all: it&#39;s all
+built up and torn down &quot;in-place&quot;, and we never built up any intermediate
+value.  That&#39;s why I mentioned that the <code>Fix</code> part earlier was more of a
+side-tangent!  But it definitely helps us understand the big picture, I feel.</p>
+<p>Our final code (the whole of it, minus the parser) ends up being:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Rule</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">Simple</span> <span class="pl-en"><span class="pl-c1">Char</span></span>
+            | <span class="pl-ent">Compound</span> [[<span class="pl-smi">a</span>]]
+  <span class="pl-k">deriving</span> (<span class="pl-e">Show</span>, <span class="pl-e">Eq</span>, <span class="pl-e">Ord</span>, <span class="pl-e">Generic</span>, <span class="pl-e">Functor</span>)
+
+<span class="pl-en">matchAlg</span> <span class="pl-k">::</span> <span class="pl-en">Rule</span> (<span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+matchAlg <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">Simple</span> c <span class="pl-k">-&gt;</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-c1">[]</span>   <span class="pl-k">-&gt;</span> <span class="pl-c1">[]</span>
+      d<span class="pl-k">:</span>ds <span class="pl-k">-&gt;</span> <span class="pl-k">if</span> c <span class="pl-k">==</span> d <span class="pl-k">then</span> [ds] <span class="pl-k">else</span> <span class="pl-c1">[]</span>
+    <span class="pl-ent">Compound</span> xs <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>str <span class="pl-k">-&gt;</span>
+      <span class="pl-c1">concatMap</span> (sequenceAll str) xs
+  <span class="pl-k">where</span>
+    sequenceAll s0 fs <span class="pl-k">=</span> <span class="pl-c1">foldr</span> <span class="pl-en">(&gt;=&gt;)</span> <span class="pl-c1">pure</span> fs s0
+
+<span class="pl-en">matcher</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Rule</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+matcher rules <span class="pl-k">=</span> hylo matchAlg (rules <span class="pl-k"><span class="pl-c1">IM.</span>!</span>) <span class="pl-c1">0</span>
+
+<span class="pl-en">solver</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Rule</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+solver rules <span class="pl-k">=</span> <span class="pl-c1">length</span> <span class="pl-k">.</span> <span class="pl-c1">filter</span> (<span class="pl-c1">any</span> <span class="pl-c1">null</span> <span class="pl-k">.</span> matcher rules)
+
+<span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> <span class="pl-en">Rule</span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> solver
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> <span class="pl-en">Rule</span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 rs <span class="pl-k">=</span> solver (extraRules <span class="pl-k">&lt;&gt;</span> rs)
+
+<span class="pl-en">extraRules</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Rule</span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+extraRules <span class="pl-k">=</span> <span class="pl-c1">IM.</span>fromList [
+    (<span class="pl-c1">8</span> , <span class="pl-ent">Compound</span> [[<span class="pl-c1">42</span>],[<span class="pl-c1">42</span>,<span class="pl-c1">8</span>]])
+  , (<span class="pl-c1">11</span>, <span class="pl-ent">Compound</span> [[<span class="pl-c1">42</span>,<span class="pl-c1">31</span>],[<span class="pl-c1">42</span>,<span class="pl-c1">11</span>,<span class="pl-c1">31</span>]])
+  ]</pre></div>
+<p>As a nice little bonus, we can also use <code>generateAlg</code> with a hylomorphism to
+also turn an <code>IntMap (Rule Int)</code> into a list of all possible strings, which
+works for part 1 but would return an infinite list for part 2.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">generateAll</span> <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Rule</span> <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en"><span class="pl-c1">String</span></span>]
+generateAll rules <span class="pl-k">=</span> hylo generateAlg (rules <span class="pl-k"><span class="pl-c1">IM.</span>!</span>) <span class="pl-c1">0</span></pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-19-benchmarks" id="user-content-day-19-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 19 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 19a
+benchmarking...
+time                 4.597 ms   (4.283 ms .. 4.936 ms)
+                     0.970 R²   (0.949 R² .. 0.989 R²)
+mean                 5.142 ms   (4.951 ms .. 5.500 ms)
+std dev              766.3 μs   (401.8 μs .. 1.260 ms)
+variance introduced by outliers: 79% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 19b
+benchmarking...
+time                 31.11 ms   (27.26 ms .. 35.16 ms)
+                     0.966 R²   (0.933 R² .. 0.998 R²)
+mean                 30.22 ms   (29.51 ms .. 31.33 ms)
+std dev              1.980 ms   (991.8 μs .. 3.197 ms)
+variance introduced by outliers: 22% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 20: Jurassic Jigsaw ---</h2><p>The high-speed train leaves the forest and quickly carries you south. You can even see a desert in the distance! Since you have some spare time, you <span title="Just in case. Maybe they missed something.">might as well</span> see if there was anything interesting in the image the Mythical Information Bureau satellite captured.</p>
+<p>After decoding the satellite messages, you discover that the data actually contains many small images created by the satellite&#39;s <em>camera array</em>. The camera array consists of many cameras; rather than produce a single square image, they produce many smaller square image <em>tiles</em> that need to be <em>reassembled back into a single image</em>.</p>
+<p>Each camera in the camera array returns a single monochrome <em>image tile</em> with a random unique <em>ID number</em>.  The tiles (your puzzle input) arrived in a random order.</p>
+<p>Worse yet, the camera array appears to be malfunctioning: each image tile has been <em>rotated and flipped to a random orientation</em>. Your first task is to reassemble the original image by orienting the tiles so they fit together.</p>
+<p>To show how the tiles should be reassembled, each tile&#39;s image data includes a border that should line up exactly with its adjacent tiles. All tiles have this border, and the border lines up exactly when the tiles are both oriented correctly. Tiles at the edge of the image also have this border, but the outermost edges won&#39;t line up with any other tiles.</p>
+<p>For example, suppose you have the following nine tiles:</p>
+<pre><code>Tile 2311:
+..##.#..#.
+##..#.....
+#...##..#.
+####.#...#
+##.##.###.
+##...#.###
+.#.#.#..##
+..#....#..
+###...#.#.
+..###..###
+
+Tile 1951:
+#.##...##.
+#.####...#
+.....#..##
+#...######
+.##.#....#
+.###.#####
+###.##.##.
+.###....#.
+..#.#..#.#
+#...##.#..
+
+Tile 1171:
+####...##.
+#..##.#..#
+##.#..#.#.
+.###.####.
+..###.####
+.##....##.
+.#...####.
+#.##.####.
+####..#...
+.....##...
+
+Tile 1427:
+###.##.#..
+.#..#.##..
+.#.##.#..#
+#.#.#.##.#
+....#...##
+...##..##.
+...#.#####
+.#.####.#.
+..#..###.#
+..##.#..#.
+
+Tile 1489:
+##.#.#....
+..##...#..
+.##..##...
+..#...#...
+#####...#.
+#..#.#.#.#
+...#.#.#..
+##.#...##.
+..##.##.##
+###.##.#..
+
+Tile 2473:
+#....####.
+#..#.##...
+#.##..#...
+######.#.#
+.#...#.#.#
+.#########
+.###.#..#.
+########.#
+##...##.#.
+..###.#.#.
+
+Tile 2971:
+..#.#....#
+#...###...
+#.#.###...
+##.##..#..
+.#####..##
+.#..####.#
+#..#.#..#.
+..####.###
+..#.#.###.
+...#.#.#.#
+
+Tile 2729:
+...#.#.#.#
+####.#....
+..#.#.....
+....#..#.#
+.##..##.#.
+.#.####...
+####.#.#..
+##.####...
+##..#.##..
+#.##...##.
+
+Tile 3079:
+#.#.#####.
+.#..######
+..#.......
+######....
+####.#..#.
+.#...#.##.
+#.#####.##
+..#.###...
+..#.......
+..#.###...
+</code></pre>
+<p>By rotating, flipping, and rearranging them, you can find a square arrangement that causes all adjacent borders to line up:</p>
+<pre><code>#...##.#.. ..###..### #.#.#####.
+..#.#..#.# ###...#.#. .#..######
+.###....#. ..#....#.. ..#.......
+###.##.##. .#.#.#..## ######....
+.###.##### ##...#.### ####.#..#.
+.##.#....# ##.##.###. .#...#.##.
+#...###### ####.#...# #.#####.##
+.....#..## #...##..#. ..#.###...
+#.####...# ##..#..... ..#.......
+#.##...##. ..##.#..#. ..#.###...
+
+#.##...##. ..##.#..#. ..#.###...
+##..#.##.. ..#..###.# ##.##....#
+##.####... .#.####.#. ..#.###..#
+####.#.#.. ...#.##### ###.#..###
+.#.####... ...##..##. .######.##
+.##..##.#. ....#...## #.#.#.#...
+....#..#.# #.#.#.##.# #.###.###.
+..#.#..... .#.##.#..# #.###.##..
+####.#.... .#..#.##.. .######...
+...#.#.#.# ###.##.#.. .##...####
+
+...#.#.#.# ###.##.#.. .##...####
+..#.#.###. ..##.##.## #..#.##..#
+..####.### ##.#...##. .#.#..#.##
+#..#.#..#. ...#.#.#.. .####.###.
+.#..####.# #..#.#.#.# ####.###..
+.#####..## #####...#. .##....##.
+##.##..#.. ..#...#... .####...#.
+#.#.###... .##..##... .####.##.#
+#...###... ..##...#.. ...#..####
+..#.#....# ##.#.#.... ...##.....
+</code></pre>
+<p>For reference, the IDs of the above tiles are:</p>
+<pre><code><em>1951</em>    2311    <em>3079</em>
+2729    1427    2473
+<em>2971</em>    1489    <em>1171</em>
+</code></pre>
+<p>To check that you&#39;ve assembled the image correctly, multiply the IDs of the four corner tiles together. If you do this with the assembled tiles from the example above, you get <code>1951 * 3079 * 2971 * 1171</code> = <em><code>20899048083289</code></em>.</p>
+<p>Assemble the tiles into an image. <em>What do you get if you multiply together the IDs of the four corner tiles?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-20" id="user-content-day-20"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 20</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em>20</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/20" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day20.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day20.html" rel="nofollow">Rendered</a></em></p>
+<p>Ah, the infamous Day 20 :)  I actually went through a few different possible
+solutions for this before settling on the one I have now.  It also pushed me to
+flesh out my &quot;direction manipulation&quot; mini-library (that I used <a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">Day
+12</a>)
+to be a full &quot;orientation manipulation&quot; mini-library.  With it, I get to
+enumerate, manipulate, and combine the eight possible orientations of a 2d
+square grid in a nice way.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Dir</span> <span class="pl-k">=</span> <span class="pl-ent">North</span> | <span class="pl-ent">East</span> | <span class="pl-ent">South</span> | <span class="pl-ent">West</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Rotate a point by a direction</span>
+<span class="pl-en">rotPoint</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Dir</span> <span class="pl-k">-&gt;</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span>
+
+<span class="pl-en">allDir</span> <span class="pl-k">::</span> [<span class="pl-en">Dir</span>]
+allDir <span class="pl-k">=</span> [<span class="pl-ent">North</span> <span class="pl-k">..</span>]
+
+<span class="pl-c"><span class="pl-c">--</span> All of these instances are described in my day 12 writeup</span>
+<span class="pl-k">instance</span> <span class="pl-en">Semigroup</span> <span class="pl-en">Dir</span> <span class="pl-k">where</span>
+<span class="pl-k">instance</span> <span class="pl-en"><span class="pl-e">Monoid</span></span> <span class="pl-en">Dir</span> <span class="pl-k">where</span>
+<span class="pl-k">instance</span> <span class="pl-en">Group</span> <span class="pl-en">Dir</span> <span class="pl-k">where</span>
+<span class="pl-k">instance</span> <span class="pl-en">Abelian</span> <span class="pl-en">Dir</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A possible orientation (flip and rotate) of a 2d square grid</span>
+<span class="pl-k">data</span> <span class="pl-en">D8</span> <span class="pl-k">=</span> <span class="pl-ent">D8</span> <span class="pl-k">{</span> <span class="pl-e">d8Rot</span> <span class="pl-k">::</span> <span class="pl-en">Dir</span>, <span class="pl-e">d8Flip</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Bool</span></span> <span class="pl-k">}</span>
+
+<span class="pl-k">instance</span> <span class="pl-en">Semigroup</span> <span class="pl-en">D8</span> <span class="pl-k">where</span>
+    <span class="pl-ent">D8</span> x1 <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">&lt;&gt;</span> <span class="pl-ent">D8</span> x2 y2 <span class="pl-k">=</span> <span class="pl-ent">D8</span> (x1 <span class="pl-k">&lt;&gt;</span> x2) y2
+    <span class="pl-ent">D8</span> x1 <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">&lt;&gt;</span> <span class="pl-ent">D8</span> x2 y2 <span class="pl-k">=</span> <span class="pl-ent">D8</span> (x1 <span class="pl-k">&lt;&gt;</span> invert x2) (<span class="pl-c1">not</span> y2)
+
+<span class="pl-k">instance</span> <span class="pl-en"><span class="pl-e">Monoid</span></span> <span class="pl-en">D8</span> <span class="pl-k">where</span>
+    <span class="pl-c1">mempty</span> <span class="pl-k">=</span> <span class="pl-ent">D8</span> <span class="pl-ent">North</span> <span class="pl-ent"><span class="pl-c1">False</span></span>
+
+<span class="pl-k">instance</span> <span class="pl-en">Group</span> <span class="pl-en">D8</span> <span class="pl-k">where</span>
+    invert (<span class="pl-ent">D8</span> x <span class="pl-ent"><span class="pl-c1">False</span></span>) <span class="pl-k">=</span> <span class="pl-ent">D8</span> (invert x) <span class="pl-ent"><span class="pl-c1">False</span></span>
+    invert (<span class="pl-ent">D8</span> x <span class="pl-ent"><span class="pl-c1">True</span></span> ) <span class="pl-k">=</span> <span class="pl-ent">D8</span> x          <span class="pl-ent"><span class="pl-c1">True</span></span>
+
+<span class="pl-en">allD8</span> <span class="pl-k">::</span> [<span class="pl-en">D8</span>]
+allD8 <span class="pl-k">=</span> <span class="pl-ent">D8</span> <span class="pl-k">&lt;$&gt;</span> allDir <span class="pl-k">&lt;*&gt;</span> [<span class="pl-ent"><span class="pl-c1">False</span></span>, <span class="pl-ent"><span class="pl-c1">True</span></span>]
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Rotate and flip a point by a &#39;D8&#39;</span>
+<span class="pl-en">orientPoint</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span> <span class="pl-k">=&gt;</span> <span class="pl-en">D8</span> <span class="pl-k">-&gt;</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en">V2</span> <span class="pl-smi">a</span>
+orientPoint <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+    <span class="pl-ent">D8</span> <span class="pl-ent">North</span> <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">id</span>
+    <span class="pl-ent">D8</span> <span class="pl-ent">East</span>  <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   y  (<span class="pl-k">-</span>x)
+    <span class="pl-ent">D8</span> <span class="pl-ent">West</span>  <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span> (<span class="pl-k">-</span>y)   x
+    <span class="pl-ent">D8</span> <span class="pl-ent">South</span> <span class="pl-ent"><span class="pl-c1">False</span></span> <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span> (<span class="pl-k">-</span>x) (<span class="pl-k">-</span>y)
+    <span class="pl-ent">D8</span> <span class="pl-ent">North</span> <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span> (<span class="pl-k">-</span>x)   y
+    <span class="pl-ent">D8</span> <span class="pl-ent">East</span>  <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   y    x
+    <span class="pl-ent">D8</span> <span class="pl-ent">West</span>  <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span> (<span class="pl-k">-</span>y) (<span class="pl-k">-</span>x)
+    <span class="pl-ent">D8</span> <span class="pl-ent">South</span> <span class="pl-ent"><span class="pl-c1">True</span></span>  <span class="pl-k">-&gt;</span> <span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> <span class="pl-ent">V2</span>   x  (<span class="pl-k">-</span>y)</pre></div>
+<p>Having orientations as a data type I can manipulate as first-class values
+helped me &quot;think&quot; my way through everything a little easier.</p>
+<p>First things first, we can break apart a 10x10 tile into the parts that
+actually matter: its eight edges (which we can represent as a set of <code>Finite 10</code>s) and its core (which we can represent as a set of <code>V2 (Finite 8)</code>, 8x8
+points).  I&#39;m using <code>Finite</code> from
+<em><a href="https://hackage.haskell.org/package/finite-typelits" rel="nofollow">finite-typelits</a></em> mostly
+as a way for me to keep track of what I have at each stage --- remember that
+<code>Finite 8</code>, for instance, is one of 0,1,2,3,4,5,6, or 7.  This is also handy
+because the library gives us <code>strengthen &lt;=&lt; unshift :: Finite 10 -&gt; Maybe (Finite 8)</code>, that lets us &quot;chop off&quot; the outer edges of a <code>Set (Finite 10)</code> to
+get the <code>Set (Finite 8)</code> core.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">type</span> <span class="pl-en">Edge</span> <span class="pl-k">=</span> <span class="pl-en">Set</span> (<span class="pl-en">Finite</span> <span class="pl-c1">10</span>)
+<span class="pl-k">type</span> <span class="pl-en">Core</span> <span class="pl-k">=</span> <span class="pl-en">Set</span> (<span class="pl-en">V2</span> (<span class="pl-en">Finite</span> <span class="pl-c1">8</span>))
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Shift corner to (0,0)</span>
+<span class="pl-en">shiftToZero</span> <span class="pl-k">::</span> (<span class="pl-en"><span class="pl-e">Applicative</span></span> <span class="pl-smi">f</span>, <span class="pl-en"><span class="pl-e">Num</span></span> <span class="pl-smi">a</span>, <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">a</span>) <span class="pl-k">=&gt;</span> <span class="pl-en">Set</span> (<span class="pl-en">V2</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-en">V2</span> <span class="pl-smi">a</span>)
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> mapMaybe but for sets</span>
+<span class="pl-en">mapMaybeSet</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Ord</span></span> <span class="pl-smi">b</span> <span class="pl-k">=&gt;</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">b</span>) <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> <span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> <span class="pl-smi">b</span>
+
+toTiles
+    <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en">V2</span> (<span class="pl-en">Finite</span> <span class="pl-c1">10</span>))
+    <span class="pl-k">-&gt;</span> ((<span class="pl-en">Core</span>, <span class="pl-en">D8</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Edge</span>), <span class="pl-en">Map</span> <span class="pl-en">Edge</span> <span class="pl-en">D8</span>)
+toTiles ps <span class="pl-k">=</span> ((core, getEdge), <span class="pl-c1">M.</span>toList (<span class="pl-c1">map</span> swap oToEdge))
+  <span class="pl-k">where</span>
+    core      <span class="pl-k">=</span> mapMaybeSet (<span class="pl-c1">traverse</span> (strengthen <span class="pl-k">&lt;=&lt;</span> unshift)) ps
+    getEdge o <span class="pl-k">=</span> oMap <span class="pl-k"><span class="pl-c1">M.</span>!</span> o
+    oMap      <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromList oToEdge
+    oToEdge   <span class="pl-k">=</span>
+        [ (o, mapMaybeSet (<span class="pl-k">\</span>(<span class="pl-ent">V2</span> x y) <span class="pl-k">-&gt;</span> x <span class="pl-k">&lt;$</span> guard (y <span class="pl-k">==</span> <span class="pl-c1">0</span>)) ps&#39;)
+        <span class="pl-k">|</span> o <span class="pl-k">&lt;-</span> allD8
+        , <span class="pl-k">let</span> ps&#39; <span class="pl-k">=</span> shiftToZero <span class="pl-k">$</span> orientPoint (invert o) <span class="pl-k">`S.map`</span> ps
+        ]</pre></div>
+<p>Both &quot;orientation to edge at that orientation&quot; (<code>D8 -&gt; Edge</code>) and &quot;edge to the
+orientation that that edge exists at&quot; (<code>Map Edge D8</code>) are useful things to
+have, so we can generate them both here.</p>
+<p>Once we do this we can get three separate <code>IntMap</code>s after parsing the file:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-ent">IntMap</span> <span class="pl-ent">Core</span>          <span class="pl-c"><span class="pl-c">--</span> a map of tile id&#39;s to their cores (for drawing)</span>
+<span class="pl-ent">IntMap</span> (<span class="pl-ent">D8</span> <span class="pl-k">-&gt;</span> <span class="pl-ent">Edge</span>)  <span class="pl-c"><span class="pl-c">--</span> a map of tile id&#39;s to their edges at each orientation</span>
+<span class="pl-ent">IntMap</span> (<span class="pl-ent">Map</span> <span class="pl-ent">Edge</span> <span class="pl-ent">D8</span>) <span class="pl-c"><span class="pl-c">--</span> a map of tile id&#39;s to all of their edges and the orientations they are at</span></pre></div>
+<p>Now for the actual solve --- we&#39;re going to build up a <code>Map Point (Int, D8)</code>
+one at a time, where the point (<code>V2 Int</code>) is going to contain the tile id at
+that point, as well as the orientation that tile has to be at.</p>
+<p>To do that, we&#39;re going to use a queue of &quot;open edges&quot;: the location that the
+open edge is facing, and the direction (north/south/east/west) of that open
+edge -- a <code>Map Edge (Point, Dir)</code>.  We&#39;ll also keep a set of tile id&#39;s that
+have not been placed yet.  And then at each step:</p>
+<ol>
+<li>Pop an edge off of that queue -- <code>(Edge, (Point, Dir))</code></li>
+<li>Search to see if any non-used tiles have any matching edge
+a.  If there is not any, it means that that edge is at the edge of the
+overall map, so just skip.
+b.  If there is a tile, place that tile at the indicated <code>(Point, Dir)</code> and
+place all of <em>its</em> edges into the queue.</li>
+<li>Repeat until the queue is empty.</li>
+</ol>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> A placement is a Tile ID and the orientation of that tile</span>
+<span class="pl-k">type</span> <span class="pl-en">Placement</span> <span class="pl-k">=</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en">D8</span>)
+<span class="pl-k">type</span> <span class="pl-en">Point</span>     <span class="pl-k">=</span> <span class="pl-en">V2</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+
+assembleMap
+    <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">D8</span> <span class="pl-k">-&gt;</span> <span class="pl-en">Edge</span>)              <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> tile id to the edge at each orientation</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Map</span> <span class="pl-en">Edge</span> <span class="pl-en">Placement</span>)      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> tile id to the map of edges to what tile id, orientation that edge is at</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en">Placement</span>              <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> map of points to the tile id, orientation at each point</span>
+assembleMap tileMap tiles0 <span class="pl-k">=</span>
+        go (toQueue <span class="pl-c1">0</span> <span class="pl-c1">mempty</span> t0<span class="pl-c1">id</span> allDir)
+           (<span class="pl-c1">IM.</span>keysSet tiles1)
+           (<span class="pl-c1">M.</span>singleton <span class="pl-c1">0</span> (t0<span class="pl-c1">id</span>, <span class="pl-c1">mempty</span>))
+  <span class="pl-k">where</span>
+    <span class="pl-c"><span class="pl-c">--</span> populate the initial tile and the initial queue</span>
+    ((_   , t0Map), tiles1)  <span class="pl-k">=</span> <span class="pl-c1">IM.</span>deleteFindMin tiles0
+    ((_, (t0<span class="pl-c1">id</span>, _)), _     ) <span class="pl-k">=</span> <span class="pl-c1">M.</span>deleteFindMin  t0Map
+
+    <span class="pl-c"><span class="pl-c">--</span> a cache of edges to tiles ID&#39;s (and orientations) that have that edge.</span>
+    <span class="pl-en">tileCache</span> <span class="pl-k">::</span> <span class="pl-en">Map</span> <span class="pl-en">Edge</span> [<span class="pl-en">Placement</span>]
+    tileCache <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromListWith <span class="pl-en">(++)</span>
+      [ (edge, [placement])
+      <span class="pl-k">|</span> (_   , tileEdges) <span class="pl-k">&lt;-</span> <span class="pl-c1">IM.</span>toList tiles0
+      , (edge, placement) <span class="pl-k">&lt;-</span> <span class="pl-c1">M.</span>toList tileEdges
+      ]
+
+    <span class="pl-en">go</span>  <span class="pl-k">::</span> <span class="pl-en">Map</span> <span class="pl-en">Edge</span> (<span class="pl-en">Point</span>, <span class="pl-en">Dir</span>)     <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> queue: edge -&gt; place, orientation</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-en">IntSet</span>                    <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> leftover points</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en">Placement</span>       <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> current map</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en">Placement</span>       <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> sweet tail rescursion</span>
+    go queue tiles mp <span class="pl-k">=</span> <span class="pl-k">case</span> <span class="pl-c1">M.</span>minViewWithKey queue <span class="pl-k">of</span>
+      <span class="pl-ent">Nothing</span> <span class="pl-k">-&gt;</span> mp
+      <span class="pl-ent">Just</span> ((edge, (pos, d)), queue&#39;) <span class="pl-k">-&gt;</span>
+        <span class="pl-k">case</span> find ((<span class="pl-k">`IS.member`</span> tiles) <span class="pl-k">.</span> <span class="pl-c1">fst</span>) (tileCache <span class="pl-k"><span class="pl-c1">NEM.</span>!</span> edge) <span class="pl-k">of</span>
+          <span class="pl-ent">Nothing</span>          <span class="pl-k">-&gt;</span> go queue&#39; tiles mp
+          <span class="pl-ent">Just</span> (tileId, o) <span class="pl-k">-&gt;</span>
+                <span class="pl-c"><span class="pl-c">--</span> If we&#39;re adding a North edge, then it&#39;s the new tile&#39;s South</span>
+                <span class="pl-c"><span class="pl-c">--</span> edge; if we are adding a East edge, it&#39;s the new tile&#39;s West</span>
+                <span class="pl-c"><span class="pl-c">--</span> edge, etc; (d &lt;&gt; South) is the right relationship to properly</span>
+                <span class="pl-c"><span class="pl-c">--</span> flip</span>
+            <span class="pl-k">let</span> o&#39;       <span class="pl-k">=</span> o <span class="pl-k">&lt;&gt;</span> <span class="pl-ent">D8</span> (d <span class="pl-k">&lt;&gt;</span> <span class="pl-ent">South</span>) <span class="pl-ent"><span class="pl-c1">True</span></span>
+                newQueue <span class="pl-k">=</span> toQueue pos o&#39;
+                    tileId
+                    (<span class="pl-c1">filter</span> (<span class="pl-k">/=</span> d <span class="pl-k">&lt;&gt;</span> <span class="pl-ent">South</span>) allDir)
+            <span class="pl-k">in</span>  go  (newQueue <span class="pl-k">&lt;&gt;</span> queue)
+                    (<span class="pl-c1">IS.</span>delete tileId tiles)
+                    (<span class="pl-c1">M.</span>insert pos (tileId, invert o&#39;) mp)
+
+    <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> For a given image, add the given edges into the queue</span>
+    toQueue
+        <span class="pl-k">::</span> <span class="pl-en"><span class="pl-e">Foldable</span></span> <span class="pl-smi">f</span>
+        <span class="pl-k">=&gt;</span> <span class="pl-en">Point</span>            <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> location of corner</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-en">D8</span>               <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> orientation to insert</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>              <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> tile id</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-smi">f</span> <span class="pl-en">Dir</span>            <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> edges to insert</span>
+        <span class="pl-k">-&gt;</span> <span class="pl-en">Map</span> <span class="pl-en">Edge</span> (<span class="pl-en">Point</span>, <span class="pl-en">Dir</span>)
+    toQueue p0 o tileId ds <span class="pl-k">=</span> <span class="pl-c1">M.</span>fromList <span class="pl-k">$</span> ds <span class="pl-k">&lt;&amp;&gt;</span> <span class="pl-k">\</span>d <span class="pl-k">-&gt;</span>   <span class="pl-c"><span class="pl-c">--</span> for each dir</span>
+        ( (tileMap <span class="pl-k"><span class="pl-c1">IM.</span>!</span> tileId) (o <span class="pl-k">&lt;&gt;</span> <span class="pl-ent">D8</span> d <span class="pl-ent"><span class="pl-c1">False</span></span>)   <span class="pl-c"><span class="pl-c">--</span> the edge</span>
+        , ( p0 <span class="pl-k">+</span> rotPoint d (<span class="pl-ent">V2</span> <span class="pl-c1">0</span> (<span class="pl-k">-</span><span class="pl-c1">1</span>))             <span class="pl-c"><span class="pl-c">--</span> the new point</span>
+          , d
+          )
+        )</pre></div>
+<p>We can wrap this all up in a solver to extract the <code>Map Point Placement</code> (using
+<code>assembleMap</code>) and the <code>Set Point</code> --- the &quot;actual&quot; pixel map that represents
+all of the points themselves in 2d space.</p>
+<div class="highlight highlight-source-haskell"><pre>solve
+    <span class="pl-k">::</span> <span class="pl-en">IntMap</span> (<span class="pl-en">Set</span> (<span class="pl-en">V2</span> (<span class="pl-en">Finite</span> <span class="pl-c1">10</span>)))
+    <span class="pl-k">-&gt;</span> (<span class="pl-en">Map</span> <span class="pl-en">Point</span> <span class="pl-en">Placement</span>, <span class="pl-en">Set</span> <span class="pl-en">Point</span>)
+solve ts <span class="pl-k">=</span> (shiftToZero mp, blitted)
+  <span class="pl-k">where</span>
+    info    <span class="pl-k">=</span> toTiles <span class="pl-k">&lt;$&gt;</span> ts
+    edgeMap <span class="pl-k">=</span> <span class="pl-c1">IM.</span>mapWithKey (<span class="pl-k">\</span>i (_, e) <span class="pl-k">-&gt;</span> (i,) <span class="pl-k">&lt;$&gt;</span> e) info
+    edges   <span class="pl-k">=</span> <span class="pl-c1">snd</span> <span class="pl-k">.</span> <span class="pl-c1">fst</span> <span class="pl-k">&lt;$&gt;</span> info
+    mp      <span class="pl-k">=</span> assembleMap edges edgeMap
+    blitted <span class="pl-k">=</span> <span class="pl-c1">flip</span> <span class="pl-c1">M.</span>foldMapWithKey mp <span class="pl-k">$</span> <span class="pl-k">\</span>p (tileId, o) <span class="pl-k">-&gt;</span>
+      <span class="pl-k">let</span> core <span class="pl-k">=</span> <span class="pl-c1">fst</span> <span class="pl-k">.</span> <span class="pl-c1">fst</span> <span class="pl-k">$</span> info <span class="pl-k"><span class="pl-c1">IM.</span>!</span> tileId
+      <span class="pl-k">in</span>  <span class="pl-c1">S.</span><span class="pl-c1">map</span> ((<span class="pl-k">+</span> (p <span class="pl-k">*</span> <span class="pl-c1">8</span>)) <span class="pl-k">.</span> shiftToZero <span class="pl-k">.</span> orientPoint o) core</pre></div>
+<p>We can use the <code>Map Point Placement</code> to get the answer to part 1: just look at
+the tile id&#39;s at the corners of the map.  Since we <code>shiftToZero</code>, we can just
+look up <code>mp M.! V2 0 0</code>, <code>mp M.! V2 0 12</code>, <code>mp M.! V2 12 0</code>, and <code>mp M.! V2 12 12</code>, and multiply them all together.</p>
+<p>For part 2, after we assemble the actual <code>Point</code>, we can do a search for all
+dragons at all orientations.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> given a pattern and a map of points, poke out all points matching that</span>
+<span class="pl-c"><span class="pl-c">--</span> pattern.</span>
+pokePattern
+    <span class="pl-k">::</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>    <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> pattern</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>    <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> map</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>
+pokePattern pat ps0 <span class="pl-k">=</span> foldl&#39; go ps0 (range (<span class="pl-ent">V2</span> <span class="pl-c1">0</span> <span class="pl-c1">0</span>, <span class="pl-ent">V2</span> <span class="pl-c1">96</span> <span class="pl-c1">96</span>))
+  <span class="pl-k">where</span>
+    go ps d
+        <span class="pl-k">|</span> pat&#39; <span class="pl-k">`S.isSubsetOf`</span> ps <span class="pl-k">=</span> ps <span class="pl-k"><span class="pl-c1">S.</span>\\</span> pat&#39;
+        <span class="pl-k">|</span> <span class="pl-c1">otherwise</span>              <span class="pl-k">=</span> ps
+      <span class="pl-k">where</span>
+        pat&#39; <span class="pl-k">=</span> <span class="pl-c1">S.</span>mapMonotonic (<span class="pl-k">+</span> d) pat</pre></div>
+<p>And now we try <code>pokePattern</code> with the dragon at all orientations until we find
+one that gets any pokes:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">dragon</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>         <span class="pl-c"><span class="pl-c">--</span> the dragon image</span>
+
+<span class="pl-en">allDragons</span> <span class="pl-k">::</span> [<span class="pl-en">Set</span> <span class="pl-en">Point</span>]   <span class="pl-c"><span class="pl-c">--</span> the dragon image at all orientations</span>
+allDragons <span class="pl-k">=</span>
+    [ shiftToZero <span class="pl-k">$</span> orientPoint o <span class="pl-k">`S.map`</span> dragon
+    <span class="pl-k">|</span> o <span class="pl-k">&lt;-</span> allD8
+    ]
+
+dragonCount
+    <span class="pl-k">::</span> <span class="pl-en">Set</span> <span class="pl-en">Point</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+dragonCount fullMap <span class="pl-k">=</span> listToMaybe
+    [ res
+    <span class="pl-k">|</span> drgn <span class="pl-k">&lt;-</span> allDragons
+    , <span class="pl-k">let</span> res <span class="pl-k">=</span> <span class="pl-c1">S.</span>size <span class="pl-k">$</span> pokePattern drgn fullMap
+    , res <span class="pl-k">/=</span> <span class="pl-c1">S.</span>size fullMap
+    ]</pre></div>
+<p>And that concludes my solve of what was probably the most complex challenge of
+the month!  Overall a lot of moving parts, but I was at least very happy to be
+able to use some knowledge of group theory (in particular, how the orientations
+of a square compose and interact) to break the puzzle down into pieces that
+were much easier to think about.</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-20-benchmarks" id="user-content-day-20-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 20 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 20a
+benchmarking...
+time                 33.33 ms   (31.40 ms .. 35.37 ms)
+                     0.987 R²   (0.974 R² .. 0.998 R²)
+mean                 31.84 ms   (31.15 ms .. 32.72 ms)
+std dev              1.720 ms   (1.143 ms .. 2.525 ms)
+variance introduced by outliers: 17% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 20b
+benchmarking...
+time                 79.49 ms   (71.01 ms .. 88.15 ms)
+                     0.973 R²   (0.931 R² .. 0.997 R²)
+mean                 80.41 ms   (77.07 ms .. 84.98 ms)
+std dev              6.588 ms   (5.023 ms .. 8.934 ms)
+variance introduced by outliers: 28% (moderately inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article></body></html>

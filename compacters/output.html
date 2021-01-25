@@ -1,0 +1,819 @@
+<!DOCTYPE html><html><head><title>"advents"</title></head><body>
+<article class="day-desc"><h2>--- Day 1: Report Repair ---</h2><p>After saving Christmas <a href="/events">five years in a row</a>, you&#39;ve decided to take a vacation at a nice resort on a tropical island. <span title="WHAT COULD GO WRONG">Surely</span>, Christmas will go on without you.</p>
+<p>The tropical island has its own currency and is entirely cash-only.  The gold coins used there have a little picture of a starfish; the locals just call them <em class="star">stars</em>. None of the currency exchanges seem to have heard of them, but somehow, you&#39;ll need to find fifty of these coins by the time you arrive so you can pay the deposit on your room.</p>
+<p>To save your vacation, you need to get all <em class="star">fifty stars</em> by December 25th.</p>
+<p>Collect stars by solving puzzles.  Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first.  Each puzzle grants <em class="star">one star</em>. Good luck!</p>
+<p>Before you leave, the Elves in accounting just need you to fix your <em>expense report</em> (your puzzle input); apparently, something isn&#39;t quite adding up.</p>
+<p>Specifically, they need you to <em>find the two entries that sum to <code>2020</code></em> and then multiply those two numbers together.</p>
+<p>For example, suppose your expense report contained the following:</p>
+<pre><code>1721
+979
+366
+299
+675
+1456
+</code></pre>
+<p>In this list, the two entries that sum to <code>2020</code> are <code>1721</code> and <code>299</code>. Multiplying them together produces <code>1721 * 299 = 514579</code>, so the correct answer is <code><em>514579</em></code>.</p>
+<p>Of course, your expense report is much larger. <em>Find the two entries that sum to <code>2020</code>; what do you get if you multiply them together?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-1" id="user-content-day-1"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 1</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em>1</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/1" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html" rel="nofollow">Rendered</a></em></p>
+<p>So there&#39;s a simple-ish Haskell solution for these problems,</p>
+<p><code>tails</code> lets you separate out each item in a list with the list of items after
+it:</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> tails [<span class="pl-c1">1</span>,<span class="pl-c1">2</span>,<span class="pl-c1">3</span>,<span class="pl-c1">4</span>]
+[<span class="pl-c1">1</span><span class="pl-k">:</span>[<span class="pl-c1">2</span>,<span class="pl-c1">3</span>,<span class="pl-c1">4</span>], <span class="pl-c1">2</span><span class="pl-k">:</span>[<span class="pl-c1">3</span>,<span class="pl-c1">4</span>], <span class="pl-c1">3</span><span class="pl-k">:</span>[<span class="pl-c1">4</span>], <span class="pl-c1">4</span><span class="pl-k">:</span><span class="pl-c1">[]</span>]</pre></div>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">findPair</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+findPair xs <span class="pl-k">=</span> listToMaybe <span class="pl-k">$</span> <span class="pl-k">do</span>
+    x<span class="pl-k">:</span>ys <span class="pl-k">&lt;-</span> tails xs
+    y    <span class="pl-k">&lt;-</span> ys
+    guard (x <span class="pl-k">+</span> y <span class="pl-k">==</span> <span class="pl-c1">2020</span>)
+    <span class="pl-c1">pure</span> (x<span class="pl-k">*</span>y)
+
+<span class="pl-en">findTriple</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+findTriple xs <span class="pl-k">=</span> listToMaybe <span class="pl-k">$</span> <span class="pl-k">do</span>
+    x<span class="pl-k">:</span>ys <span class="pl-k">&lt;-</span> tails xs
+    y<span class="pl-k">:</span>zs <span class="pl-k">&lt;-</span> tails ys
+    z    <span class="pl-k">&lt;-</span> zs
+    guard (x <span class="pl-k">+</span> y <span class="pl-k">+</span> z <span class="pl-k">==</span> <span class="pl-c1">2020</span>)
+    <span class="pl-c1">pure</span> (x<span class="pl-k">*</span>y<span class="pl-k">*</span>z)</pre></div>
+<p>But this method is a little bit &quot;extra&quot;, since we actually don&#39;t need to search
+all of <code>ys</code> for the proper sum...if we pick <code>x</code> as <code>500</code>, then we really only
+need to check if <code>1520</code> is a part of <code>ys</code>.</p>
+<p>So we really only need to check for set inclusion:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Data.IntSet</span> <span class="pl-k">as</span> <span class="pl-c1">IS</span>
+
+<span class="pl-en">findPair</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">IS.</span>IntSet</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+findPair goal xs <span class="pl-k">=</span> listToMaybe <span class="pl-k">$</span> <span class="pl-k">do</span>
+    x <span class="pl-k">&lt;-</span> <span class="pl-c1">IS.</span>toList xs
+    <span class="pl-k">let</span> y <span class="pl-k">=</span> goal <span class="pl-k">-</span> x
+    guard (y <span class="pl-k">`IS.member`</span> xs)
+    <span class="pl-c1">pure</span> (x <span class="pl-k">*</span> y)</pre></div>
+<p>And our first part will be <code>findPair 2020</code>!</p>
+<p>You could even implement <code>findTriple</code> in terms of <code>findPair</code>, using <code>IS.split</code>
+to partition a set into all items smaller than and larger than a number.
+Splitting is a very efficient operation on a binary search tree like <code>IntSet</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">findTriple</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">IS.</span>IntSet</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+findTriple goal xs <span class="pl-k">=</span> listToMaybe <span class="pl-k">$</span> <span class="pl-k">do</span>
+    x <span class="pl-k">&lt;-</span> <span class="pl-c1">IS.</span>toList xs
+    <span class="pl-k">let</span> (_, ys) <span class="pl-k">=</span> <span class="pl-c1">IS.</span>split x xs
+        goal&#39;   <span class="pl-k">=</span> goal <span class="pl-k">-</span> x
+    <span class="pl-k">case</span> findPair goal&#39; ys <span class="pl-k">of</span>
+      <span class="pl-ent">Nothing</span> <span class="pl-k">-&gt;</span> empty
+      <span class="pl-ent">Just</span> yz <span class="pl-k">-&gt;</span> <span class="pl-c1">pure</span> (x<span class="pl-k">*</span>yz)</pre></div>
+<p>But hey...this recursive descent is kind of neat.  We could write a general
+function to find any goal in any number of items!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Given a number n of items and a goal sum and a set of numbers to</span>
+<span class="pl-c"><span class="pl-c">--</span> pick from, finds the n numbers in the set that add to the goal sum.</span>
+knapsack
+    <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span>              <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> number of items n to pick</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>              <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> goal sum</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">IS.</span>IntSet</span>        <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> set of options</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> [<span class="pl-en"><span class="pl-c1">Int</span></span>]      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> resulting n items that sum to the goal</span>
+knapsack <span class="pl-c1">0</span> _    _  <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+knapsack <span class="pl-c1">1</span> goal xs
+    <span class="pl-k">|</span> goal <span class="pl-k">`IS.member`</span> xs <span class="pl-k">=</span> <span class="pl-ent">Just</span> [goal]
+    <span class="pl-k">|</span> <span class="pl-c1">otherwise</span>           <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+knapsack n goal xs <span class="pl-k">=</span> listToMaybe <span class="pl-k">$</span> <span class="pl-k">do</span>
+    x <span class="pl-k">&lt;-</span> <span class="pl-c1">IS.</span>toList xs
+    <span class="pl-k">let</span> goal&#39;   <span class="pl-k">=</span> goal <span class="pl-k">-</span> x
+        (_, ys) <span class="pl-k">=</span> <span class="pl-c1">IS.</span>split x xs
+    <span class="pl-k">case</span> knapsack (n <span class="pl-k">-</span> <span class="pl-c1">1</span>) goal&#39; ys <span class="pl-k">of</span>
+      <span class="pl-ent">Nothing</span> <span class="pl-k">-&gt;</span> empty
+      <span class="pl-ent">Just</span> rs <span class="pl-k">-&gt;</span> <span class="pl-c1">pure</span> (x<span class="pl-k">:</span>rs)</pre></div>
+<p>And so we have:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> knapsack <span class="pl-c1">2</span> <span class="pl-c1">2020</span> <span class="pl-k">.</span> <span class="pl-c1">IS.</span>fromList
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">Int</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> knapsack <span class="pl-c1">3</span> <span class="pl-c1">2020</span> <span class="pl-k">.</span> <span class="pl-c1">IS.</span>fromList</pre></div>
+<p>And we could go on, and on, and on!</p>
+<p>Definitely very unnecessary, but it does shave my time on Part 2 down from
+around 2ms to around 20μs :)</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-1-benchmarks" id="user-content-day-1-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 1 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 01a
+benchmarking...
+time                 6.588 μs   (6.220 μs .. 7.104 μs)
+                     0.965 R²   (0.952 R² .. 0.981 R²)
+mean                 7.174 μs   (6.897 μs .. 7.499 μs)
+std dev              1.142 μs   (928.2 ns .. 1.728 μs)
+variance introduced by outliers: 94% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 01b
+benchmarking...
+time                 48.11 μs   (45.44 μs .. 51.04 μs)
+                     0.982 R²   (0.978 R² .. 0.990 R²)
+mean                 52.94 μs   (51.31 μs .. 54.51 μs)
+std dev              5.165 μs   (4.000 μs .. 6.012 μs)
+variance introduced by outliers: 82% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 2: Password Philosophy ---</h2><p>Your flight departs in a few days from the coastal airport; the easiest way down to the coast from here is via <a href="https://en.wikipedia.org/wiki/Toboggan" target="_blank">toboggan</a>.</p>
+<p>The shopkeeper at the North Pole Toboggan Rental Shop is having a bad day. &quot;Something&#39;s wrong with our computers; we can&#39;t log in!&quot; You ask if you can take a look.</p>
+<p>Their password database seems to be a little corrupted: some of the passwords wouldn&#39;t have been allowed by the <span title="To ensure your safety, your password must be the following string...">Official Toboggan Corporate Policy</span> that was in effect when they were chosen.</p>
+<p>To try to debug the problem, they have created a list (your puzzle input) of <em>passwords</em> (according to the corrupted database) and <em>the corporate policy when that password was set</em>.</p>
+<p>For example, suppose you have the following list:</p>
+<pre><code>1-3 a: abcde
+1-3 b: cdefg
+2-9 c: ccccccccc
+</code></pre>
+<p>Each line gives the password policy and then the password. The password policy indicates the lowest and highest number of times a given letter must appear for the password to be valid. For example, <code>1-3 a</code> means that the password must contain <code>a</code> at least <code>1</code> time and at most <code>3</code> times.</p>
+<p>In the above example, <code><em>2</em></code> passwords are valid. The middle password, <code>cdefg</code>, is not; it contains no instances of <code>b</code>, but needs at least <code>1</code>. The first and third passwords are valid: they contain one <code>a</code> or nine <code>c</code>, both within the limits of their respective policies.</p>
+<p><em>How many passwords are valid</em> according to their policies?</p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-2" id="user-content-day-2"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 2</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em>2</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/2" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day02.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day02.html" rel="nofollow">Rendered</a></em></p>
+<p>Day 2, not too bad for Haskell either :)</p>
+<p>There is some fun in parsing here:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Policy</span> <span class="pl-k">=</span> <span class="pl-ent">P</span>
+    <span class="pl-k">{</span> <span class="pl-e">pIx1</span>  <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+    , <span class="pl-e">pIx2</span>  <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+    , <span class="pl-e">pChar</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Char</span></span>
+    , <span class="pl-e">pPass</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    <span class="pl-k">}</span>
+
+<span class="pl-en">parsePolicy</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Policy</span>
+parsePolicy str <span class="pl-k">=</span> <span class="pl-k">do</span>
+    [ixes,c<span class="pl-k">:</span>_,pwd] <span class="pl-k">&lt;-</span> <span class="pl-c1">pure</span> <span class="pl-k">$</span> <span class="pl-c1">words</span> str
+    [ix1,ix2]      <span class="pl-k">&lt;-</span> <span class="pl-c1">pure</span> <span class="pl-k">$</span> splitOn <span class="pl-s"><span class="pl-pds">&quot;</span>-<span class="pl-pds">&quot;</span></span> ixes
+    <span class="pl-ent">P</span> <span class="pl-k">&lt;$&gt;</span> readMaybe ix1
+      <span class="pl-k">&lt;*&gt;</span> readMaybe ix2
+      <span class="pl-k">&lt;*&gt;</span> <span class="pl-c1">pure</span> c
+      <span class="pl-k">&lt;*&gt;</span> <span class="pl-c1">pure</span> pwd</pre></div>
+<p>I used one of my more regular do-block tricks: if you pattern match in a
+<code>Maybe</code> do-block, then failed pattern matches will turn the whole thing into a
+<code>Nothing</code>.  So if any of those list literal pattern matches failed, the whole
+block will return <code>Nothing</code>.</p>
+<p>In any case, we just need to write a function to check if a given policy is
+valid for either criteria:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">countTrue</span> <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>) <span class="pl-k">-&gt;</span> [<span class="pl-smi">a</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+countTrue p <span class="pl-k">=</span> <span class="pl-c1">length</span> <span class="pl-k">.</span> <span class="pl-c1">filter</span> p
+
+<span class="pl-en">validate1</span> <span class="pl-k">::</span> <span class="pl-en">Policy</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+validate1 <span class="pl-ent">P</span>{<span class="pl-k">..</span>} <span class="pl-k">=</span> n <span class="pl-k">&gt;=</span> pIx1 <span class="pl-k">&amp;&amp;</span> n <span class="pl-k">&lt;=</span> pIx2
+  <span class="pl-k">where</span>
+    n <span class="pl-k">=</span> countTrue (<span class="pl-k">==</span> pChar) pPass
+
+<span class="pl-en">validate2</span> <span class="pl-k">::</span> <span class="pl-en">Policy</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+validate2 <span class="pl-ent">P</span>{<span class="pl-k">..</span>} <span class="pl-k">=</span> n <span class="pl-k">==</span> <span class="pl-c1">1</span>
+  <span class="pl-k">where</span>
+    n <span class="pl-k">=</span> countTrue (<span class="pl-k">==</span> pChar) [pPass <span class="pl-k">!!</span> (pIx1 <span class="pl-k">-</span> <span class="pl-c1">1</span>), pPass <span class="pl-k">!!</span> (pIx2 <span class="pl-k">-</span> <span class="pl-c1">1</span>)]</pre></div>
+<p>And so parts 1 and 2 are just a count of how many policies are true :)</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en">Policy</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> countTrue validate1
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en">Policy</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> countTrue validate2</pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-2-benchmarks" id="user-content-day-2-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 2 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 02a
+benchmarking...
+time                 59.47 μs   (59.46 μs .. 59.49 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 59.56 μs   (59.54 μs .. 59.58 μs)
+std dev              73.01 ns   (59.85 ns .. 85.83 ns)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 02b
+benchmarking...
+time                 42.35 μs   (42.33 μs .. 42.38 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 42.38 μs   (42.37 μs .. 42.41 μs)
+std dev              57.98 ns   (42.80 ns .. 82.91 ns)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 3: Toboggan Trajectory ---</h2><p>With the toboggan login problems resolved, you set off toward the airport. While travel by toboggan might be easy, it&#39;s certainly not safe: there&#39;s <span title="It looks like the toboggan steering system even runs on Intcode! Good thing you don&#39;t have to modify it.">very minimal steering</span> and the area is covered in trees. You&#39;ll need to see which angles will take you near the fewest trees.</p>
+<p>Due to the local geology, trees in this area only grow on exact integer coordinates in a grid. You make a map (your puzzle input) of the open squares (<code>.</code>) and trees (<code>#</code>) you can see. For example:</p>
+<pre><code>..##.......
+#...#...#..
+.#....#..#.
+..#.#...#.#
+.#...##..#.
+..#.##.....
+.#.#.#....#
+.#........#
+#.##...#...
+#...##....#
+.#..#...#.#
+</code></pre>
+<p>These aren&#39;t the only trees, though; due to something you read about once involving arboreal genetics and biome stability, the same pattern repeats to the right many times:</p>
+<pre><code><em>..##.......</em>..##.........##.........##.........##.........##.......  ---&gt;
+<em>#...#...#..</em>#...#...#..#...#...#..#...#...#..#...#...#..#...#...#..
+<em>.#....#..#.</em>.#....#..#..#....#..#..#....#..#..#....#..#..#....#..#.
+<em>..#.#...#.#</em>..#.#...#.#..#.#...#.#..#.#...#.#..#.#...#.#..#.#...#.#
+<em>.#...##..#.</em>.#...##..#..#...##..#..#...##..#..#...##..#..#...##..#.
+<em>..#.##.....</em>..#.##.......#.##.......#.##.......#.##.......#.##.....  ---&gt;
+<em>.#.#.#....#</em>.#.#.#....#.#.#.#....#.#.#.#....#.#.#.#....#.#.#.#....#
+<em>.#........#</em>.#........#.#........#.#........#.#........#.#........#
+<em>#.##...#...</em>#.##...#...#.##...#...#.##...#...#.##...#...#.##...#...
+<em>#...##....#</em>#...##....##...##....##...##....##...##....##...##....#
+<em>.#..#...#.#</em>.#..#...#.#.#..#...#.#.#..#...#.#.#..#...#.#.#..#...#.#  ---&gt;
+</code></pre>
+<p>You start on the open square (<code>.</code>) in the top-left corner and need to reach the bottom (below the bottom-most row on your map).</p>
+<p>The toboggan can only follow a few specific slopes (you opted for a cheaper model that prefers rational numbers); start by <em>counting all the trees</em> you would encounter for the slope <em>right 3, down 1</em>:</p>
+<p>From your starting position at the top-left, check the position that is right 3 and down 1. Then, check the position that is right 3 and down 1 from there, and so on until you go past the bottom of the map.</p>
+<p>The locations you&#39;d check in the above example are marked here with <code><em>O</em></code> where there was an open square and <code><em>X</em></code> where there was a tree:</p>
+<pre><code>..##.........##.........##.........##.........##.........##.......  ---&gt;
+#..<em>O</em>#...#..#...#...#..#...#...#..#...#...#..#...#...#..#...#...#..
+.#....<em>X</em>..#..#....#..#..#....#..#..#....#..#..#....#..#..#....#..#.
+..#.#...#<em>O</em>#..#.#...#.#..#.#...#.#..#.#...#.#..#.#...#.#..#.#...#.#
+.#...##..#..<em>X</em>...##..#..#...##..#..#...##..#..#...##..#..#...##..#.
+..#.##.......#.<em>X</em>#.......#.##.......#.##.......#.##.......#.##.....  ---&gt;
+.#.#.#....#.#.#.#.<em>O</em>..#.#.#.#....#.#.#.#....#.#.#.#....#.#.#.#....#
+.#........#.#........<em>X</em>.#........#.#........#.#........#.#........#
+#.##...#...#.##...#...#.<em>X</em>#...#...#.##...#...#.##...#...#.##...#...
+#...##....##...##....##...#<em>X</em>....##...##....##...##....##...##....#
+.#..#...#.#.#..#...#.#.#..#...<em>X</em>.#.#..#...#.#.#..#...#.#.#..#...#.#  ---&gt;
+</code></pre>
+<p>In this example, traversing the map using this slope would cause you to encounter <code><em>7</em></code> trees.</p>
+<p>Starting at the top-left corner of your map and following a slope of right 3 and down 1, <em>how many trees would you encounter?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-3" id="user-content-day-3"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 3</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em>3</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/3" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html" rel="nofollow">Rendered</a></em></p>
+<p>Here I&#39;m going to list two methods --- one that involves pre-building a set to
+check if a tree is at a given point, and the other involves just a single
+direct traversal checking all valid points for trees!</p>
+<p>First of all, I&#39;m going to reveal one of my favorite secrets for parsing 2D
+ASCII maps!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">asciiGrid</span> <span class="pl-k">::</span> <span class="pl-en">IndexedFold</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-en"><span class="pl-c1">Char</span></span>
+asciiGrid <span class="pl-k">=</span> reindexed swap (lined <span class="pl-k">&lt;.&gt;</span> folded)</pre></div>
+<p>This gives you an indexed fold (from the <em><a href="https://hackage.haskell.org/package/lens" rel="nofollow">lens</a></em> package) iterating over
+each character in a string, indexed by <code>(x,y)</code>!</p>
+<p>This lets us parse today&#39;s ASCII forest pretty easily into a <code>Set (Int, Int)</code>:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">parseForest</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>)
+parseForest <span class="pl-k">=</span> ifoldMapOf asciiGrid <span class="pl-k">$</span> <span class="pl-k">\</span>xy c <span class="pl-k">-&gt;</span> <span class="pl-k">case</span> c <span class="pl-k">of</span>
+    <span class="pl-s"><span class="pl-pds">&#39;</span>#<span class="pl-pds">&#39;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">S.</span>singleton xy
+    _   <span class="pl-k">-&gt;</span> <span class="pl-c1">S.</span>empty</pre></div>
+<p>This folds over the input string, giving us the <code>(x,y)</code> index and the character
+at that index.  We accumulate with a monoid, so we can use a <code>Set (Int, Int)</code>
+to collect the coordinates where the character is <code>&#39;#&#39;</code> and ignore all other
+coordinates.</p>
+<p>Admittedly, <code>Set (Int, Int)</code> is sliiiightly overkill, since you could probably
+use <code>Vector (Vector Bool)</code> or something with <code>V.fromList . map (V.fromList . (== &#39;#&#39;)) . lines</code>, and check for membership with double-indexing.  But I was
+bracing for something a little more demanding, like having to iterate over all
+the trees or something.  Still, sparse grids are usually my go-to data
+structure for Advent of Code ASCII maps.</p>
+<p>Anyway, now we need to be able to traverse the ray.  We can write a function to
+check all points in our line, given the slope (delta x and delta y):</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">countTrue</span> <span class="pl-k">::</span> (<span class="pl-smi">a</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>) <span class="pl-k">-&gt;</span> [<span class="pl-smi">a</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+countTrue p <span class="pl-k">=</span> <span class="pl-c1">length</span> <span class="pl-k">.</span> <span class="pl-c1">filter</span> p
+
+<span class="pl-en">countLine</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Set</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+countLine dx dy pts <span class="pl-k">=</span> countTrue valid [<span class="pl-c1">0</span><span class="pl-k">..</span><span class="pl-c1">322</span>]
+  <span class="pl-k">where</span>
+    valid i <span class="pl-k">=</span> (x, y) <span class="pl-k">`S.member`</span> pts
+      <span class="pl-k">where</span>
+        x <span class="pl-k">=</span> (i <span class="pl-k">*</span> dx) <span class="pl-k">`mod`</span> <span class="pl-c1">31</span>
+        y <span class="pl-k">=</span> i <span class="pl-k">*</span> dy</pre></div>
+<p>And there we go :)</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> countLine <span class="pl-c1">1</span> <span class="pl-c1">3</span>
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en">Set</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 pts <span class="pl-k">=</span> <span class="pl-c1">product</span> <span class="pl-k">$</span>
+    [ countLine <span class="pl-c1">1</span> <span class="pl-c1">1</span>
+    , countLine <span class="pl-c1">3</span> <span class="pl-c1">1</span>
+    , countLine <span class="pl-c1">5</span> <span class="pl-c1">1</span>
+    , countLine <span class="pl-c1">7</span> <span class="pl-c1">1</span>
+    , countLine <span class="pl-c1">1</span> <span class="pl-c1">2</span>
+    ] <span class="pl-k">&lt;*&gt;</span> [pts]</pre></div>
+<p>Note that this checks a lot of points we wouldn&#39;t normally need to check: any y
+points out of range (322) for <code>dy &gt; 1</code>.  We could add a minor optimization to
+only check for membership if <code>y</code> is in range, but because our check is a set
+lookup, it isn&#39;t too inefficient and it always returns <code>False</code> anyway.  So a
+small price to pay for slightly more clean code :)</p>
+<p>So this was the solution I used to submit my original answers, but I started
+thinking the possible optimizations.  I realized that we could actually do the
+whole thing in a single traversal...since we could associate each of the points
+with coordinates as we go along, and reject any coordinates that would not be
+on the line!</p>
+<p>We can write a function to check if a coordinate is on a line:</p>
+<div class="highlight highlight-source-haskell"><pre>validCoord
+    <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span>      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> dx</span>
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>      <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">^</span> dy</span>
+    <span class="pl-k">-&gt;</span> (<span class="pl-en"><span class="pl-c1">Int</span></span>, <span class="pl-en"><span class="pl-c1">Int</span></span>)
+    <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Bool</span></span>
+validCoord dx dy <span class="pl-k">=</span> <span class="pl-k">\</span>(x,y) <span class="pl-k">-&gt;</span>
+    <span class="pl-k">let</span> (i,r) <span class="pl-k">=</span> y <span class="pl-k">`divMod`</span> dy
+    <span class="pl-k">in</span>  r <span class="pl-k">==</span> <span class="pl-c1">0</span> <span class="pl-k">&amp;&amp;</span> (dx <span class="pl-k">*</span> i) <span class="pl-k">`mod`</span> <span class="pl-c1">31</span> <span class="pl-k">==</span> x</pre></div>
+<p>And now we can use <code>lengthOf</code> with the coordinate fold up there, which counts
+how many traversed items match our fold:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">countLineDirect</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+countLineDirect dx dy <span class="pl-k">=</span> lengthOf (asciiGrid <span class="pl-k">.</span> ifiltered tree)
+  <span class="pl-k">where</span>
+    checkCoord <span class="pl-k">=</span> validCoord dx dy
+    tree pt c <span class="pl-k">=</span> c <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">&#39;</span>#<span class="pl-pds">&#39;</span></span> <span class="pl-k">&amp;&amp;</span> checkCoord pt</pre></div>
+<p>And this gives the same answer, with the same interface!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> countLineDirect <span class="pl-c1">1</span> <span class="pl-c1">3</span>
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 pts <span class="pl-k">=</span> <span class="pl-c1">product</span> <span class="pl-k">$</span>
+    [ countLineDirect <span class="pl-c1">1</span> <span class="pl-c1">1</span>
+    , countLineDirect <span class="pl-c1">3</span> <span class="pl-c1">1</span>
+    , countLineDirect <span class="pl-c1">5</span> <span class="pl-c1">1</span>
+    , countLineDirect <span class="pl-c1">7</span> <span class="pl-c1">1</span>
+    , countLineDirect <span class="pl-c1">1</span> <span class="pl-c1">2</span>
+    ] <span class="pl-k">&lt;*&gt;</span> [pts]</pre></div>
+<p>Is the direct single-traversal method any faster?</p>
+<p>Well, it&#39;s complicated, slightly.  There&#39;s a clear benefit in the pre-built set
+method for part 2, since we essentially build up an efficient structure (<code>Set</code>)
+that we re-use for all five lines.  We get the most benefit if we build the set
+once and re-use it many times, since we only have to do the actual coordinate
+folding once.</p>
+<p>So, directly comparing the two methods, we see the single-traversal as
+faster for part 1 and slower for part 2.</p>
+<p>However, we can do a little better for the single-traversal method.  As it
+turns out, the lens indexed fold is kind of slow.  I was able to write the
+single-traversal one a much faster way by directly just using <code>zip [0..]</code>,
+without losing too much readability.  And with this <em>direct</em> single traversal
+and computing the indices manually, we get a much faster time for part 1 (about
+ten times faster!) and a slightly faster time for part 2 (about 5 times
+faster).  The benchmarks for this optimized version are what is presented
+below.</p>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-3-benchmarks" id="user-content-day-3-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 3 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 03a
+benchmarking...
+time                 315.9 μs   (305.7 μs .. 327.0 μs)
+                     0.991 R²   (0.988 R² .. 0.996 R²)
+mean                 312.0 μs   (303.6 μs .. 318.4 μs)
+std dev              28.62 μs   (24.06 μs .. 34.34 μs)
+variance introduced by outliers: 75% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 03b
+benchmarking...
+time                 1.430 ms   (1.355 ms .. 1.524 ms)
+                     0.980 R²   (0.972 R² .. 0.990 R²)
+mean                 1.503 ms   (1.467 ms .. 1.537 ms)
+std dev              130.1 μs   (103.9 μs .. 153.7 μs)
+variance introduced by outliers: 64% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 4: Passport Processing ---</h2><p>You arrive at the airport only to realize that you grabbed your North Pole Credentials instead of your passport. While these documents are extremely similar, North Pole Credentials aren&#39;t issued by a country and therefore aren&#39;t actually valid documentation for travel in most of the world.</p>
+<p>It seems like you&#39;re not the only one having problems, though; a very long line has formed for the automatic passport scanners, and the delay could upset your travel itinerary.</p>
+<p>Due to some questionable network security, you realize you might be able to solve both of these problems at the same time.</p>
+<p>The automatic passport scanners are slow because they&#39;re having trouble <em>detecting which passports have all required fields</em>. The expected fields are as follows:</p>
+<ul>
+<li><code>byr</code> (Birth Year)</li>
+<li><code>iyr</code> (Issue Year)</li>
+<li><code>eyr</code> (Expiration Year)</li>
+<li><code>hgt</code> (Height)</li>
+<li><code>hcl</code> (Hair Color)</li>
+<li><code>ecl</code> (Eye Color)</li>
+<li><code>pid</code> (Passport ID)</li>
+<li><code>cid</code> (Country ID)</li>
+</ul>
+<p>Passport data is validated in batch files (your puzzle input). Each passport is represented as a sequence of <code>key:value</code> pairs separated by spaces or newlines. Passports are separated by blank lines.</p>
+<p>Here is an example batch file containing four passports:</p>
+<pre><code>ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+byr:1937 iyr:2017 cid:147 hgt:183cm
+
+iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
+hcl:#cfa07d byr:1929
+
+hcl:#ae17e1 iyr:2013
+eyr:2024
+ecl:brn pid:760753108 byr:1931
+hgt:179cm
+
+hcl:#cfa07d eyr:2025 pid:166559648
+iyr:2011 ecl:brn hgt:59in
+</code></pre>
+<p>The first passport is <em>valid</em> - all eight fields are present. The second passport is <em>invalid</em> - it is missing <code>hgt</code> (the Height field).</p>
+<p>The third passport is interesting; the <em>only missing field</em> is <code>cid</code>, so it looks like data from North Pole Credentials, not a passport at all! Surely, nobody would mind if you made the system temporarily ignore missing <code>cid</code> fields.  Treat this &quot;passport&quot; as <em>valid</em>.</p>
+<p>The fourth passport is missing two fields, <code>cid</code> and <code>byr</code>. Missing <code>cid</code> is fine, but missing any other field is not, so this passport is <em>invalid</em>.</p>
+<p>According to the above rules, your improved system would report <code><em>2</em></code> valid passports.</p>
+<p>Count the number of <em>valid</em> passports - those that have all required fields. Treat <code>cid</code> as optional. <em>In your batch file, how many passports are valid?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-4" id="user-content-day-4"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 4</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em>4</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md">5</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/4" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day04.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day04.html" rel="nofollow">Rendered</a></em></p>
+<p>I almost hit the leaderboard today, but hit the 1 minute timeout because I
+didn&#39;t read carefully enough to treat <code>cid</code> as optional ;_;</p>
+<p>Ah well, that&#39;s life!</p>
+<p>Anyway, there are a lot of great Haskell solutions out there involving parser
+combinators and validation of different fields, stuff like that.  My original
+solution parsed a map of fields to values, and then validated those values
+according to their keys.</p>
+<p>But taking a step back from it all, I thought it would be a nice opportunity to
+try out the principal of <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/" rel="nofollow">Parse, Don&#39;t Validate</a> and see if I can take it
+its extremes!  And implementing this in a nice way lead me also to refinement
+types with the <em><a href="https://hackage.haskell.org/package/refined" rel="nofollow">refined</a></em> library, and also and the <a href="https://reasonablypolymorphic.com/blog/higher-kinded-data/" rel="nofollow">higher-kinded
+data</a> pattern, supported by  the <em><a href="https://hackage.haskell.org/package/barbies" rel="nofollow">barbies</a></em> library.</p>
+<p>So, what is &quot;Parse, Don&#39;t Validate&quot;?  It means: instead of parsing your data
+into some structure and then checking if the structure is valid (like my
+original parse-a-map-then-check-it), try instead to represent your data in a
+structure where it is <em>imposssible</em> to represent or create an invalid instance
+in the first place.  And so what was originally &quot;validation&quot; is now simply
+parsing your data into that correct-by-construction structure.</p>
+<p>This seemed like a good candidate for the <em><a href="https://hackage.haskell.org/package/refined" rel="nofollow">refined</a></em> library, which gives us
+data types that are &quot;literally&quot; impossible to construct unless they are in the
+right shape.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> (a &lt;-&gt; b) will represent the type of an integer between a and b</span>
+<span class="pl-k">type</span> <span class="pl-smi">a</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-smi">b</span>  <span class="pl-k">=</span> <span class="pl-en">Refined</span> (<span class="pl-en">FromTo</span> <span class="pl-smi">a</span> <span class="pl-smi">b</span>) <span class="pl-en"><span class="pl-c1">Int</span></span>
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> (n ** a) will represent the type of a list of a&#39;s with exactly n elements</span>
+<span class="pl-k">type</span> <span class="pl-smi">n</span> <span class="pl-k">**</span> <span class="pl-smi">a</span>   <span class="pl-k">=</span> <span class="pl-en">Refined</span> (<span class="pl-en">SizeEqualTo</span> <span class="pl-smi">n</span>) [<span class="pl-smi">a</span>]
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> These come included in the library</span>
+<span class="pl-en">refineThrow</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Int</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-smi">a</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-smi">b</span>)
+<span class="pl-en">refineThrow</span> <span class="pl-k">::</span> [<span class="pl-smi">a</span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-smi">n</span> <span class="pl-k">**</span> <span class="pl-smi">a</span>)</pre></div>
+<p>Which gives us a good picture for the type of our &quot;correct-by-construction&quot;
+passport:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Height</span> <span class="pl-k">=</span>
+    <span class="pl-ent">HCm</span> (<span class="pl-c1">150</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">193</span>)
+  | <span class="pl-ent">HIn</span> ( <span class="pl-c1">59</span> <span class="pl-k">&lt;-&gt;</span>  <span class="pl-c1">76</span>)
+
+<span class="pl-k">data</span> <span class="pl-en">Eye</span> <span class="pl-k">=</span> <span class="pl-ent">AMB</span> | <span class="pl-ent">BLU</span> | <span class="pl-ent">BRN</span> | <span class="pl-ent">GRY</span> | <span class="pl-ent">GRN</span> | <span class="pl-ent">HZL</span> | <span class="pl-ent">OTH</span>
+
+<span class="pl-k">data</span> <span class="pl-en">Passport</span> <span class="pl-k">=</span> <span class="pl-ent">Passport</span>
+    <span class="pl-k">{</span> <span class="pl-e">pByr</span> <span class="pl-k">::</span> <span class="pl-c1">1920</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2002</span>
+    , <span class="pl-e">pIyr</span> <span class="pl-k">::</span> <span class="pl-c1">2010</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2020</span>
+    , <span class="pl-e">pEyr</span> <span class="pl-k">::</span> <span class="pl-c1">2020</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2030</span>
+    , <span class="pl-e">pHgt</span> <span class="pl-k">::</span> <span class="pl-en">Height</span>
+    , <span class="pl-e">pHcl</span> <span class="pl-k">::</span> <span class="pl-c1">6</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">15</span>)
+    , <span class="pl-e">pEcl</span> <span class="pl-k">::</span> <span class="pl-en">Eye</span>
+    , <span class="pl-e">pPid</span> <span class="pl-k">::</span> <span class="pl-c1">9</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">9</span>)
+    <span class="pl-k">}</span></pre></div>
+<p>Et voila!  We now have a passport where it is impossible to construct unless
+you have all the correct components!</p>
+<p>That&#39;s great and all, but...how do we actually parse our data type into this?</p>
+<p>One way that could work is to parse each key-value pair into a <code>Passport</code> with
+all fields blank except for the field corresponding to that key-value pair, and
+then combining those optional-field passports into a &quot;certain&quot; passport.</p>
+<p>So we can imagine:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">PassportMaybe</span> <span class="pl-k">=</span> <span class="pl-ent">PassportMaybe</span>
+    <span class="pl-k">{</span> <span class="pl-e">pByrMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">1920</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2002</span>)
+    , <span class="pl-e">pIyrMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">2010</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2020</span>)
+    , <span class="pl-e">pEyrMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">2020</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2030</span>)
+    , <span class="pl-e">pHgtMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Height</span>
+    , <span class="pl-e">pHclMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">6</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">15</span>))
+    , <span class="pl-e">pEclMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Eye</span>
+    , <span class="pl-e">pPidMaybe</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">9</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">9</span>))
+    <span class="pl-k">}</span></pre></div>
+<p>with an appropriate <code>Monoid</code> instance that merges known fields together, and a
+function like</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">fromPassportMaybe</span> <span class="pl-k">::</span> <span class="pl-en">PassportMaybe</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Passport</span></pre></div>
+<p>that will only work if all the fields are <code>Just</code>.</p>
+<p>And hey, we would also maybe like to keep a collection of all the parsers so we
+can dispatch them whenever we want...</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">PassportParser</span> <span class="pl-k">=</span> <span class="pl-ent">PassportParser</span>
+    <span class="pl-k">{</span> <span class="pl-e">pByrParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">1920</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2002</span>)
+    , <span class="pl-e">pIyrParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">2010</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2020</span>)
+    , <span class="pl-e">pEyrParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">2020</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2030</span>)
+    , <span class="pl-e">pHgtParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Height</span>
+    , <span class="pl-e">pHclParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">6</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">15</span>))
+    , <span class="pl-e">pEclParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en">Eye</span>
+    , <span class="pl-e">pPidParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-c1">9</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">9</span>))
+    <span class="pl-k">}</span></pre></div>
+<p>And wait a minute ... doesn&#39;t part 1 require us to create a passport <em>without</em>
+validating the strings?  So we also need to create</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">PassportRaw</span> <span class="pl-k">=</span> <span class="pl-ent">PassportRaw</span>
+    <span class="pl-k">{</span> <span class="pl-e">pByrRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pIyrRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pEyrRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pHgtRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pHclRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pEclRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pPidRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    <span class="pl-k">}</span></pre></div>
+<p>And also</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">PassportRawMaybe</span> <span class="pl-k">=</span> <span class="pl-ent">PassportRawMaybe</span>
+    <span class="pl-k">{</span> <span class="pl-e">pByrRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pIyrRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pEyrRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pHgtRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pHclRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pEclRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    , <span class="pl-e">pPidRaw</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>
+    <span class="pl-k">}</span></pre></div>
+<p>as well, for the accumulation part?  Wow, this sounds like a horrible idea!</p>
+<p>Or...does it?  What if we try the old <a href="https://reasonablypolymorphic.com/blog/higher-kinded-data/" rel="nofollow">higher-kinded data</a> trick?</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">data</span> <span class="pl-en">Passport</span> <span class="pl-smi">f</span> <span class="pl-k">=</span> <span class="pl-ent">Passport</span>
+    <span class="pl-k">{</span> <span class="pl-e">pByr</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> (<span class="pl-c1">1920</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2002</span>)
+    , <span class="pl-e">pIyr</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> (<span class="pl-c1">2010</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2020</span>)
+    , <span class="pl-e">pEyr</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> (<span class="pl-c1">2020</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">2030</span>)
+    , <span class="pl-e">pHgt</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> <span class="pl-en">Height</span>
+    , <span class="pl-e">pHcl</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> (<span class="pl-c1">6</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">15</span>))
+    , <span class="pl-e">pEcl</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> <span class="pl-en">Eye</span>
+    , <span class="pl-e">pPid</span> <span class="pl-k">::</span> <span class="pl-smi">f</span> (<span class="pl-c1">9</span> <span class="pl-k">**</span> (<span class="pl-c1">0</span> <span class="pl-k">&lt;-&gt;</span> <span class="pl-c1">9</span>))
+    <span class="pl-k">}</span>
+  <span class="pl-k">deriving</span> (<span class="pl-e">Generic</span>)</pre></div>
+<p>Neat, huh?  We now have a flexible data type that can account for all usage
+patterns!  For example:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> the original</span>
+<span class="pl-k">type</span> <span class="pl-en">FullPassport</span> <span class="pl-k">=</span> <span class="pl-en">Passport</span> <span class="pl-en">Identity</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> the optional-field</span>
+<span class="pl-k">type</span> <span class="pl-en">PassportMaybe</span> <span class="pl-k">=</span> <span class="pl-en">Passport</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> the parser collection</span>
+<span class="pl-k">newtype</span> <span class="pl-en">Parser</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">{</span> <span class="pl-e">runParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">a</span> <span class="pl-k">}</span>
+<span class="pl-k">type</span> <span class="pl-en">PassportParser</span> <span class="pl-k">=</span> <span class="pl-en">Passport</span> <span class="pl-en">Parser</span>
+
+<span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> the raw strings</span>
+<span class="pl-k">newtype</span> <span class="pl-en">Const</span> <span class="pl-smi">w</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-k">{</span> <span class="pl-e">getConst</span> <span class="pl-k">::</span> <span class="pl-smi">w</span> <span class="pl-k">}</span>
+<span class="pl-k">type</span> <span class="pl-en">PassportRaw</span> <span class="pl-k">=</span> <span class="pl-en">Passport</span> (<span class="pl-en">Const</span> <span class="pl-en"><span class="pl-c1">String</span></span>)
+
+ <span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> the optional raw strings</span>
+<span class="pl-k">type</span> <span class="pl-en">PassportRaw</span> <span class="pl-k">=</span> <span class="pl-en">Passport</span> (<span class="pl-en">Const</span> (<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>))</pre></div>
+<p>We get all of our original desired types, all from a single type definition, by
+swapping out the functor <code>f</code> we use!  And then we can just use the
+<em><a href="https://hackage.haskell.org/package/barbies" rel="nofollow">barbies</a></em> library to convert between the different formats.  Neat!</p>
+<p>Well, what are we waiting for?</p>
+<p>First, let&#39;s derive all of the instances necessary for our parsing to work,
+given by the <em>barbies</em> and <em>one-liner-instances</em> packages.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">instance</span> <span class="pl-en">FunctorB</span> <span class="pl-en">Passport</span>
+<span class="pl-k">instance</span> <span class="pl-en">ApplicativeB</span> <span class="pl-en">Passport</span>
+<span class="pl-k">instance</span> <span class="pl-en">TraversableB</span> <span class="pl-en">Passport</span>
+<span class="pl-k">instance</span> <span class="pl-en">ConstraintsB</span> <span class="pl-en">Passport</span>
+<span class="pl-k">deriving</span> <span class="pl-k">via</span> <span class="pl-en">GMonoid</span> (<span class="pl-en">Passport</span> <span class="pl-smi">f</span>) <span class="pl-k">instance</span> <span class="pl-en">AllBF</span> <span class="pl-en">Semigroup</span> <span class="pl-smi">f</span> <span class="pl-en">Passport</span> <span class="pl-k">=&gt;</span> <span class="pl-en">Semigroup</span> (<span class="pl-en">Passport</span> <span class="pl-smi">f</span>)
+<span class="pl-k">deriving</span> <span class="pl-k">via</span> <span class="pl-en">GMonoid</span> (<span class="pl-en">Passport</span> <span class="pl-smi">f</span>) <span class="pl-k">instance</span> <span class="pl-en">AllBF</span> <span class="pl-en"><span class="pl-e">Monoid</span></span> <span class="pl-smi">f</span> <span class="pl-en">Passport</span> <span class="pl-k">=&gt;</span> <span class="pl-en"><span class="pl-e">Monoid</span></span> (<span class="pl-en">Passport</span> <span class="pl-smi">f</span>)
+<span class="pl-k">deriving</span> <span class="pl-k">instance</span> <span class="pl-en">AllBF</span> <span class="pl-en"><span class="pl-e">Show</span></span> <span class="pl-smi">f</span> <span class="pl-en">Passport</span> <span class="pl-k">=&gt;</span> <span class="pl-en"><span class="pl-e">Show</span></span> (<span class="pl-en">Passport</span> <span class="pl-smi">f</span>)</pre></div>
+<p>Now we can write our parsers:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">newtype</span> <span class="pl-en">Parser</span> <span class="pl-smi">a</span> <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">{</span> <span class="pl-e">runParser</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-smi">a</span> <span class="pl-k">}</span>
+
+<span class="pl-en">passportParser</span> <span class="pl-k">::</span> <span class="pl-en">Passport</span> <span class="pl-en">Parser</span>
+passportParser <span class="pl-k">=</span> <span class="pl-ent">Passport</span>
+    { pByr <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> refineThrow <span class="pl-k">&lt;=&lt;</span> readMaybe
+    , pIyr <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> refineThrow <span class="pl-k">&lt;=&lt;</span> readMaybe
+    , pEyr <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> refineThrow <span class="pl-k">&lt;=&lt;</span> readMaybe
+    , pHgt <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> <span class="pl-k">\</span>str <span class="pl-k">-&gt;</span>
+                <span class="pl-k">let</span> (x, u) <span class="pl-k">=</span> <span class="pl-c1">span</span> isDigit str
+                <span class="pl-k">in</span>  <span class="pl-k">case</span> u <span class="pl-k">of</span>
+                      <span class="pl-s"><span class="pl-pds">&quot;</span>cm<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">fmap</span> <span class="pl-ent">HCm</span> <span class="pl-k">.</span> refineThrow <span class="pl-k">=&lt;&lt;</span> readMaybe x
+                      <span class="pl-s"><span class="pl-pds">&quot;</span>in<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">fmap</span> <span class="pl-ent">HIn</span> <span class="pl-k">.</span> refineThrow <span class="pl-k">=&lt;&lt;</span> readMaybe x
+                      _    <span class="pl-k">-&gt;</span> <span class="pl-ent">Nothing</span>
+    , pHcl <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+                <span class="pl-s"><span class="pl-pds">&#39;</span>#<span class="pl-pds">&#39;</span></span><span class="pl-k">:</span>n <span class="pl-k">-&gt;</span> refineThrow <span class="pl-k">=&lt;&lt;</span> <span class="pl-c1">traverse</span> readHex n
+                _     <span class="pl-k">-&gt;</span> <span class="pl-ent">Nothing</span>
+    , pEcl <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> readMaybe <span class="pl-k">.</span> <span class="pl-c1">map</span> toUpper
+    , pPid <span class="pl-k">=</span> <span class="pl-ent">Parser</span> <span class="pl-k">$</span> refineThrow <span class="pl-k">&lt;=&lt;</span> <span class="pl-c1">traverse</span> (refineThrow <span class="pl-k">&lt;=&lt;</span> readMaybe <span class="pl-k">.</span> (<span class="pl-k">:</span><span class="pl-c1">[]</span>))
+    }
+  <span class="pl-k">where</span>
+    readHex c
+      <span class="pl-k">|</span> isHexDigit c <span class="pl-k">=</span> refineThrow (digitToInt c)
+      <span class="pl-k">|</span> <span class="pl-c1">otherwise</span>    <span class="pl-k">=</span> <span class="pl-ent">Nothing</span></pre></div>
+<p>The usage of <code>refineThrow</code> means that we use the machinery already defined in
+the <em><a href="https://hackage.haskell.org/package/refined" rel="nofollow">refined</a></em> library to automatically check that our data is within the
+given ranges...no need for manual range checking!</p>
+<p>Now we can load a single <code>key:val</code> token into a passport that is <em>empty</em> (all
+fields are <code>Const Nothing</code>) <em>except for</em> the value at the seen key</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Load a single &quot;key:val&quot; token into a passport</span>
+<span class="pl-en">loadPassportField</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Passport</span> (<span class="pl-en">Const</span> (<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">String</span></span>))
+loadPassportField str <span class="pl-k">=</span> <span class="pl-k">case</span> splitOn <span class="pl-s"><span class="pl-pds">&quot;</span>:<span class="pl-pds">&quot;</span></span> str <span class="pl-k">of</span>
+    [k,v] <span class="pl-k">-&gt;</span> <span class="pl-k">case</span> k <span class="pl-k">of</span>
+      <span class="pl-s"><span class="pl-pds">&quot;</span>byr<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pByr <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      <span class="pl-s"><span class="pl-pds">&quot;</span>iyr<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pIyr <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      <span class="pl-s"><span class="pl-pds">&quot;</span>eyr<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pEyr <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      <span class="pl-s"><span class="pl-pds">&quot;</span>hgt<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pHgt <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      <span class="pl-s"><span class="pl-pds">&quot;</span>hcl<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pHcl <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      <span class="pl-s"><span class="pl-pds">&quot;</span>ecl<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pEcl <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      <span class="pl-s"><span class="pl-pds">&quot;</span>pid<span class="pl-pds">&quot;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span> { pPid <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> v) }
+      _     <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span>
+    _     <span class="pl-k">-&gt;</span> <span class="pl-c1">mempty</span></pre></div>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> loadPassportField <span class="pl-s"><span class="pl-pds">&quot;</span>eyr:1234<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Passport</span>
+  { pByr <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-ent">Nothing</span>
+  , pIyr <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-ent">Nothing</span>
+  , pEyr <span class="pl-k">=</span> <span class="pl-ent">Const</span> (<span class="pl-ent">Just</span> <span class="pl-s"><span class="pl-pds">&quot;</span>1234<span class="pl-pds">&quot;</span></span>)
+  , pHgt <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-ent">Nothing</span>
+  , pHcl <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-ent">Nothing</span>
+  , pEcl <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-ent">Nothing</span>
+  , pPid <span class="pl-k">=</span> <span class="pl-ent">Const</span> <span class="pl-ent">Nothing</span>
+  }</pre></div>
+<p>Now we can parse a field in its entirety by using <code>bzipWith</code> (from <em>barbies</em>),
+to &quot;zip together&quot; a <code>Passport Parser</code> and <code>Passport (Const (Maybe String))</code>
+with a given function that tells how to merge the values in any two fields.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">parsePassportField</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en">Passport</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span>
+parsePassportField <span class="pl-k">=</span> bzipWith go passportParser <span class="pl-k">.</span> loadPassportField
+  <span class="pl-k">where</span>
+    go p (<span class="pl-ent">Const</span> x) <span class="pl-k">=</span> runParser p <span class="pl-k">=&lt;&lt;</span> x</pre></div>
+<p>In the above, <code>go</code> is run between each matching field in the <code>Passport Parser</code>
+and the <code>Passport (Const (Maybe String))</code>, and the overall effect is that each
+string is run with the appropriate parser for its field.</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> parsePassportField <span class="pl-s"><span class="pl-pds">&quot;</span>eyr:2025<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Passport</span>
+  { pByr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pIyr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pEyr <span class="pl-k">=</span> <span class="pl-ent">Just</span> (refined <span class="pl-c1">2025</span>)
+  , pHgt <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pHcl <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pEcl <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pPid <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  }
+ghci<span class="pl-k">&gt;</span> parsePassportField <span class="pl-s"><span class="pl-pds">&quot;</span>eyr:2050<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Passport</span>
+  { pByr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pIyr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pEyr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pHgt <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pHcl <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pEcl <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pPid <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  }</pre></div>
+<p>And the way the <code>Monoid</code> instance works, we can just combine two <code>Passport Maybe</code>s with <code>&lt;&gt;</code>:</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> parsePassportField <span class="pl-s"><span class="pl-pds">&quot;</span>eyr:2025<span class="pl-pds">&quot;</span></span> <span class="pl-k">&lt;&gt;</span> parsePassportField <span class="pl-s"><span class="pl-pds">&quot;</span>ecl:brn<span class="pl-pds">&quot;</span></span>
+<span class="pl-ent">Passport</span>
+  { pByr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pIyr <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pEyr <span class="pl-k">=</span> <span class="pl-ent">Just</span> (refined <span class="pl-c1">2025</span>)
+  , pHgt <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pHcl <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  , pEcl <span class="pl-k">=</span> <span class="pl-ent">Just</span> <span class="pl-ent">BRN</span>
+  , pPid <span class="pl-k">=</span> <span class="pl-ent">Nothing</span>
+  }</pre></div>
+<p>Which gives us a nice function to parse a whole passport, with the help of
+<code>btraverse</code> to flip a <code>Passport Maybe</code> into a <code>Maybe (Passport Identity)</code></p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">parsePassport</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-en">Passport</span> <span class="pl-en">Identity</span>)
+parsePassport <span class="pl-k">=</span> btraverse (<span class="pl-c1">fmap</span> <span class="pl-ent">Identity</span>)
+              <span class="pl-k">.</span> <span class="pl-c1">foldMap</span> parsePassportField
+              <span class="pl-k">.</span> <span class="pl-c1">words</span></pre></div>
+<p>The result of <code>foldMap parsePassportField . words</code> is a <code>Passport Maybe</code>, and
+<code>btraverse</code> &quot;pulls out&quot; all of the <code>Just</code> fields and returns a <code>Passport Identity</code> if all of the fields are <code>Just</code>, failing with <code>Nothing</code> if any of the
+fields are <code>Nothing</code>.</p>
+<p>And...that&#39;s it for part 2!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Get a list of all valid passports.</span>
+<span class="pl-en">part2</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en">Passport</span> <span class="pl-en">Identity</span>]
+part2 <span class="pl-k">=</span> mapMaybe parsePassport <span class="pl-k">.</span> splitOn <span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-cce">\n\n</span><span class="pl-pds">&quot;</span></span></pre></div>
+<p>This works because we know that if we have a <code>Passport Identity</code>, we <em>know</em> it
+has to be a valid passport.  It&#39;s physically impossible to create one that
+isn&#39;t valid!</p>
+<p><strong>All hail &quot;Parse, Don&#39;t Validate&quot;!</strong></p>
+<p>And part 1 is a fun diversion: instead of a <code>Passport Identity</code>, we want to
+parse into a <code>Passport (Const String)</code> instead.  The mechanics are pretty much
+the same:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">loadPassport</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> (<span class="pl-en">Passport</span> (<span class="pl-en">Const</span> <span class="pl-en"><span class="pl-c1">String</span></span>))
+loadPassport <span class="pl-k">=</span> btraverse (<span class="pl-k">\</span>(<span class="pl-ent">Const</span> x) <span class="pl-k">-&gt;</span> <span class="pl-ent">Const</span> <span class="pl-k">&lt;$&gt;</span> x)
+             <span class="pl-k">.</span> <span class="pl-c1">foldMap</span> loadPassportField
+             <span class="pl-k">.</span> <span class="pl-c1">words</span></pre></div>
+<p>The result of <code>foldMap loadPassportField</code> is a <code>Passport (Const (Maybe String))</code>, and so <code>btraverse</code> will pull out all the <code>Just</code>s again, returning a
+<code>Passport (Const String)</code> and failing if any of those values were <code>Nothing</code>s.
+Note the sliiight abuse of the <code>Monoid</code> instance for <code>Maybe</code>, which combines
+strings by concatenation.  But we&#39;re more concerned about whether or not it is
+present than the actual contents of the string.</p>
+<p>Anyway, here&#39;s wonderwall.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-c"><span class="pl-c">--</span> <span class="pl-c">|</span> Get a list of all complete passports field string values.</span>
+<span class="pl-en">part1</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> [<span class="pl-en">Passport</span> (<span class="pl-en">Const</span> <span class="pl-en"><span class="pl-c1">String</span></span>)]
+part1 <span class="pl-k">=</span> mapMaybe loadPassport <span class="pl-k">.</span> splitOn <span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-cce">\n\n</span><span class="pl-pds">&quot;</span></span></pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-4-benchmarks" id="user-content-day-4-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 4 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 04a
+benchmarking...
+time                 1.527 ms   (1.415 ms .. 1.655 ms)
+                     0.969 R²   (0.954 R² .. 0.988 R²)
+mean                 1.662 ms   (1.604 ms .. 1.702 ms)
+std dev              176.0 μs   (133.5 μs .. 265.1 μs)
+variance introduced by outliers: 73% (severely inflated)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 04b
+benchmarking...
+time                 4.856 ms   (4.611 ms .. 5.008 ms)
+                     0.971 R²   (0.946 R² .. 0.986 R²)
+mean                 4.897 ms   (4.720 ms .. 5.123 ms)
+std dev              611.3 μs   (427.5 μs .. 857.6 μs)
+variance introduced by outliers: 72% (severely inflated)
+
+* parsing and formatting times excluded
+</code></pre>
+</article><article class="day-desc"><h2>--- Day 5: Binary Boarding ---</h2><p>You board your plane only to discover a new problem: you dropped your boarding pass! You aren&#39;t sure which seat is yours, and all of the flight attendants are busy with the flood of people that suddenly made it through passport control.</p>
+<p>You write a <span title="No problem!">quick program</span> to use your phone&#39;s camera to scan all of the nearby boarding passes (your puzzle input); perhaps you can find your seat through process of elimination.</p>
+<p>Instead of <a href="https://www.youtube.com/watch?v=oAHbLRjF0vo" target="_blank">zones or groups</a>, this airline uses <em>binary space partitioning</em> to seat people. A seat might be specified like <code>FBFBBFFRLR</code>, where <code>F</code> means &quot;front&quot;, <code>B</code> means &quot;back&quot;, <code>L</code> means &quot;left&quot;, and <code>R</code> means &quot;right&quot;.</p>
+<p>The first 7 characters will either be <code>F</code> or <code>B</code>; these specify exactly one of the <em>128 rows</em> on the plane (numbered <code>0</code> through <code>127</code>). Each letter tells you which half of a region the given seat is in. Start with the whole list of rows; the first letter indicates whether the seat is in the <em>front</em> (<code>0</code> through <code>63</code>) or the <em>back</em> (<code>64</code> through <code>127</code>). The next letter indicates which half of that region the seat is in, and so on until you&#39;re left with exactly one row.</p>
+<p>For example, consider just the first seven characters of <code>FBFBBFFRLR</code>:</p>
+<ul>
+<li>Start by considering the whole range, rows <code>0</code> through <code>127</code>.</li>
+<li><code>F</code> means to take the <em>lower half</em>, keeping rows <code>0</code> through <code>63</code>.</li>
+<li><code>B</code> means to take the <em>upper half</em>, keeping rows <code>32</code> through <code>63</code>.</li>
+<li><code>F</code> means to take the <em>lower half</em>, keeping rows <code>32</code> through <code>47</code>.</li>
+<li><code>B</code> means to take the <em>upper half</em>, keeping rows <code>40</code> through <code>47</code>.</li>
+<li><code>B</code> keeps rows <code>44</code> through <code>47</code>.</li>
+<li><code>F</code> keeps rows <code>44</code> through <code>45</code>.</li>
+<li>The final <code>F</code> keeps the lower of the two, <em>row <code>44</code></em>.</li>
+</ul>
+<p>The last three characters will be either <code>L</code> or <code>R</code>; these specify exactly one of the <em>8 columns</em> of seats on the plane (numbered <code>0</code> through <code>7</code>). The same process as above proceeds again, this time with only three steps.  <code>L</code> means to keep the <em>lower half</em>, while <code>R</code> means to keep the <em>upper half</em>.</p>
+<p>For example, consider just the last 3 characters of <code>FBFBBFFRLR</code>:</p>
+<ul>
+<li>Start by considering the whole range, columns <code>0</code> through <code>7</code>.</li>
+<li><code>R</code> means to take the <em>upper half</em>, keeping columns <code>4</code> through <code>7</code>.</li>
+<li><code>L</code> means to take the <em>lower half</em>, keeping columns <code>4</code> through <code>5</code>.</li>
+<li>The final <code>R</code> keeps the upper of the two, <em>column <code>5</code></em>.</li>
+</ul>
+<p>So, decoding <code>FBFBBFFRLR</code> reveals that it is the seat at <em>row <code>44</code>, column <code>5</code></em>.</p>
+<p>Every seat also has a unique <em>seat ID</em>: multiply the row by 8, then add the column. In this example, the seat has ID <code>44 * 8 + 5 = <em>357</em></code>.</p>
+<p>Here are some other boarding passes:</p>
+<ul>
+<li><code>BFFFBBFRRR</code>: row <code>70</code>, column <code>7</code>, seat ID <code>567</code>.</li>
+<li><code>FFFBBBFRRR</code>: row <code>14</code>, column <code>7</code>, seat ID <code>119</code>.</li>
+<li><code>BBFFBBFRLL</code>: row <code>102</code>, column <code>4</code>, seat ID <code>820</code>.</li>
+</ul>
+<p>As a sanity check, look through your list of boarding passes. <em>What is the highest seat ID on a boarding pass?</em></p>
+</article><article class="markdown-body entry-content container-lg" itemprop="text"><h1><a aria-hidden="true" class="anchor" href="#day-5" id="user-content-day-5"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 5</h1>
+
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">all</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md">1</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md">2</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md">3</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md">4</a></em> / <em>5</em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md">6</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md">7</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md">8</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md">9</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md">10</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md">11</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day12.md">12</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md">13</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md">14</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md">15</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md">16</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md">17</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md">18</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day19.md">19</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day20.md">20</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md">21</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md">22</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md">23</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md">24</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md">25</a></em></p>
+<p><a href="http://feeds.feedburner.com/jle-advent-of-code-2020" rel="nofollow">Available as an RSS Feed</a></p>
+<p><em><a href="https://adventofcode.com/2020/day/5" rel="nofollow">Prompt</a></em> / <em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day05.hs">Code</a></em> / <em><a href="https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day05.html" rel="nofollow">Rendered</a></em></p>
+<p>So, compared to yesterday&#39;s, this was decently chill :)</p>
+<p>The main insight here probably is that the puzzle is just describing that the
+seat ID&#39;s are straight up binary notation for numerals, with F/L representing
+what is traditionally 0, and B/R representing what is traditionally 1.  So we
+can use any of our binary parsers from the standard libraries, or we can just
+directly pull it into binary.</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">seatId</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+seatId <span class="pl-k">=</span> foldl&#39; iGuessWe&#39;reDoingThis <span class="pl-c1">0</span>
+  <span class="pl-k">where</span>
+    iGuessWe&#39;reDoingThis n <span class="pl-k">=</span> <span class="pl-k">\</span><span class="pl-k">case</span>
+      <span class="pl-s"><span class="pl-pds">&#39;</span>B<span class="pl-pds">&#39;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">2</span><span class="pl-k">*</span>n<span class="pl-k">+</span><span class="pl-c1">1</span>
+      <span class="pl-s"><span class="pl-pds">&#39;</span>R<span class="pl-pds">&#39;</span></span> <span class="pl-k">-&gt;</span> <span class="pl-c1">2</span><span class="pl-k">*</span>n<span class="pl-k">+</span><span class="pl-c1">1</span>
+      _   <span class="pl-k">-&gt;</span> <span class="pl-c1">2</span><span class="pl-k">*</span>n</pre></div>
+<p>A nice one-pass way to find the missing seat ID is to realize that if we sum
+all the numbers from min to max, and sum all of our lists&#39;s seat id&#39;s, then the
+difference is the missing number.  Luckily there&#39;s a nice closed-form solution
+for the sum of all numbers in a given range (the sum of numbers from <code>a</code> to <code>b</code>
+is <code>b*(b+1)`div`2 - a*(a-1)`div`2</code>), so we can do all of this in a single
+pass using the <em><a href="https://hackage.haskell.org/package/foldl" rel="nofollow">foldl</a></em> library</p>
+<div class="highlight highlight-source-haskell"><pre>{-# <span class="pl-k">LANGUAGE</span> ApplicativeDo #-}
+<span class="pl-k">import</span> <span class="pl-k">qualified</span> <span class="pl-c1">Control.Foldl</span> <span class="pl-k">as</span> <span class="pl-c1">F</span>
+
+<span class="pl-en">findHole</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">F.</span>Fold</span> <span class="pl-en"><span class="pl-c1">Int</span></span> (<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>)
+findHole <span class="pl-k">=</span> <span class="pl-k">do</span>
+    mn <span class="pl-k">&lt;-</span> <span class="pl-c1">F.</span><span class="pl-c1">minimum</span>
+    mx <span class="pl-k">&lt;-</span> <span class="pl-c1">F.</span><span class="pl-c1">maximum</span>
+    sm <span class="pl-k">&lt;-</span> <span class="pl-c1">F.</span><span class="pl-c1">sum</span>
+    <span class="pl-c1">pure</span> <span class="pl-k">$</span>
+      missingItem <span class="pl-k">&lt;$&gt;</span> mn <span class="pl-k">&lt;*&gt;</span> mx <span class="pl-k">&lt;*&gt;</span> <span class="pl-c1">pure</span> sm
+  <span class="pl-k">where</span>
+    missingItem mn mx sm <span class="pl-k">=</span> totalSum <span class="pl-k">-</span> sm
+      <span class="pl-k">where</span>
+        totalSum <span class="pl-k">=</span> mx<span class="pl-k">*</span>(mx<span class="pl-k">+</span><span class="pl-c1">1</span>)<span class="pl-k">`div`</span><span class="pl-c1">2</span> <span class="pl-k">-</span> mn<span class="pl-k">*</span>(mn<span class="pl-k">-</span><span class="pl-c1">1</span>)<span class="pl-k">`div`</span><span class="pl-c1">2</span></pre></div>
+<p>A <code>F.Fold Int (Maybe Int)</code> folds a list of <code>Int</code>s into a <code>Maybe Int</code>.  You can
+run it with <code>F.fold :: F.Fold a b -&gt; [a] -&gt; b</code>.</p>
+<p>I really like the <em>foldl</em> library because it lets you build a complex
+single-pass fold by combining multiple simple single-pass folds (like
+<code>F.minimum</code>, <code>F.maximum</code>, <code>F.sum</code>) using an Applicative interface.  We need to
+do a bit of wrangling with the <code>Maybe</code>s because <code>F.minimum</code> and <code>F.maximum</code>
+each return <code>Maybe Int</code>.</p>
+<p>And that&#39;s more or less it!  We can actually represent the entire thing as a
+fold if we use <code>F.premap</code>, to pre-map a fold...</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en"><span class="pl-c1">F.</span>premap</span>                 <span class="pl-k">::</span> (<span class="pl-smi">c</span> <span class="pl-k">-&gt;</span> <span class="pl-smi">a</span>) <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">F.</span>Fold</span> <span class="pl-smi">a</span> <span class="pl-smi">b</span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">F.</span>Fold</span> <span class="pl-smi">c</span> <span class="pl-smi">b</span>
+
+<span class="pl-c"><span class="pl-c">--</span> &quot;pre-apply&quot; `setId` so we fold over a string instead</span>
+<span class="pl-c1">F.</span>premap seatId findHole <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">F.</span>Fold</span> <span class="pl-en"><span class="pl-c1">String</span></span> (<span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>)</pre></div>
+<p>And...that&#39;s enough to do it all in a single pass!</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-en">part1</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">String</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part1 <span class="pl-k">=</span> <span class="pl-c1">F.</span>fold <span class="pl-k">$</span> <span class="pl-c1">F.</span>premap seatId <span class="pl-c1">F.</span><span class="pl-c1">maximum</span>
+
+<span class="pl-en">part2</span> <span class="pl-k">::</span> [<span class="pl-en"><span class="pl-c1">String</span></span>] <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Maybe</span></span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+part2 <span class="pl-k">=</span> <span class="pl-c1">F.</span>fold <span class="pl-k">$</span> <span class="pl-c1">F.</span>premap seatId findHole</pre></div>
+<p>Bonus: I was tipped off that the 3rd from last digit of F/L are 1, while the
+same digit of B/R are 0:</p>
+<div class="highlight highlight-source-haskell"><pre>ghci<span class="pl-k">&gt;</span> (<span class="pl-k">.&amp;.</span> <span class="pl-c1">1</span>) <span class="pl-k">.</span> (<span class="pl-k">`shiftR`</span> <span class="pl-c1">2</span>) <span class="pl-k">.</span> ord <span class="pl-k">&lt;$&gt;</span> <span class="pl-s"><span class="pl-pds">&quot;</span>FLBR<span class="pl-pds">&quot;</span></span>
+[<span class="pl-c1">1</span>,<span class="pl-c1">1</span>,<span class="pl-c1">0</span>,<span class="pl-c1">0</span>]</pre></div>
+<p>So we can actually use this for <code>seatId</code> to get a slight speed boost and help
+out the branch predictor maybe:</p>
+<div class="highlight highlight-source-haskell"><pre><span class="pl-k">import</span> <span class="pl-c1">Data.Bits</span>
+
+<span class="pl-en">seatId</span> <span class="pl-k">::</span> <span class="pl-en"><span class="pl-c1">String</span></span> <span class="pl-k">-&gt;</span> <span class="pl-en"><span class="pl-c1">Int</span></span>
+seatId <span class="pl-k">=</span> foldl&#39; iGuessWe&#39;reDoingThis <span class="pl-c1">0</span>
+  <span class="pl-k">where</span>
+    iGuessWe&#39;reDoingThis n c <span class="pl-k">=</span>
+      <span class="pl-c1">2</span> <span class="pl-k">*</span> n <span class="pl-k">+</span> (complement (ord c) <span class="pl-k">`shiftR`</span> <span class="pl-c1">2</span>) <span class="pl-k">.&amp;.</span> <span class="pl-c1">1</span></pre></div>
+<p><em><a href="https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md">Back to all reflections for 2020</a></em></p>
+<h2><a aria-hidden="true" class="anchor" href="#day-5-benchmarks" id="user-content-day-5-benchmarks"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z" fill-rule="evenodd"></path></svg></a>Day 5 Benchmarks</h2>
+<pre><code>&gt;&gt; Day 05a
+benchmarking...
+time                 17.82 μs   (17.80 μs .. 17.83 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 17.85 μs   (17.83 μs .. 17.90 μs)
+std dev              99.61 ns   (62.10 ns .. 135.5 ns)
+
+* parsing and formatting times excluded
+
+&gt;&gt; Day 05b
+benchmarking...
+time                 18.71 μs   (18.70 μs .. 18.72 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 18.70 μs   (18.70 μs .. 18.71 μs)
+std dev              29.62 ns   (22.55 ns .. 42.77 ns)
+
+* parsing and formatting times excluded
+</code></pre>
+</article></body></html>
